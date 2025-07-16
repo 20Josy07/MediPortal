@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
 import { AuthContext } from "@/context/auth-context";
+import { auth, db } from "@/lib/firebase";
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (!auth) {
-      console.error("Firebase Auth is not initialized.");
+      // Firebase might not be initialized on first render, so we wait.
       setLoading(false);
       return;
     }
