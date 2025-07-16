@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { AuthContext } from "@/context/auth-context";
 
 interface AuthProviderProps {
@@ -15,6 +15,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (!auth) {
+      console.error("Firebase Auth is not initialized.");
       setLoading(false);
       return;
     }
@@ -31,12 +32,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await signOut(auth);
     }
   };
-  
-  const value = {
-    user,
-    loading,
-    logout,
-  };
+
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      logout,
+      auth,
+      db,
+    }),
+    [user, loading]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

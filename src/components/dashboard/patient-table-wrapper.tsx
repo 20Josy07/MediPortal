@@ -8,10 +8,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  query,
-  where,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import type { Patient } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -43,7 +40,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 
 export function PatientTableWrapper() {
-  const { user } = useAuth();
+  const { user, db } = useAuth();
   const { toast } = useToast();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,7 +72,7 @@ export function PatientTableWrapper() {
     };
 
     fetchPatients();
-  }, [user, toast]);
+  }, [user, db, toast]);
   
   const filteredPatients = useMemo(() =>
     patients.filter((patient) =>
