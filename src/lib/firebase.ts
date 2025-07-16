@@ -16,22 +16,21 @@ let auth: Auth;
 let db: Firestore;
 
 if (
-    firebaseConfig.apiKey &&
-    firebaseConfig.authDomain &&
-    firebaseConfig.projectId
-  ) {
-    if (!getApps().length) {
-        app = initializeApp(firebaseConfig);
-    } else {
-        app = getApp();
-    }
-    auth = getAuth(app);
-    db = getFirestore(app);
+  firebaseConfig.apiKey &&
+  firebaseConfig.authDomain &&
+  firebaseConfig.projectId
+) {
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApp();
+  }
+  auth = getAuth(app);
+  db = getFirestore(app);
 } else {
-    console.error(
-      "Firebase configuration is missing or incomplete. Make sure to set up your environment variables."
-    );
+  console.error(
+    "Firebase configuration is missing or incomplete. Make sure to set up your environment variables."
+  );
 }
-
 
 export { app, auth, db };
