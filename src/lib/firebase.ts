@@ -20,7 +20,11 @@ if (
     firebaseConfig.authDomain &&
     firebaseConfig.projectId
   ) {
-    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    if (!getApps().length) {
+        app = initializeApp(firebaseConfig);
+    } else {
+        app = getApp();
+    }
     auth = getAuth(app);
     db = getFirestore(app);
 } else {

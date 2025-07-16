@@ -15,7 +15,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (!auth) {
-      // Firebase might not be initialized on first render, so we wait.
       setLoading(false);
       return;
     }
