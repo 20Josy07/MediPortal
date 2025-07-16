@@ -1,9 +1,24 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    --primary-bg: 264 100% 13%; /* #200040 */
+    --secondary-bg: 265 100% 18%; /* #30005A */
+    --text-color: 240 100% 97%; /* #F0F0F0 */
+    --highlight-yellow: 54 100% 61%; /* #FFEB3B */
+    --highlight-purple: 284 100% 64%; /* #D147FF */
+    --button-secondary-border: 276 85% 56%; /* #A020F0 */
+    --code-window-bg: 270 100% 10%; /* #1A0033 */
+    --code-window-border: 266 70% 28%; /* #4A0080 */
+    --dot-red: #FF605C;
+    --dot-yellow: #FFBD44;
+    --dot-green: #00CA4E;
+    --status-negative-bg: 266 70% 28%; /* #4A0080 */
+    --status-text: #FF4D4D;
+
     --background: 264 100% 13%; /* #200040 */
     --foreground: 240 100% 97%; /* #F0F0F0 */
 
@@ -33,9 +48,6 @@
     --ring: 284 100% 64%; /* #D147FF */
 
     --radius: 0.5rem;
-
-    /* Custom colors from user CSS */
-    --highlight-yellow: 54 100% 61%; /* #FFEB3B */
   }
 
   .dark {
@@ -76,10 +88,443 @@
   body {
     @apply bg-background text-foreground;
   }
-  .alumbra-highlight {
-    @apply bg-gradient-to-r from-[hsl(var(--highlight-yellow))] to-[hsl(var(--accent))] bg-clip-text text-transparent;
-  }
-  .primary-button-gradient {
-    @apply bg-gradient-to-r from-[#FF007F] to-[#A020F0] text-white shadow-[0_8px_25px_rgba(255,0,127,0.6)] hover:shadow-[0_12px_30px_rgba(255,0,127,0.8)] hover:-translate-y-1;
-  }
+}
+
+@layer components {
+    .navbar {
+        @apply flex justify-between items-center py-4 px-[5%] bg-[#3D224E] border-b border-white/10 relative z-[1000];
+    }
+
+    .navbar-left {
+        @apply flex items-center;
+    }
+
+    .logo {
+        @apply flex items-center gap-2;
+    }
+
+    .logo-image {
+        @apply w-8 h-8 object-contain;
+    }
+
+    .prototype-text {
+        @apply font-bold text-base border border-white/50 py-1 px-2.5 rounded-full opacity-80;
+    }
+
+    .navbar-right ul {
+        @apply list-none m-0 p-0 flex items-center gap-8;
+    }
+
+    .navbar-right ul li a {
+        @apply text-foreground no-underline font-normal text-sm transition-colors duration-300 ease-in-out;
+    }
+
+    .navbar-right ul li a:hover {
+        color: hsl(var(--highlight-yellow));
+    }
+
+    .login-button {
+        @apply bg-primary text-foreground border-none py-2.5 px-5 rounded-full cursor-pointer font-bold text-sm transition-colors duration-300 ease-in-out;
+    }
+    .login-button:hover {
+        @apply bg-primary/90;
+    }
+
+    .hero-section {
+        @apply flex justify-center items-center py-8 px-[5%] gap-6 min-h-[calc(100vh-80px)] box-border relative;
+    }
+
+    .hero-content {
+        @apply flex-1 max-w-[750px] text-left;
+    }
+
+    .hero-content .tag {
+        @apply bg-secondary py-2 px-4 rounded-full inline-block mb-4 text-sm font-bold text-white/80;
+    }
+
+    .hero-content h1 {
+        @apply text-6xl font-extrabold leading-tight mb-3;
+    }
+
+    .alumbra-highlight {
+        @apply bg-gradient-to-r from-[hsl(var(--highlight-yellow))] to-[hsl(var(--highlight-purple))] bg-clip-text text-transparent;
+    }
+
+    .hero-content p {
+        @apply text-xl leading-relaxed mb-8 text-white/70;
+    }
+
+    .buttons {
+        @apply flex gap-4;
+    }
+
+    .primary-button, .secondary-button {
+        @apply py-4 px-8 rounded-full text-base font-bold cursor-pointer transition-transform duration-200 ease-in-out;
+    }
+
+    .primary-button {
+        @apply bg-gradient-to-r from-[#FF007F] to-[#A020F0] text-foreground border-none shadow-[0_8px_25px_rgba(255,0,127,0.6)];
+    }
+
+    .primary-button:hover {
+        @apply -translate-y-1 shadow-[0_12px_30px_rgba(255,0,127,0.8)];
+    }
+
+    .secondary-button {
+        @apply bg-transparent text-foreground border-2 border-[hsl(var(--button-secondary-border))] shadow-[0_2px_10px_rgba(160,32,240,0.2)];
+    }
+
+    .secondary-button:hover {
+        @apply -translate-y-px bg-[hsl(var(--button-secondary-border))] bg-opacity-30 shadow-[0_5px_15px_rgba(160,32,240,0.4)];
+    }
+
+    .hero-image {
+        @apply flex-1 flex justify-center items-center relative;
+    }
+
+    .code-window {
+        @apply bg-[hsl(var(--code-window-bg))] border border-[hsl(var(--code-window-border))] rounded-lg w-full max-w-xl shadow-2xl overflow-hidden;
+    }
+
+    .window-header {
+        @apply flex items-center py-3 px-4 bg-[hsl(var(--code-window-border))] border-b border-white/10 relative;
+    }
+
+    .dots {
+        @apply flex gap-2;
+    }
+
+    .dot {
+        @apply w-3 h-3 rounded-full;
+    }
+
+    .dot.red { background-color: var(--dot-red); }
+    .dot.yellow { background-color: var(--dot-yellow); }
+    .dot.green { background-color: var(--dot-green); }
+    
+    .window-title {
+        @apply absolute left-1/2 -translate-x-1/2 text-sm text-white/70 font-bold;
+    }
+
+    .window-body {
+        @apply p-6 font-mono text-sm text-white/90 leading-normal;
+    }
+    
+    .window-body p {
+        @apply m-0 mb-2;
+    }
+
+    .status-box {
+        @apply bg-[hsl(var(--status-negative-bg))] py-3 px-4 rounded-md mt-4 flex justify-between items-center font-bold text-sm;
+    }
+    
+    .status-box span:first-child {
+        @apply text-white/60;
+    }
+
+    .status-box .status-text {
+      color: hsl(var(--status-text));
+    }
+
+    .how-it-works-section {
+        @apply bg-secondary py-16 px-[5%] text-center mt-0;
+    }
+
+    .how-it-works-section h2 {
+        @apply text-5xl font-extrabold mb-4 text-foreground;
+    }
+
+    .how-it-works-section .subtitle {
+        @apply text-lg text-white/70 mb-12;
+    }
+
+    .steps-container {
+        @apply flex justify-center gap-8 flex-wrap;
+    }
+
+    .step-card {
+        @apply bg-background rounded-xl p-8 w-[280px] shadow-lg text-center relative overflow-hidden transition-transform duration-300 ease-in-out;
+    }
+    
+    .step-card:hover {
+        @apply -translate-y-2 shadow-2xl;
+    }
+    
+    .step-number {
+        @apply absolute top-4 left-4 text-5xl font-extrabold text-white/10 z-[1];
+    }
+    
+    .icon-circle {
+        @apply bg-gradient-to-r from-[#FF007F] to-[#A020F0] rounded-full w-20 h-20 flex justify-center items-center mx-auto mb-6 shadow-lg relative z-[2];
+    }
+
+    .icon-circle img {
+        filter: brightness(0) invert(1);
+    }
+    
+    .step-card h3 {
+        @apply text-2xl font-bold mb-3 text-foreground;
+    }
+
+    .step-card p {
+        @apply text-base text-white/70 leading-normal;
+    }
+
+    .features-section {
+        @apply bg-background py-16 px-[5%] text-center;
+    }
+
+    .features-section h2 {
+        @apply text-5xl font-extrabold mb-4 text-foreground;
+    }
+
+    .features-section .subtitle {
+        @apply text-lg text-white/70 mb-12;
+    }
+
+    .features-container {
+        @apply flex justify-center gap-8 flex-wrap;
+    }
+
+    .feature-card {
+        @apply bg-secondary rounded-xl p-8 w-[300px] shadow-lg text-center transition-transform duration-300 ease-in-out;
+    }
+    
+    .feature-card:hover {
+        @apply -translate-y-2 shadow-2xl;
+    }
+    
+    .icon-circle-small {
+        @apply bg-gradient-to-r from-[#FF007F] to-[#A020F0] rounded-full w-16 h-16 flex justify-center items-center mx-auto mb-6 shadow-md;
+    }
+
+    .icon-circle-small img {
+      filter: brightness(0) invert(1);
+    }
+
+    .feature-card h3 {
+        @apply text-xl font-bold mb-3 text-foreground;
+    }
+
+    .feature-card p {
+        @apply text-sm text-white/70 leading-normal;
+    }
+    
+    .testimonials-section {
+        @apply bg-secondary py-16 px-[5%] text-center;
+    }
+
+    .testimonials-section h2 {
+        @apply text-5xl font-extrabold mb-4 text-foreground;
+    }
+
+    .testimonials-section .subtitle {
+        @apply text-lg text-white/70 mb-12;
+    }
+
+    .testimonials-container {
+        @apply flex justify-center gap-8 flex-wrap;
+    }
+
+    .testimonial-card {
+        @apply bg-background rounded-xl p-8 w-[300px] shadow-lg text-left transition-transform duration-300 ease-in-out flex flex-col justify-between;
+    }
+    
+    .testimonial-card:hover {
+        @apply -translate-y-2 shadow-2xl;
+    }
+    
+    .testimonial-card p {
+        @apply text-base text-white/80 leading-relaxed mb-6 flex-grow;
+    }
+
+    .author-info {
+        @apply flex items-center gap-4 mt-auto;
+    }
+    
+    .author-avatar {
+        @apply w-12 h-12 bg-white/20 rounded-full flex-shrink-0;
+    }
+    
+    .author-name {
+        @apply font-bold text-lg text-foreground block;
+    }
+    
+    .author-title {
+        @apply text-sm text-white/60 block;
+    }
+
+    .mission-vision-section {
+        @apply bg-background py-16 px-[5%] text-center;
+    }
+
+    .mission-vision-section h2 {
+        @apply text-5xl font-extrabold mb-4 text-foreground;
+    }
+
+    .mission-vision-section .subtitle {
+        @apply text-lg text-white/70 mb-12;
+    }
+
+    .mission-vision-container {
+        @apply flex justify-center gap-16 flex-wrap max-w-6xl mx-auto;
+    }
+
+    .mission-card, .vision-card {
+        @apply flex-1 min-w-[300px] max-w-lg text-left p-8 rounded-xl bg-secondary shadow-lg;
+    }
+    
+    .icon-title {
+        @apply flex items-center gap-4 mb-6;
+    }
+    
+    .icon-title img {
+      filter: brightness(0) invert(1);
+    }
+
+    .icon-title h3 {
+        @apply text-3xl font-bold text-foreground m-0;
+    }
+
+    .mission-card p, .vision-card p {
+        @apply text-base text-white/80 leading-relaxed;
+    }
+    
+    footer {
+        @apply bg-secondary py-16 px-[5%] text-foreground text-sm;
+    }
+
+    .footer-container {
+        @apply flex justify-between gap-12 max-w-6xl mx-auto mb-12 flex-wrap;
+    }
+
+    .footer-column {
+        @apply flex-1 min-w-[200px];
+    }
+
+    .footer-column h3 {
+        @apply text-xl font-bold mb-6 text-foreground;
+    }
+
+    .footer-column p {
+        @apply text-white/70 leading-relaxed mb-6;
+    }
+    
+    .footer-column ul {
+        @apply list-none p-0 m-0;
+    }
+
+    .footer-column ul li {
+        @apply mb-3;
+    }
+    
+    .footer-column ul li a {
+        @apply text-white/70 no-underline transition-colors duration-300 ease-in-out;
+    }
+    
+    .footer-column ul li a:hover {
+      color: hsl(var(--highlight-yellow));
+    }
+    
+    .footer-badges {
+        @apply flex gap-4 mt-4;
+    }
+    
+    .footer-badges span {
+        @apply bg-background py-2 px-4 rounded-full text-xs font-bold text-white/80;
+    }
+    
+    .footer-bottom {
+        @apply text-center pt-8 border-t border-white/10 text-white/50 text-xs;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-section { @apply flex-col text-center py-8 px-[5%]; }
+      .hero-content { @apply max-w-full; }
+      .hero-content h1 { @apply text-5xl; }
+      .buttons { @apply justify-center; }
+      .hero-image { @apply mt-6; }
+      .how-it-works-section { @apply py-12 px-[5%]; }
+      .how-it-works-section h2 { @apply text-4xl; }
+      .steps-container { @apply gap-6; }
+      .step-card { @apply w-[250px] p-6; }
+      .features-section { @apply py-12 px-[5%]; }
+      .features-section h2 { @apply text-4xl; }
+      .features-container { @apply gap-6; }
+      .feature-card { @apply w-[280px] p-6; }
+      .testimonials-section { @apply py-12 px-[5%]; }
+      .testimonials-section h2 { @apply text-4xl; }
+      .testimonials-container { @apply gap-6; }
+      .testimonial-card { @apply w-[280px] p-6; }
+      .mission-vision-section { @apply py-12 px-[5%]; }
+      .mission-vision-section h2 { @apply text-4xl; }
+      .mission-vision-container { @apply gap-8; }
+      .mission-card, .vision-card { @apply p-6; }
+      .icon-title h3 { @apply text-2xl; }
+    }
+    @media (max-width: 768px) {
+      .navbar { @apply flex-col gap-2 py-4 px-[3%]; }
+      .navbar-right ul { @apply flex-wrap justify-center gap-2; }
+      .hero-content h1 { @apply text-4xl; }
+      .hero-content p { @apply text-base; }
+      .primary-button, .secondary-button { @apply py-3 px-6 text-sm; }
+      .code-window { @apply w-[95%]; }
+      .how-it-works-section { @apply py-8 px-[3%]; }
+      .how-it-works-section h2 { @apply text-3xl; }
+      .how-it-works-section .subtitle { @apply text-base mb-8; }
+      .steps-container { @apply flex-col items-center gap-4; }
+      .step-card { @apply w-[90%] max-w-sm; }
+      .features-section { @apply py-8 px-[3%]; }
+      .features-section h2 { @apply text-3xl; }
+      .features-section .subtitle { @apply text-base mb-8; }
+      .features-container { @apply flex-col items-center gap-4; }
+      .feature-card { @apply w-[90%] max-w-sm; }
+      .testimonials-section { @apply py-8 px-[3%]; }
+      .testimonials-section h2 { @apply text-3xl; }
+      .testimonials-section .subtitle { @apply text-base mb-8; }
+      .testimonials-container { @apply flex-col items-center gap-4; }
+      .testimonial-card { @apply w-[90%] max-w-sm; }
+      .mission-vision-section { @apply py-8 px-[3%]; }
+      .mission-vision-section h2 { @apply text-3xl; }
+      .mission-vision-section .subtitle { @apply text-base mb-8; }
+      .mission-vision-container { @apply flex-col items-center gap-6; }
+      .mission-card, .vision-card { @apply w-[90%] max-w-md; }
+      .footer-container { @apply flex-col items-center text-center gap-8; }
+      .footer-column { @apply min-w-0 w-full max-w-xs; }
+      .footer-badges { @apply justify-center; }
+    }
+    @media (max-width: 480px) {
+      .navbar-right ul { @apply flex-col gap-1; }
+      .login-button { @apply w-full; }
+      .hero-content h1 { @apply text-3xl; }
+      .buttons { @apply flex-col gap-2; }
+      .primary-button, .secondary-button { @apply w-full; }
+      .window-body { @apply p-4 text-xs; }
+      .how-it-works-section h2 { @apply text-2xl; }
+      .step-card { @apply p-5; }
+      .icon-circle { @apply w-[70px] h-[70px] mb-4; }
+      .icon-circle img { @apply w-[35px] h-[35px]; }
+      .step-card h3 { @apply text-xl; }
+      .step-card p { @apply text-sm; }
+      .features-section h2 { @apply text-2xl; }
+      .feature-card { @apply p-5; }
+      .icon-circle-small { @apply w-12 h-12 mb-4; }
+      .icon-circle-small img { @apply w-6 h-6; }
+      .feature-card h3 { @apply text-lg; }
+      .feature-card p { @apply text-xs; }
+      .testimonials-section h2 { @apply text-2xl; }
+      .testimonial-card { @apply p-5; }
+      .testimonial-card p { @apply text-sm; }
+      .author-avatar { @apply w-10 h-10; }
+      .author-name { @apply text-base; }
+      .author-title { @apply text-xs; }
+      .mission-vision-section h2 { @apply text-2xl; }
+      .mission-card, .vision-card { @apply p-5; }
+      .icon-title img { @apply w-6 h-6; }
+      .icon-title h3 { @apply text-xl; }
+      .mission-card p, .vision-card p { @apply text-sm; }
+      footer { @apply py-12 px-[3%]; }
+      .footer-column h3 { @apply text-lg; }
+      .footer-column p, .footer-column ul li a, .footer-badges span, .footer-bottom p { @apply text-xs; }
+    }
 }
