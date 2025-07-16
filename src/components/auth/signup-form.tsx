@@ -19,19 +19,23 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { GoogleIcon, FacebookIcon, LinkedinIcon, MicrosoftIcon } from "../icons";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  fullname: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
+  email: z.string().email({ message: "Por favor, introduce un correo válido." }),
+  username: z.string().min(2, { message: "El nombre de usuario debe tener al menos 2 caracteres." }),
+  password: z.string().min(8, { message: "La contraseña debe tener al menos 8 caracteres." }),
+  dob: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Por favor, introduce una fecha válida." }),
+  gender: z.string().min(1, { message: "Por favor, selecciona un género." }),
 });
 
 export function SignUpForm() {
@@ -42,9 +46,12 @@ export function SignUpForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      fullname: "",
       email: "",
+      username: "",
       password: "",
+      dob: "",
+      gender: "",
     },
   });
 
@@ -59,13 +66,13 @@ export function SignUpForm() {
 
       if (userCredential.user) {
         await updateProfile(userCredential.user, {
-          displayName: values.name,
+          displayName: values.fullname,
         });
       }
 
       toast({
-        title: "Account Created",
-        description: "You have been successfully signed up.",
+        title: "Cuenta Creada",
+        description: "Te has registrado exitosamente.",
       });
 
       router.push("/dashboard");
@@ -73,8 +80,8 @@ export function SignUpForm() {
       console.error("Sign Up Error:", error);
       toast({
         variant: "destructive",
-        title: "Sign Up Failed",
-        description: error.message || "An unexpected error occurred. Please try again.",
+        title: "Error al registrarse",
+        description: error.message || "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
       });
     } finally {
       setIsLoading(false);
@@ -82,62 +89,139 @@ export function SignUpForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Create an Account</CardTitle>
-        <CardDescription>
-          Join MediPortal to streamline your patient management.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="text-left">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <FormField
+            control={form.control}
+            name="fullname"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Nombre Completo</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Tu nombre completo"
+                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Correo Electrónico</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="nombre@ejemplo.com"
+                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Nombre de Usuario</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Tu nombre de usuario"
+                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Contraseña</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dob"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Fecha de Nacimiento</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="date"
+                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="gender"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Género</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <Input placeholder="Dr. John Doe" {...field} />
+                    <SelectTrigger className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white h-auto placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none">
+                      <SelectValue placeholder="Selecciona tu género" />
+                    </SelectTrigger>
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                  <SelectContent>
+                    <SelectItem value="male">Masculino</SelectItem>
+                    <SelectItem value="female">Femenino</SelectItem>
+                    <SelectItem value="other">Otro</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        
+        <div className="flex-center mt-6">
+          <p className="social-login-text mb-4 text-sm text-white/70">O regístrate con</p>
+          <div className="flex items-center justify-center gap-5">
+             <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#d62976]">
+                <GoogleIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+             </a>
+             <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#00acee]">
+                <FacebookIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+             </a>
+             <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#0072b1]">
+                <LinkedinIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+             </a>
+              <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#128C7E]">
+                <MicrosoftIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+             </a>
+          </div>
+        </div>
+        
+        <Button type="submit" className="login-shimmer-button w-full mt-8 h-auto" disabled={isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Registrarse
+        </Button>
+      </form>
+    </Form>
   );
 }
+
+    
