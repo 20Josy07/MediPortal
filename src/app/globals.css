@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --primary-bg: 264 100% 13%; /* #200040 */
+    --primary-bg: 264 70% 12%; /* #1d0535 */
     --secondary-bg: 265 100% 18%; /* #30005A */
     --text-color: 240 100% 97%; /* #F0F0F0 */
     --highlight-yellow: 54 100% 61%; /* #FFEB3B */
@@ -19,7 +19,7 @@
     --status-negative-bg: 266 70% 28%; /* #4A0080 */
     --status-text: #FF4D4D;
 
-    --background: 264 100% 13%; /* #200040 */
+    --background: 264 70% 12%; /* Updated from --primary-bg */
     --foreground: 240 100% 97%; /* #F0F0F0 */
 
     --card: 265 100% 18%; /* #30005A */
@@ -28,7 +28,7 @@
     --popover: 265 100% 18%; /* #30005A */
     --popover-foreground: 240 100% 97%; /* #F0F0F0 */
     
-    --primary: 276 85% 56%; /* #A020F0 */
+    --primary: 274 71% 52%; /* #8e2de2 */
     --primary-foreground: 240 100% 97%; /* #F0F0F0 */
     
     --secondary: 265 100% 18%; /* #30005A */
@@ -44,14 +44,14 @@
     --destructive-foreground: 0 0% 98%;
 
     --border: 266 70% 28%; /* #4A0080 */
-    --input: 270 100% 10%; /* #1A0033 */
+    --input: 257 88% 13%; /* rgba(255, 255, 255, 0.1) on #1d0535 -> #2a0e4a */
     --ring: 284 100% 64%; /* #D147FF */
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 264 100% 13%; /* #200040 */
+    --background: 264 70% 12%; /* #1d0535 */
     --foreground: 240 100% 97%; /* #F0F0F0 */
 
     --card: 265 100% 18%; /* #30005A */
@@ -60,7 +60,7 @@
     --popover: 265 100% 18%; /* #30005A */
     --popover-foreground: 240 100% 97%; /* #F0F0F0 */
     
-    --primary: 276 85% 56%; /* #A020F0 */
+    --primary: 274 71% 52%; /* #8e2de2 */
     --primary-foreground: 240 100% 97%; /* #F0F0F0 */
     
     --secondary: 265 100% 18%; /* #30005A */
@@ -76,7 +76,7 @@
     --destructive-foreground: 0 0% 98%;
 
     --border: 266 70% 28%; /* #4A0080 */
-    --input: 270 100% 10%; /* #1A0033 */
+    --input: 257 88% 13%; /* rgba(255, 255, 255, 0.1) on #1d0535 -> #2a0e4a */
     --ring: 284 100% 64%; /* #D147FF */
   }
 }
@@ -121,13 +121,6 @@
 
     .navbar-right ul li a:hover {
         color: hsl(var(--highlight-yellow));
-    }
-
-    .login-button {
-        @apply bg-primary text-foreground border-none py-2.5 px-5 rounded-full cursor-pointer font-bold text-sm transition-colors duration-300 ease-in-out;
-    }
-    .login-button:hover {
-        @apply bg-primary/90;
     }
 
     .hero-section {
@@ -437,6 +430,36 @@
     .footer-bottom {
         @apply text-center pt-8 border-t border-white/10 text-white/50 text-xs;
     }
+    .login-shimmer-button {
+      @apply relative p-4 rounded-lg border border-primary text-lg uppercase font-bold tracking-[2px] bg-transparent text-white overflow-hidden shadow-none transition-all duration-200 ease-in;
+    }
+    .login-shimmer-button:hover {
+      @apply bg-primary shadow-[0_0_30px_5px_rgba(142,45,226,0.815)] transition-all duration-200 ease-out;
+    }
+    .login-shimmer-button:hover::before {
+      animation: shimmer 0.5s 0s linear;
+    }
+    .login-shimmer-button::before {
+      content: '';
+      @apply block w-0 h-[86%] absolute top-[7%] left-0 opacity-0 bg-white shadow-[0_0_50px_30px_white] -skew-x-[20deg];
+    }
+    .login-shimmer-button:active {
+      @apply shadow-none transition-shadow duration-200 ease-in;
+    }
+    @keyframes shimmer {
+      from {
+        opacity: 0;
+        left: 0%;
+      }
+      50% {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+        left: 100%;
+      }
+    }
+
 
     @media (max-width: 1024px) {
       .hero-section { @apply flex-col text-center py-8 px-[5%]; }
@@ -495,7 +518,6 @@
     }
     @media (max-width: 480px) {
       .navbar-right ul { @apply flex-col gap-1; }
-      .login-button { @apply w-full; }
       .hero-content h1 { @apply text-3xl; }
       .buttons { @apply flex-col gap-2; }
       .primary-button, .secondary-button { @apply w-full; }

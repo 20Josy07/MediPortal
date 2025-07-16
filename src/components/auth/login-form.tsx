@@ -18,19 +18,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { FacebookIcon, GoogleIcon, LinkedinIcon, MicrosoftIcon } from "../icons";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(1, { message: "Password is required." }),
+  email: z.string().email({ message: "Por favor, introduce un correo válido." }),
+  password: z.string().min(1, { message: "La contraseña es obligatoria." }),
 });
 
 export function LoginForm() {
@@ -55,8 +50,8 @@ export function LoginForm() {
       console.error("Login Error:", error);
       toast({
         variant: "destructive",
-        title: "Login Failed",
-        description: error.message || "An unexpected error occurred. Please try again.",
+        title: "Error al iniciar sesión",
+        description: error.message || "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
       });
     } finally {
       setIsLoading(false);
@@ -64,47 +59,70 @@ export function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Welcome Back</CardTitle>
-        <CardDescription>Enter your credentials to access your account.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Login
-            </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 text-left">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Correo Electrónico</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="tu@ejemplo.com"
+                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="font-bold text-white">Contraseña</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+           <span className="block text-left text-sm mt-2.5">
+              <Link href="#" className="font-bold text-primary hover:underline">
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </span>
+          <Button type="submit" className="login-shimmer-button w-full mt-8 h-auto" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Iniciar Sesión
+          </Button>
+        </form>
+      </Form>
+      <div className="flex-center mt-6">
+        <p className="social-login-text mb-4 text-sm text-white/70">O inicia sesión con</p>
+        <div className="flex items-center justify-center gap-5">
+           <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#d62976]">
+              <GoogleIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+           </a>
+           <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#00acee]">
+              <FacebookIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+           </a>
+           <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#0072b1]">
+              <LinkedinIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+           </a>
+            <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#128C7E]">
+              <MicrosoftIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
+           </a>
+        </div>
+      </div>
+    </div>
   );
 }
