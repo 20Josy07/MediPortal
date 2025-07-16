@@ -15,8 +15,7 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-try {
-  if (
+if (
     firebaseConfig.apiKey &&
     firebaseConfig.authDomain &&
     firebaseConfig.projectId
@@ -24,12 +23,11 @@ try {
     app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
-  } else {
-    // This case can happen during build or when env vars are not set
-  }
-} catch (error) {
-  console.error("Firebase initialization error:", error);
+} else {
+    console.error(
+      "Firebase configuration is missing or incomplete. Make sure to set up your environment variables."
+    );
 }
 
-// @ts-ignore
+
 export { app, auth, db };
