@@ -15,18 +15,23 @@ let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-if (
-  firebaseConfig.apiKey &&
-  firebaseConfig.authDomain &&
-  firebaseConfig.projectId
-) {
-  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-} else {
-  console.error(
-    "Firebase configuration is missing or incomplete. Make sure to set up your environment variables."
-  );
+try {
+  if (
+    firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId
+  ) {
+    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } else {
+    throw new Error("Firebase configuration is missing or incomplete. Make sure to set up your environment variables.");
+  }
+} catch (error) {
+    console.error(error);
+    // You can handle the error appropriately here, e.g., by setting mock instances.
+    // For now, we'll let the error be thrown so it's visible during development.
 }
+
 
 export { app, auth, db };
