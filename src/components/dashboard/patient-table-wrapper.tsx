@@ -11,7 +11,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import type { Patient } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,10 @@ export function PatientTableWrapper() {
 
   useEffect(() => {
     const fetchPatients = async () => {
-      if (!user) return;
+      if (!user || !db) {
+        setIsLoading(false);
+        return;
+      }
       setIsLoading(true);
       try {
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
@@ -80,7 +83,7 @@ export function PatientTableWrapper() {
     ), [patients, searchTerm]);
 
   const handleFormSubmit = async (data: Omit<Patient, "id">) => {
-    if (!user) return;
+    if (!user || !db) return;
     const patientsCollection = collection(db, `users/${user.uid}/patients`);
     
     try {
@@ -105,7 +108,7 @@ export function PatientTableWrapper() {
   };
   
   const handleDeletePatient = async () => {
-    if (!user || !selectedPatient) return;
+    if (!user || !selectedPatient || !db) return;
     try {
       const patientDoc = doc(db, `users/${user.uid}/patients`, selectedPatient.id);
       await deleteDoc(patientDoc);

@@ -56,6 +56,14 @@ export function SignUpForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) {
+       toast({
+        variant: "destructive",
+        title: "Error de configuración",
+        description: "Firebase no está configurado. Por favor, contacta al soporte.",
+      });
+      return;
+    }
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -223,5 +231,3 @@ export function SignUpForm() {
     </Form>
   );
 }
-
-    

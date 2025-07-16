@@ -42,6 +42,14 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) {
+      toast({
+        variant: "destructive",
+        title: "Error de configuración",
+        description: "Firebase no está configurado. Por favor, contacta al soporte.",
+      });
+      return;
+    }
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -51,7 +59,7 @@ export function LoginForm() {
       toast({
         variant: "destructive",
         title: "Error al iniciar sesión",
-        description: error.message || "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+        description: "Credenciales inválidas, por favor verifica tus datos.",
       });
     } finally {
       setIsLoading(false);

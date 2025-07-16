@@ -10,12 +10,25 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarGroup,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
 import { useAuth } from "@/context/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, LogOut, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users,
+  Calendar,
+  BarChart2,
+  LineChart,
+  FileText,
+  CreditCard,
+  LifeBuoy,
+  Home,
+} from "lucide-react";
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -24,7 +37,7 @@ export function DashboardSidebar() {
 
   const handleLogout = async () => {
     await logout();
-    router.push('/');
+    router.push("/");
   };
 
   const getInitials = (name: string | null | undefined) => {
@@ -41,7 +54,7 @@ export function DashboardSidebar() {
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2">
           <Logo className="w-7 h-7 text-primary" />
-          <span className="font-bold text-lg">MediPortal</span>
+          <span className="font-bold text-lg">Psicólogo</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">
@@ -52,36 +65,121 @@ export function DashboardSidebar() {
               isActive={pathname === "/dashboard"}
             >
               <Link href="/dashboard">
-                <LayoutDashboard />
-                Patients
+                <Home />
+                Dashboard
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-             <SidebarMenuButton
+            <SidebarMenuButton
               asChild
-              isActive={pathname === "/dashboard/settings"}
-              disabled
+              isActive={pathname === "/dashboard/patients"}
             >
               <Link href="#">
-                <Settings />
-                Settings
+                <Users />
+                Pacientes
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/sessions"}
+            >
+              <Link href="#">
+                <Calendar />
+                Sesiones
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/analysis"}
+            >
+              <Link href="#">
+                <BarChart2 />
+                Análisis
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/metrics"}
+            >
+              <Link href="#">
+                <LineChart />
+                Métricas
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/documents"}
+            >
+              <Link href="#">
+                <FileText />
+                Documentos
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/billing"}
+            >
+              <Link href="#">
+                <CreditCard />
+                Facturación
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="p-2">
-        <div className="flex items-center gap-3">
+      <SidebarFooter className="p-2 flex flex-col gap-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/settings"}
+            >
+              <Link href="#">
+                <Settings />
+                Configuración
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/support"}
+            >
+              <Link href="#">
+                <LifeBuoy />
+                Ayuda/Soporte
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+
+        <div className="flex items-center gap-3 mt-4">
           <Avatar className="h-9 w-9">
             <AvatarImage src={user?.photoURL || undefined} alt="User avatar" />
             <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
           </Avatar>
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-semibold truncate">{user?.displayName || "User"}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            <p className="text-sm font-semibold truncate">
+              {user?.displayName || "Usuario"}
+            </p>
           </div>
-          <Button variant="ghost" size="icon" onClick={handleLogout} className="flex-shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleLogout}
+            className="flex-shrink-0"
+          >
             <LogOut className="w-4 h-4" />
           </Button>
         </div>
