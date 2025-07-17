@@ -8,8 +8,6 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  query,
-  where
 } from "firebase/firestore";
 import type { Patient } from "@/lib/types";
 import { Input } from "@/components/ui/input";
@@ -23,12 +21,6 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -37,18 +29,18 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, PlusCircle, Edit, Trash2, Eye, Search, Loader2 } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Eye, Search, Loader2 } from "lucide-react";
 import { PatientForm } from "./patient-form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 
-const mockPatients: Omit<Patient, "id">[] = [
-    { name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+57 310 123 4567', nextSession: '2024-08-10 10:00 AM', status: 'Activo' },
-    { name: 'Lucas Gómez', email: 'lucas.gomez@example.com', phone: '+57 320 987 6543', nextSession: null, status: 'Inactivo' },
-    { name: 'Sofía Hernández', email: 'sofia.hernandez@example.com', phone: '+57 300 555 1234', nextSession: '2024-08-15 03:00 PM', status: 'Activo' },
-    { name: 'Juan Pérez', email: 'juan.perez@example.com', phone: '+57 315 765 4321', nextSession: '2024-08-20 09:00 AM', status: 'Activo' },
-    { name: 'María García', email: 'maria.garcia@example.com', phone: '+57 311 222 3344', nextSession: null, status: 'Inactivo' },
-    { name: 'Carlos Ruiz', email: 'carlos.ruiz@example.com', phone: '+57 313 777 8899', nextSession: '2024-09-01 11:00 AM', status: 'Activo' },
+const mockPatients: Patient[] = [
+    { id: '1', name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+57 310 123 4567', nextSession: '2024-08-10T10:00', status: 'Activo' },
+    { id: '2', name: 'Lucas Gómez', email: 'lucas.gomez@example.com', phone: '+57 320 987 6543', nextSession: null, status: 'Inactivo' },
+    { id: '3', name: 'Sofía Hernández', email: 'sofia.hernandez@example.com', phone: '+57 300 555 1234', nextSession: '2024-08-15T15:00', status: 'Activo' },
+    { id: '4', name: 'Juan Pérez', email: 'juan.perez@example.com', phone: '+57 315 765 4321', nextSession: '2024-08-20T09:00', status: 'Activo' },
+    { id: '5', name: 'María García', email: 'maria.garcia@example.com', phone: '+57 311 222 3344', nextSession: null, status: 'Inactivo' },
+    { id: '6', name: 'Carlos Ruiz', email: 'carlos.ruiz@example.com', phone: '+57 313 777 8899', nextSession: '2024-09-01T11:00', status: 'Activo' },
 ];
 
 export function PatientTableWrapper() {
@@ -65,6 +57,7 @@ export function PatientTableWrapper() {
     const fetchPatients = async () => {
       if (!user || !db) {
         setIsLoading(false);
+        setPatients(mockPatients); 
         return;
       }
       setIsLoading(true);
@@ -73,14 +66,7 @@ export function PatientTableWrapper() {
         const patientSnapshot = await getDocs(patientsCollection);
         
         if (patientSnapshot.empty) {
-          // Seed mock data if no patients exist
-          const addPromises = mockPatients.map(p => addDoc(patientsCollection, p));
-          await Promise.all(addPromises);
-          const newSnapshot = await getDocs(patientsCollection);
-          const patientList = newSnapshot.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as Patient)
-          );
-          setPatients(patientList);
+          setPatients(mockPatients);
         } else {
           const patientList = patientSnapshot.docs.map(
             (doc) => ({ id: doc.id, ...doc.data() } as Patient)
@@ -90,6 +76,7 @@ export function PatientTableWrapper() {
       } catch (error) {
         console.error("Error fetching patients:", error);
         toast({ variant: "destructive", title: "Failed to fetch patients." });
+        setPatients(mockPatients);
       } finally {
         setIsLoading(false);
       }
@@ -104,8 +91,10 @@ export function PatientTableWrapper() {
     ), [patients, searchTerm]);
 
   const handleFormSubmit = async (data: Omit<Patient, "id">) => {
-    if (!user || !db) return;
-    const patientsCollection = collection(db, `users/${user.uid}/patients`);
+    if (!user || !db) {
+      toast({ variant: "destructive", title: "Error de autenticación. Intenta de nuevo." });
+      return
+    };
     
     try {
       if (selectedPatient) {
@@ -116,6 +105,7 @@ export function PatientTableWrapper() {
         toast({ title: "Paciente actualizado exitosamente." });
       } else {
         // Create
+        const patientsCollection = collection(db, `users/${user.uid}/patients`);
         const docRef = await addDoc(patientsCollection, data);
         setPatients([...patients, { id: docRef.id, ...data }]);
         toast({ title: "Paciente agregado exitosamente." });
@@ -201,7 +191,7 @@ export function PatientTableWrapper() {
                     <div className="text-sm text-muted-foreground">{patient.email}</div>
                   </TableCell>
                   <TableCell>{patient.phone}</TableCell>
-                  <TableCell>{patient.nextSession || 'No agendada'}</TableCell>
+                  <TableCell>{patient.nextSession ? new Date(patient.nextSession).toLocaleString() : 'No agendada'}</TableCell>
                   <TableCell>
                     <Badge variant={patient.status === 'Activo' ? 'default' : 'destructive'} className={patient.status === 'Activo' ? 'bg-green-600/90' : 'bg-red-600/90'}>
                       {patient.status}
