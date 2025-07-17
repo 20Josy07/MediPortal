@@ -44,7 +44,7 @@ const mockPatients: Patient[] = [
 ];
 
 export function PatientTableWrapper() {
-  const { user, db } = useAuth();
+  const { user, db, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,11 +55,16 @@ export function PatientTableWrapper() {
 
   useEffect(() => {
     const fetchPatients = async () => {
-      if (!user || !db) {
-        setIsLoading(false);
-        setPatients(mockPatients); 
+      if (authLoading) {
         return;
       }
+      
+      if (!user || !db) {
+        setPatients(mockPatients); 
+        setIsLoading(false);
+        return;
+      }
+      
       setIsLoading(true);
       try {
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
@@ -83,7 +88,7 @@ export function PatientTableWrapper() {
     };
 
     fetchPatients();
-  }, [user, db, toast]);
+  }, [user, db, authLoading, toast]);
   
   const filteredPatients = useMemo(() =>
     patients.filter((patient) =>
