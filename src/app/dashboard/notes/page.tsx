@@ -458,8 +458,8 @@ export default function SmartNotesPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-2 overflow-hidden flex-grow">
-                <ScrollArea className="max-h-[80vh]">
-                  <div className="space-y-2 p-2">
+                <ScrollArea className="max-h-[90vh]">
+                  <div className="space-y-2 p-2 h-full">
                     {isLoading ? (
                       <div className="flex justify-center items-center h-full">
                         <Loader2 className="h-6 w-6 animate-spin text-primary" />
