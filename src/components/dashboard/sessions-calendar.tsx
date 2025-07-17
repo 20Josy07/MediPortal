@@ -176,7 +176,7 @@ export function SessionsCalendar() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <div className="lg:col-span-2">
-            <Card>
+           <Card className="h-full">
               <CardHeader className="p-4">
                   <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
               </CardHeader>
@@ -198,7 +198,7 @@ export function SessionsCalendar() {
         </div>
 
         <div className="lg:col-span-7">
-          <Card>
+          <Card className="h-full">
             <CardContent className="p-4">
               {isLoading ? (
                 <div className="flex justify-center items-center h-[560px]">
@@ -241,7 +241,7 @@ export function SessionsCalendar() {
                               <div
                                 key={session.id}
                                 className={cn(
-                                  "text-[10px] rounded-sm px-1 py-0.5",
+                                  "text-[10px] rounded-sm px-1 py-0.5 shadow-md",
                                   getStatusColor(session.status)
                                 )}
                                 title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
@@ -251,7 +251,7 @@ export function SessionsCalendar() {
                               </div>
                             ))}
                            {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 3 && (
-                              <div className="text-primary/80 text-[10px] font-bold px-1 py-0.5 truncate">
+                              <div className="text-primary/80 text-[10px] font-bold px-1 py-0.5">
                                 ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 3} más
                               </div>
                            )}
