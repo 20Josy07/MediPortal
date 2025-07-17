@@ -18,6 +18,7 @@ export interface Session {
 
 export interface Note {
   id: string;
+  patientId: string;
   title: string;
   type: "Voz" | "Texto";
   createdAt: Date;

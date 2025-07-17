@@ -34,8 +34,8 @@ if (
   );
 }
 
-export const addNote = async (db: Firestore, userId: string, noteData: Omit<Note, 'id'>): Promise<Note> => {
-  const notesCollection = collection(db, `users/${userId}/notes`);
+export const addNote = async (db: Firestore, userId: string, patientId: string, noteData: Omit<Note, 'id'>): Promise<Note> => {
+  const notesCollection = collection(db, `users/${userId}/patients/${patientId}/notes`);
   const docRef = await addDoc(notesCollection, {
     ...noteData,
     createdAt: serverTimestamp(),
@@ -47,13 +47,13 @@ export const addNote = async (db: Firestore, userId: string, noteData: Omit<Note
   };
 };
 
-export const updateNote = async (db: Firestore, userId: string, noteId: string, data: Partial<Omit<Note, 'id'>>) => {
-  const noteDoc = doc(db, `users/${userId}/notes`, noteId);
+export const updateNote = async (db: Firestore, userId: string, patientId: string, noteId: string, data: Partial<Omit<Note, 'id'>>) => {
+  const noteDoc = doc(db, `users/${userId}/patients/${patientId}/notes`, noteId);
   await updateDoc(noteDoc, data);
 };
 
-export const deleteNote = async (db: Firestore, userId: string, noteId: string) => {
-  const noteDoc = doc(db, `users/${userId}/notes`, noteId);
+export const deleteNote = async (db: Firestore, userId: string, patientId: string, noteId: string) => {
+  const noteDoc = doc(db, `users/${userId}/patients/${patientId}/notes`, noteId);
   await deleteDoc(noteDoc);
 };
 

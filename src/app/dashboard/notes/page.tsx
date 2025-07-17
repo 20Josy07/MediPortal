@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import type { Note } from "@/lib/types";
+import type { Note, Patient } from "@/lib/types";
 import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -20,6 +20,7 @@ import { addNote, updateNote, deleteNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 const aiChatHistory = [
@@ -32,6 +33,10 @@ export default function SmartNotesPage() {
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -45,16 +50,40 @@ export default function SmartNotesPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-
   useEffect(() => {
-    const fetchNotes = async () => {
+    const fetchPatients = async () => {
       if (authLoading || !user || !db) {
         if (!authLoading) setIsLoading(false);
         return;
       }
       setIsLoading(true);
       try {
-        const notesCollection = collection(db, `users/${user.uid}/notes`);
+        const patientsCollection = collection(db, `users/${user.uid}/patients`);
+        const patientSnapshot = await getDocs(patientsCollection);
+        const patientList = patientSnapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Patient)
+        );
+        setPatients(patientList);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+        toast({ variant: "destructive", title: "Error al cargar los pacientes." });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPatients();
+  }, [user, db, authLoading, toast]);
+
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      if (!selectedPatientId || !user || !db) {
+        setNotes([]);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const notesCollection = collection(db, `users/${user.uid}/patients/${selectedPatientId}/notes`);
         const q = query(notesCollection, orderBy("createdAt", "desc"));
         const noteSnapshot = await getDocs(q);
         const noteList = noteSnapshot.docs.map((doc) => {
@@ -74,10 +103,14 @@ export default function SmartNotesPage() {
       }
     };
     fetchNotes();
-  }, [user, db, authLoading, toast]);
+  }, [selectedPatientId, user, db, toast]);
 
 
   const startRecording = async () => {
+    if (!selectedPatientId) {
+        toast({ variant: "destructive", title: "Selecciona un paciente antes de grabar." });
+        return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorderRef.current = new MediaRecorder(stream);
@@ -97,14 +130,15 @@ export default function SmartNotesPage() {
           try {
             const { transcription } = await transcribeAudio({ audioDataUri: base64Audio });
             
-            if (transcription && user && db) {
+            if (transcription && user && db && selectedPatientId) {
               const newNote: Omit<Note, 'id'> = {
                 title: `Nota de voz - ${new Date().toLocaleString()}`,
                 type: 'Voz',
                 content: transcription,
+                patientId: selectedPatientId,
                 createdAt: new Date(),
               };
-              const addedNote = await addNote(db, user.uid, newNote);
+              const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
               setNotes(prevNotes => [addedNote, ...prevNotes]);
               toast({ title: "Nota de voz guardada y transcrita." });
             }
@@ -150,8 +184,12 @@ export default function SmartNotesPage() {
   };
   
   const handleSaveTextNote = async () => {
+    if (!selectedPatientId) {
+        toast({ variant: "destructive", title: "Selecciona un paciente para guardar la nota." });
+        return;
+    }
     if (!textNoteContent.trim() || !user || !db) {
-      toast({ variant: "destructive", title: "La nota no puede estar vacía o no estás autenticado." });
+      toast({ variant: "destructive", title: "La nota no puede estar vacía." });
       return;
     }
 
@@ -160,9 +198,10 @@ export default function SmartNotesPage() {
         title: `${textNoteContent.substring(0, 30)}${textNoteContent.length > 30 ? '...' : ''}`,
         type: 'Texto',
         content: textNoteContent,
+        patientId: selectedPatientId,
         createdAt: new Date(),
       };
-      const addedNote = await addNote(db, user.uid, newNote);
+      const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
       setNotes(prevNotes => [addedNote, ...prevNotes]);
       setTextNoteContent("");
       toast({ title: "Nota de texto guardada." });
@@ -180,7 +219,7 @@ export default function SmartNotesPage() {
   };
   
   const handleUpdateNote = async () => {
-    if (!selectedNote || !user || !db) return;
+    if (!selectedNote || !user || !db || !selectedPatientId) return;
 
     const updatedData = {
       title: editableNoteTitle,
@@ -188,7 +227,7 @@ export default function SmartNotesPage() {
     };
 
     try {
-      await updateNote(db, user.uid, selectedNote.id, updatedData);
+      await updateNote(db, user.uid, selectedPatientId, selectedNote.id, updatedData);
       setNotes(notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData } : n));
       toast({ title: "Nota actualizada correctamente." });
       setIsDetailViewOpen(false);
@@ -200,10 +239,10 @@ export default function SmartNotesPage() {
   };
 
   const handleDeleteNote = async () => {
-    if (!selectedNote || !user || !db) return;
+    if (!selectedNote || !user || !db || !selectedPatientId) return;
 
     try {
-      await deleteNote(db, user.uid, selectedNote.id);
+      await deleteNote(db, user.uid, selectedPatientId, selectedNote.id);
       setNotes(notes.filter(n => n.id !== selectedNote.id));
       toast({ title: "Nota eliminada correctamente." });
       setIsDetailViewOpen(false);
@@ -224,11 +263,27 @@ export default function SmartNotesPage() {
   return (
     <>
       <div className="flex-1 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Notas Inteligentes</h1>
-          <p className="text-muted-foreground">
-            Crea, transcribe y analiza tus notas de sesión con el poder de la IA.
-          </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Notas Inteligentes</h1>
+            <p className="text-muted-foreground">
+              Selecciona un paciente y luego crea, transcribe o analiza tus notas de sesión.
+            </p>
+          </div>
+          <div className="w-full max-w-xs">
+             <Select onValueChange={setSelectedPatientId} value={selectedPatientId || ""}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un paciente..." />
+                </SelectTrigger>
+                <SelectContent>
+                    {patients.length > 0 ? patients.map(p => (
+                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    )) : (
+                        <div className="p-4 text-center text-sm text-muted-foreground">No hay pacientes</div>
+                    )}
+                </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -251,7 +306,7 @@ export default function SmartNotesPage() {
                               size="icon"
                               className={`h-24 w-24 rounded-full transition-all duration-300 ${isRecording ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-primary hover:bg-primary/90"}`}
                               onClick={handleMicClick}
-                              disabled={isTranscribing}
+                              disabled={isTranscribing || !selectedPatientId}
                               >
                               {isTranscribing ? (
                                   <Loader2 className="h-10 w-10 animate-spin" />
@@ -262,7 +317,7 @@ export default function SmartNotesPage() {
                               )}
                           </Button>
                           <p className="text-muted-foreground">
-                              {isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : "Iniciar Grabación"}
+                              {isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : !selectedPatientId ? "Selecciona un paciente para grabar" : "Iniciar Grabación"}
                           </p>
                       </CardContent>
                       </Card>
@@ -277,14 +332,15 @@ export default function SmartNotesPage() {
                       </CardHeader>
                       <CardContent>
                           <Textarea 
-                            placeholder="Escribe aquí tus notas..." 
+                            placeholder={!selectedPatientId ? "Selecciona un paciente para empezar a escribir..." : "Escribe aquí tus notas..."}
                             className="min-h-[250px] text-base"
                             value={textNoteContent}
                             onChange={(e) => setTextNoteContent(e.target.value)}
+                            disabled={!selectedPatientId}
                           />
                           <div className="mt-4 flex justify-between items-center">
-                              <Button variant="outline"><Paperclip className="mr-2 h-4 w-4" /> Adjuntar Archivo</Button>
-                              <Button onClick={handleSaveTextNote}>Guardar Nota</Button>
+                              <Button variant="outline" disabled={!selectedPatientId}><Paperclip className="mr-2 h-4 w-4" /> Adjuntar Archivo</Button>
+                              <Button onClick={handleSaveTextNote} disabled={!selectedPatientId}>Guardar Nota</Button>
                           </div>
                       </CardContent>
                       </Card>
@@ -326,6 +382,9 @@ export default function SmartNotesPage() {
               <Card>
                   <CardHeader>
                       <CardTitle>Historial de Notas</CardTitle>
+                       <CardDescription>
+                          {selectedPatientId ? `Mostrando notas para ${patients.find(p => p.id === selectedPatientId)?.name}` : 'Selecciona un paciente para ver sus notas'}
+                       </CardDescription>
                   </CardHeader>
                   <CardContent>
                       {isLoading ? (
@@ -348,7 +407,9 @@ export default function SmartNotesPage() {
                                       </span>
                                   </div>
                               )) : (
-                                  <p className="text-center text-sm text-muted-foreground py-4">No hay notas guardadas.</p>
+                                  <p className="text-center text-sm text-muted-foreground py-4">
+                                    {selectedPatientId ? 'No hay notas para este paciente.' : 'Selecciona un paciente.'}
+                                  </p>
                               )}
                           </div>
                       )}
