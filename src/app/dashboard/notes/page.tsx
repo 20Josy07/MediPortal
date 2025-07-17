@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { collection, getDocs, query, orderBy, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Note } from "@/lib/types";
@@ -35,6 +35,7 @@ export default function SmartNotesPage() {
   const [recordingTime, setRecordingTime] = useState(0);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDetailViewOpen, setIsDetailViewOpen] = useState(false);
+  const [textNoteContent, setTextNoteContent] = useState("");
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -144,6 +145,33 @@ export default function SmartNotesPage() {
     }
   };
   
+  const handleSaveTextNote = async () => {
+    if (!textNoteContent.trim()) {
+      toast({ variant: "destructive", title: "La nota no puede estar vacía." });
+      return;
+    }
+    if (!user || !db) {
+      toast({ variant: "destructive", title: "Debes iniciar sesión para guardar notas." });
+      return;
+    }
+
+    try {
+      const newNote: Omit<Note, 'id'> = {
+        title: `${textNoteContent.substring(0, 30)}${textNoteContent.length > 30 ? '...' : ''}`,
+        type: 'Texto',
+        content: textNoteContent,
+        createdAt: new Date(),
+      };
+      const addedNote = await addNote(db, user.uid, newNote);
+      setNotes(prevNotes => [addedNote, ...prevNotes]);
+      setTextNoteContent("");
+      toast({ title: "Nota de texto guardada." });
+    } catch (error) {
+       console.error("Error saving text note:", error);
+       toast({ variant: "destructive", title: "Error al guardar la nota de texto." });
+    }
+  };
+  
   const handleViewNote = (note: Note) => {
     setSelectedNote(note);
     setIsDetailViewOpen(true);
@@ -211,10 +239,15 @@ export default function SmartNotesPage() {
                           </CardDescription>
                       </CardHeader>
                       <CardContent>
-                          <Textarea placeholder="Escribe aquí tus notas..." className="min-h-[250px] text-base" />
+                          <Textarea 
+                            placeholder="Escribe aquí tus notas..." 
+                            className="min-h-[250px] text-base"
+                            value={textNoteContent}
+                            onChange={(e) => setTextNoteContent(e.target.value)}
+                          />
                           <div className="mt-4 flex justify-between items-center">
                               <Button variant="outline"><Paperclip className="mr-2 h-4 w-4" /> Adjuntar Archivo</Button>
-                              <Button>Guardar Nota</Button>
+                              <Button onClick={handleSaveTextNote}>Guardar Nota</Button>
                           </div>
                       </CardContent>
                       </Card>
