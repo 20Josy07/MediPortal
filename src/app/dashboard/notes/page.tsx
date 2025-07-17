@@ -460,7 +460,7 @@ export default function SmartNotesPage() {
                           </div>
                       ) : (
                         <ScrollArea className="h-full">
-                          <div className="space-y-4">
+                          <div className="space-y-4 h-full">
                               {notes.length > 0 ? notes.map((note) => (
                                   <div key={note.id} onClick={() => handleViewNote(note)} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
                                       <div className="flex items-center gap-3">
@@ -475,7 +475,7 @@ export default function SmartNotesPage() {
                                       </span>
                                   </div>
                               )) : (
-                                  <p className="text-center text-sm text-muted-foreground py-4">
+                                  <p className="text-center text-sm text-muted-foreground h-full flex items-center justify-center">
                                     {selectedPatientId ? 'No hay notas para este paciente.' : 'Selecciona un paciente.'}
                                   </p>
                               )}
