@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import type { Note } from "./types";
 
 const firebaseConfig = {
@@ -46,5 +46,16 @@ export const addNote = async (db: Firestore, userId: string, noteData: Omit<Note
     createdAt: new Date(), // Return optimistic date
   };
 };
+
+export const updateNote = async (db: Firestore, userId: string, noteId: string, data: Partial<Omit<Note, 'id'>>) => {
+  const noteDoc = doc(db, `users/${userId}/notes`, noteId);
+  await updateDoc(noteDoc, data);
+};
+
+export const deleteNote = async (db: Firestore, userId: string, noteId: string) => {
+  const noteDoc = doc(db, `users/${userId}/notes`, noteId);
+  await deleteDoc(noteDoc);
+};
+
 
 export { app, auth, db };

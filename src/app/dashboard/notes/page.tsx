@@ -13,11 +13,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
-import { addNote } from "@/lib/firebase";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { addNote, updateNote, deleteNote } from "@/lib/firebase";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
 
 
 const aiChatHistory = [
@@ -36,6 +38,8 @@ export default function SmartNotesPage() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDetailViewOpen, setIsDetailViewOpen] = useState(false);
   const [textNoteContent, setTextNoteContent] = useState("");
+  const [editableNoteContent, setEditableNoteContent] = useState("");
+  const [editableNoteTitle, setEditableNoteTitle] = useState("");
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -146,12 +150,8 @@ export default function SmartNotesPage() {
   };
   
   const handleSaveTextNote = async () => {
-    if (!textNoteContent.trim()) {
-      toast({ variant: "destructive", title: "La nota no puede estar vacía." });
-      return;
-    }
-    if (!user || !db) {
-      toast({ variant: "destructive", title: "Debes iniciar sesión para guardar notas." });
+    if (!textNoteContent.trim() || !user || !db) {
+      toast({ variant: "destructive", title: "La nota no puede estar vacía o no estás autenticado." });
       return;
     }
 
@@ -174,7 +174,44 @@ export default function SmartNotesPage() {
   
   const handleViewNote = (note: Note) => {
     setSelectedNote(note);
+    setEditableNoteTitle(note.title);
+    setEditableNoteContent(note.content || "");
     setIsDetailViewOpen(true);
+  };
+  
+  const handleUpdateNote = async () => {
+    if (!selectedNote || !user || !db) return;
+
+    const updatedData = {
+      title: editableNoteTitle,
+      content: editableNoteContent,
+    };
+
+    try {
+      await updateNote(db, user.uid, selectedNote.id, updatedData);
+      setNotes(notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData } : n));
+      toast({ title: "Nota actualizada correctamente." });
+      setIsDetailViewOpen(false);
+      setSelectedNote(null);
+    } catch (error) {
+      console.error("Error updating note:", error);
+      toast({ variant: "destructive", title: "Error al actualizar la nota." });
+    }
+  };
+
+  const handleDeleteNote = async () => {
+    if (!selectedNote || !user || !db) return;
+
+    try {
+      await deleteNote(db, user.uid, selectedNote.id);
+      setNotes(notes.filter(n => n.id !== selectedNote.id));
+      toast({ title: "Nota eliminada correctamente." });
+      setIsDetailViewOpen(false);
+      setSelectedNote(null);
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      toast({ variant: "destructive", title: "Error al eliminar la nota." });
+    }
   };
   
   const formatTime = (timeInSeconds: number) => {
@@ -327,19 +364,47 @@ export default function SmartNotesPage() {
           {selectedNote && (
             <>
               <DialogHeader>
-                <DialogTitle>{selectedNote.title}</DialogTitle>
+                <DialogTitle>
+                  <Input 
+                    value={editableNoteTitle}
+                    onChange={(e) => setEditableNoteTitle(e.target.value)}
+                    className="text-lg font-semibold p-0 border-0 shadow-none focus-visible:ring-0"
+                  />
+                </DialogTitle>
                 <DialogDescription>
                   {selectedNote.type} - {format(selectedNote.createdAt, "PPPp", { locale: es })}
                 </DialogDescription>
               </DialogHeader>
-              <ScrollArea className="max-h-[60vh] rounded-md border p-4 my-4">
-                <p className="text-sm whitespace-pre-wrap">
-                  {selectedNote.content}
-                </p>
+              <ScrollArea className="max-h-[50vh] rounded-md border my-4">
+                 <Textarea 
+                    value={editableNoteContent}
+                    onChange={(e) => setEditableNoteContent(e.target.value)}
+                    className="text-sm whitespace-pre-wrap min-h-[30vh] border-0 shadow-none focus-visible:ring-0"
+                  />
               </ScrollArea>
-              <div className="flex justify-end">
-                  <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cerrar</Button>
-              </div>
+              <DialogFooter className="justify-between">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" /> Eliminar</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción no se puede deshacer. Esto eliminará permanentemente tu nota.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteNote}>Continuar</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cancelar</Button>
+                  <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
+                </div>
+              </DialogFooter>
             </>
           )}
         </DialogContent>
