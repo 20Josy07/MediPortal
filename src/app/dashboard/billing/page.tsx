@@ -1,3 +1,12 @@
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import type { Patient } from "@/lib/types";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,38 +34,40 @@ import {
   Plus,
   Search,
   Send,
+  Loader2
 } from "lucide-react";
 
-const invoices = [
+const initialInvoices = [
   {
     invoiceNumber: "FACT-001",
-    patient: "Isabella Rossi",
+    patientKey: 0,
     date: "2024-07-28",
     total: "$150.00",
     status: "Pagada",
   },
   {
     invoiceNumber: "FACT-002",
-    patient: "Sofía Hernández",
+    patientKey: 1,
     date: "2024-07-29",
     total: "$200.00",
     status: "Pendiente",
   },
   {
     invoiceNumber: "FACT-003",
-    patient: "Juan Pérez",
+    patientKey: 2,
     date: "2024-07-20",
     total: "$100.00",
     status: "Vencida",
   },
   {
     invoiceNumber: "FACT-004",
-    patient: "Carlos Ruiz",
+    patientKey: 3,
     date: "2024-07-25",
     total: "$350.00",
     status: "Pagada",
   },
 ];
+
 
 const statusStyles: { [key: string]: string } = {
   Pagada: "bg-green-500/20 text-green-400 border-green-500/30",
@@ -71,6 +82,39 @@ const statusIcons: { [key: string]: React.ElementType } = {
 };
 
 export default function BillingPage() {
+  const { user, db, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      if (authLoading || !user || !db) {
+        if (!authLoading) setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const patientsCollection = collection(db, `users/${user.uid}/patients`);
+        const patientSnapshot = await getDocs(patientsCollection);
+        const patientList = patientSnapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Patient)
+        );
+        setPatients(patientList);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+        toast({ variant: "destructive", title: "Error al cargar los pacientes." });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPatients();
+  }, [user, db, authLoading, toast]);
+
+  const getPatientName = (key: number) => {
+    return patients[key]?.name || "Paciente no encontrado";
+  }
+
   return (
     <div className="flex-1 space-y-6">
       <div className="flex items-center justify-end space-x-4">
@@ -108,14 +152,20 @@ export default function BillingPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {invoices.map((invoice) => {
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="h-24 text-center">
+                        <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
+                      </TableCell>
+                    </TableRow>
+                  ) : initialInvoices.map((invoice) => {
                     const Icon = statusIcons[invoice.status];
                     return (
                       <TableRow key={invoice.invoiceNumber}>
                         <TableCell className="font-medium">
                           {invoice.invoiceNumber}
                         </TableCell>
-                        <TableCell>{invoice.patient}</TableCell>
+                        <TableCell>{getPatientName(invoice.patientKey)}</TableCell>
                         <TableCell>{invoice.date}</TableCell>
                         <TableCell>{invoice.total}</TableCell>
                         <TableCell>
@@ -162,3 +212,4 @@ export default function BillingPage() {
     </div>
   );
 }
+

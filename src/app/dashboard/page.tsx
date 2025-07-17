@@ -1,3 +1,8 @@
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
 import {
   Card,
   CardContent,
@@ -13,10 +18,68 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Video } from "lucide-react";
+import { Video, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { Session, Patient } from "@/lib/types";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 export default function DashboardPage() {
+  const { user, db, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (authLoading || !user || !db) {
+        if (!authLoading) setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const patientsCollection = collection(db, `users/${user.uid}/patients`);
+        const patientSnapshot = await getDocs(patientsCollection);
+        const patientList = patientSnapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Patient)
+        );
+        setPatients(patientList);
+        
+        const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
+        const q = query(
+          sessionsCollection, 
+          where("date", ">=", new Date()), 
+          orderBy("date"), 
+          limit(4)
+        );
+        const sessionSnapshot = await getDocs(q);
+        const sessionList = sessionSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            date: (data.date as any).toDate(),
+          } as Session;
+        });
+        setSessions(sessionList);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        toast({
+          variant: "destructive",
+          title: "Error al cargar los datos del dashboard.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user, db, authLoading, toast]);
+
+
   return (
     <div className="flex-1 space-y-4">
       <div className="space-y-4">
@@ -29,7 +92,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">15</div>
+              <div className="text-2xl font-bold">{patients.filter(p => p.status === 'Activo').length}</div>
             </CardContent>
           </Card>
           <Card className="text-center">
@@ -68,71 +131,47 @@ export default function DashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell>Isabella Rossi</TableCell>
-                  <TableCell>2024-07-25</TableCell>
-                  <TableCell>10:00 AM</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">Individual</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="bg-green-600/90">Confirmada</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outline" size="sm">
-                      <Video className="mr-2 h-4 w-4" />
-                      Join
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Lucas Gómez</TableCell>
-                  <TableCell>2024-07-26</TableCell>
-                  <TableCell>02:00 PM</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">Pareja</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="border-yellow-500/30 bg-yellow-500/20 text-yellow-400">
-                      Pendiente
-                    </Badge>
-                  </TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Sofía Hernández</TableCell>
-                  <TableCell>2024-07-27</TableCell>
-                  <TableCell>11:00 AM</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">Individual</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="bg-green-600/90">Confirmada</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outline" size="sm">
-                      <Video className="mr-2 h-4 w-4" />
-                      Join
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                 <TableRow>
-                  <TableCell>Carlos Ruiz</TableCell>
-                  <TableCell>2024-07-28</TableCell>
-                  <TableCell>09:00 AM</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">Individual</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className="bg-green-600/90">Confirmada</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outline" size="sm">
-                      <Video className="mr-2 h-4 w-4" />
-                      Join
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
+                    </TableCell>
+                  </TableRow>
+                ) : sessions.length > 0 ? (
+                  sessions.map((session) => (
+                    <TableRow key={session.id}>
+                      <TableCell>{session.patientName}</TableCell>
+                      <TableCell>{format(session.date, 'yyyy-MM-dd')}</TableCell>
+                      <TableCell>{format(session.date, 'p')}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{session.type}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={
+                          session.status === 'Confirmada' ? 'bg-green-600/90' : 
+                          session.status === 'Pendiente' ? 'border-yellow-500/30 bg-yellow-500/20 text-yellow-400' : 
+                          'bg-red-600/90'
+                        }>
+                          {session.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {session.status === 'Confirmada' ? (
+                          <Button variant="outline" size="sm">
+                            <Video className="mr-2 h-4 w-4" />
+                            Join
+                          </Button>
+                        ) : null}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-24 text-center">
+                      No hay próximas sesiones agendadas.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </Card>
@@ -141,3 +180,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

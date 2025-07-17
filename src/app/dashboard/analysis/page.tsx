@@ -1,3 +1,12 @@
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import type { Patient } from "@/lib/types";
+
 import {
   Card,
   CardContent,
@@ -7,11 +16,58 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, ArrowUp, Mic, FileText, Eye } from "lucide-react";
+import { AlertTriangle, ArrowUp, Mic, FileText, Eye, Loader2 } from "lucide-react";
 import { MostFrequentTopicsChart } from "@/components/dashboard/analysis/most-frequent-topics-chart";
 import { EmotionalTrendsChart } from "@/components/dashboard/analysis/emotional-trends-chart";
 
+
+const recentActivity = [
+  { patientKey: 0, date: "2024-07-28 - 60 min", tags: ["Alta Ansiedad", "Conflictos Familiares"] },
+  { patientKey: 1, date: "2024-07-27 - 45 min", tags: ["Detección de Resistencia", "Estrés Laboral"] },
+  { patientKey: 2, date: "2024-07-26 - 60 min", tags: ["Burnout", "Lenguaje Depresivo"] },
+];
+
+const processedDocs = [
+    { patientKey: 3, doc: "Diario del Paciente - 2024-07-29", tags: ["Pensamientos Catastróficos"] },
+    { patientKey: 0, doc: "Informe de Evaluación - 2024-07-25", tags: ["Mejora en Coping"] },
+    { patientKey: 4, doc: "Nota de Sesión - 2024-07-22", tags: ["Conflicto de Pareja"] },
+];
+
+
 export default function AnalysisPage() {
+  const { user, db, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      if (authLoading || !user || !db) {
+        if (!authLoading) setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const patientsCollection = collection(db, `users/${user.uid}/patients`);
+        const patientSnapshot = await getDocs(patientsCollection);
+        const patientList = patientSnapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Patient)
+        );
+        setPatients(patientList);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+        toast({ variant: "destructive", title: "Error al cargar los pacientes." });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPatients();
+  }, [user, db, authLoading, toast]);
+  
+  const getPatientName = (key: number) => {
+    return patients[key]?.name || "Paciente no encontrado";
+  }
+
   return (
     <div className="flex-1 space-y-4">
       <div className="space-y-2">
@@ -113,60 +169,33 @@ export default function AnalysisPage() {
               <CardTitle>Actividad Reciente de Análisis</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start gap-4 rounded-lg bg-card p-4">
-                <Mic className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">Isabella Rossi</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Eye className="h-4 w-4" />
-                    </Button>
+               {isLoading ? (
+                 <div className="flex justify-center items-center h-48">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                 </div>
+               ) : patients.length > 0 ? (
+                recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-start gap-4 rounded-lg bg-card p-4">
+                    <Mic className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold">{getPatientName(activity.patientKey)}</p>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {activity.date}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {activity.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    2024-07-28 - 60 min
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary">Alta Ansiedad</Badge>
-                    <Badge variant="secondary">Conflictos Familiares</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-lg bg-card p-4">
-                <Mic className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">Juan Pérez</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    2024-07-27 - 45 min
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary">Detección de Resistencia</Badge>
-                    <Badge variant="secondary">Estrés Laboral</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-lg bg-card p-4">
-                <Mic className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">Sofía Hernández</p>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    2024-07-26 - 60 min
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary">Burnout</Badge>
-                    <Badge variant="secondary">Lenguaje Depresivo</Badge>
-                  </div>
-                </div>
-              </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm p-4 text-center">No hay pacientes para mostrar actividad.</p>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -174,57 +203,33 @@ export default function AnalysisPage() {
               <CardTitle>Documentos Clínicos Procesados</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start gap-4 rounded-lg bg-card p-4">
-                <FileText className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">Carlos Ruiz</p>
-                     <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Eye className="h-4 w-4" />
-                    </Button>
+              {isLoading ? (
+                 <div className="flex justify-center items-center h-48">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                 </div>
+               ) : patients.length > 0 ? (
+                processedDocs.map((item, index) => (
+                  <div key={index} className="flex items-start gap-4 rounded-lg bg-card p-4">
+                    <FileText className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold">{getPatientName(item.patientKey)}</p>
+                         <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                       {item.doc}
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                         {item.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    Diario del Paciente - 2024-07-29
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary">Pensamientos Catastróficos</Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-start gap-4 rounded-lg bg-card p-4">
-                <FileText className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">Isabella Rossi</p>
-                     <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Informe de Evaluación - 2024-07-25
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary">Mejora en Coping</Badge>
-                  </div>
-                </div>
-              </div>
-               <div className="flex items-start gap-4 rounded-lg bg-card p-4">
-                <FileText className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold">Lucas Gómez</p>
-                     <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Nota de Sesión - 2024-07-22
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Badge variant="secondary">Conflicto de Pareja</Badge>
-                  </div>
-                </div>
-              </div>
+                ))
+              ) : (
+                 <p className="text-muted-foreground text-sm p-4 text-center">No hay pacientes para mostrar documentos.</p>
+              )}
             </CardContent>
           </Card>
         </div>
