@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Loader2 } from "lucide-react";
 
 export default function DashboardLayout({
@@ -32,7 +32,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      <main className="lg:pl-[16rem]">{children}</main>
+      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }
