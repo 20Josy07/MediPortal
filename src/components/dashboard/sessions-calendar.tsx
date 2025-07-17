@@ -174,98 +174,97 @@ export function SessionsCalendar() {
           <Button onClick={() => setIsFormOpen(true)}>Agendar Nueva Sesión</Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12">
-        <div className="lg:col-span-2">
-           <Card className="h-full">
-              <CardHeader className="p-4">
-                  <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
-              </CardHeader>
-              <CardContent className="p-2">
-                  <div className="flex flex-col gap-1">
-                      {months.map((month, index) => (
-                          <Button 
-                              key={month}
-                              variant={format(currentDate, 'M') === String(index + 1) ? "default" : "ghost"}
-                              className="capitalize w-full justify-start"
-                              onClick={() => setCurrentDate(setMonth(currentDate, index))}
-                          >
-                              {month}
-                          </Button>
-                      ))}
-                  </div>
-              </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-7">
-          <Card className="h-full">
-            <CardContent className="p-4">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-[560px]">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground">
-                    {weekdays.map((day) => (
-                      <div key={day} className="font-medium capitalize">
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-7 grid-rows-5 gap-1 mt-2">
-                    {days.map((day) => (
-                      <div
-                        key={day.toString()}
-                        onClick={() => setSelectedDate(day)}
-                        className={cn(
-                          "relative p-2 h-28 rounded-md cursor-pointer transition-colors overflow-hidden",
-                          !isSameMonth(day, currentDate) &&
-                            "text-muted-foreground/50 bg-card/50",
-                          isSameMonth(day, currentDate) &&
-                            "bg-card hover:bg-accent/10",
-                          isSameDay(day, selectedDate) &&
-                            "bg-primary/20 border border-primary"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "absolute top-2 left-2 text-xs font-semibold",
-                            isSameDay(day, new Date()) && "text-primary font-bold"
-                          )}
-                        >
-                          {format(day, "d")}
-                        </span>
-                        <div className="absolute top-8 left-1 right-1 flex flex-col gap-1">
-                          {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
-                              <div
-                                key={session.id}
-                                className={cn(
-                                  "text-[10px] rounded-sm px-1 py-0.5 shadow-md",
-                                  getStatusColor(session.status)
-                                )}
-                                title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-9">
+            <Card className="h-full">
+              <div className="grid grid-cols-12">
+                <div className="col-span-3 lg:col-span-2 p-2 border-r">
+                   <CardHeader className="p-2">
+                      <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-2">
+                      <div className="flex flex-col gap-1">
+                          {months.map((month, index) => (
+                              <Button 
+                                  key={month}
+                                  variant={format(currentDate, 'M') === String(index + 1) ? "default" : "ghost"}
+                                  className="capitalize w-full justify-start text-sm h-8"
+                                  onClick={() => setCurrentDate(setMonth(currentDate, index))}
                               >
-                                <div>{format(session.date, "HH:mm")}</div>
-                                <div>{session.patientName}</div>
-                              </div>
-                            ))}
-                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 3 && (
-                              <div className="text-primary/80 text-[10px] font-bold px-1 py-0.5">
-                                ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 3} más
-                              </div>
-                           )}
-                        </div>
+                                  {month}
+                              </Button>
+                          ))}
                       </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
+                  </CardContent>
+                </div>
+                 <div className="col-span-9 lg:col-span-10 p-4">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-[560px]">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground">
+                        {weekdays.map((day) => (
+                          <div key={day} className="font-medium capitalize">
+                            {day}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-7 grid-rows-5 gap-1 mt-2">
+                        {days.map((day) => (
+                          <div
+                            key={day.toString()}
+                            onClick={() => setSelectedDate(day)}
+                            className={cn(
+                              "relative p-2 h-28 rounded-md cursor-pointer transition-colors overflow-hidden",
+                              !isSameMonth(day, currentDate) &&
+                                "text-muted-foreground/50 bg-card/50",
+                              isSameMonth(day, currentDate) &&
+                                "bg-card hover:bg-accent/10",
+                              isSameDay(day, selectedDate) &&
+                                "bg-primary/20 border border-primary"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "absolute top-2 left-2 text-xs font-semibold",
+                                isSameDay(day, new Date()) && "text-primary font-bold"
+                              )}
+                            >
+                              {format(day, "d")}
+                            </span>
+                            <div className="absolute top-8 left-1 right-1 flex flex-col gap-1">
+                              {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 2).map((session) => (
+                                  <div
+                                    key={session.id}
+                                    className={cn(
+                                      "text-[10px] leading-tight rounded-sm px-1 py-0.5 shadow-md",
+                                      getStatusColor(session.status)
+                                    )}
+                                    title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
+                                  >
+                                    <div>{format(session.date, "HH:mm")}</div>
+                                    <div>{session.patientName}</div>
+                                  </div>
+                                ))}
+                               {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 2 && (
+                                  <div className="text-primary/80 text-[10px] font-bold px-1 py-0.5">
+                                    ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 2} más
+                                  </div>
+                               )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </Card>
         </div>
 
-        <div className="lg:col-span-3 lg:ml-6">
+        <div className="lg:col-span-3">
           <Card>
             <CardHeader>
               <CardTitle>
