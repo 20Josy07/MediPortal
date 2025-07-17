@@ -147,30 +147,6 @@ export function SessionsCalendar() {
   return (
     <>
       <div className="flex items-center justify-end mb-6 gap-4">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentDate(subMonths(currentDate, 1))}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-lg font-semibold w-32 text-center capitalize">
-              {format(currentDate, "MMMM yyyy", { locale: es })}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setCurrentDate(addMonths(currentDate, 1))}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-          <Button variant="outline" onClick={() => setCurrentDate(new Date())}>
-            Hoy
-          </Button>
           <Button onClick={() => setIsFormOpen(true)}>Agendar Nueva Sesión</Button>
       </div>
 
