@@ -43,6 +43,7 @@ export function DashboardNavbar() {
       dashboard: 'Principal',
       patients: 'Pacientes',
       sessions: 'Sesiones',
+      notes: 'Notas',
       analysis: 'Análisis',
       metrics: 'Métricas',
       documents: 'Documentos',
