@@ -192,8 +192,11 @@ export function SessionsCalendar() {
                   </div>
               </CardContent>
               <div className="p-2 mt-auto text-center">
-                <Button onClick={() => setIsFormOpen(true)} className="h-9 text-sm">
-                  Agendar Nueva Sesión
+                <Button
+                  onClick={() => setIsFormOpen(true)}
+                  className="h-9 text-sm w-full"
+                >
+                  Agendar
                 </Button>
               </div>
             </div>
