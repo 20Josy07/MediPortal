@@ -15,3 +15,11 @@ export interface Session {
   type: "Individual" | "Pareja" | "Familiar";
   status: "Confirmada" | "Pendiente" | "Cancelada";
 }
+
+export interface Note {
+  id: string;
+  title: string;
+  type: "Voz" | "Texto";
+  createdAt: Date;
+  content?: string;
+}

@@ -1,19 +1,21 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import type { Note } from "@/lib/types";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, Clock, User } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const recentNotes = [
-    { title: "Sesión con Ana G.", type: "Voz", date: "Hace 2 horas" },
-    { title: "Reflexión sobre caso M.", type: "Texto", date: "Hace 1 día" },
-    { title: "Ideas para terapia de grupo", type: "Texto", date: "Hace 3 días" },
-];
 
 const aiChatHistory = [
     { from: "user", text: "Resume la última sesión con el paciente Carlos Vega." },
@@ -21,7 +23,42 @@ const aiChatHistory = [
 ];
 
 export default function SmartNotesPage() {
+  const { user, db, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      if (authLoading || !user || !db) {
+        if (!authLoading) setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const notesCollection = collection(db, `users/${user.uid}/notes`);
+        const q = query(notesCollection, orderBy("createdAt", "desc"));
+        const noteSnapshot = await getDocs(q);
+        const noteList = noteSnapshot.docs.map((doc) => {
+           const data = doc.data();
+           return {
+            id: doc.id,
+            ...data,
+            createdAt: (data.createdAt as any).toDate(),
+           } as Note;
+        });
+        setNotes(noteList);
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+        toast({ variant: "destructive", title: "Error al cargar las notas." });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchNotes();
+  }, [user, db, authLoading, toast]);
+
 
   return (
     <div className="flex-1 space-y-6">
@@ -118,20 +155,30 @@ export default function SmartNotesPage() {
                     <CardTitle>Historial de Notas</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {recentNotes.map((note, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
-                                <div className="flex items-center gap-3">
-                                    <FileText className="h-5 w-5 text-muted-foreground" />
-                                    <div>
-                                        <p className="font-semibold">{note.title}</p>
-                                        <p className="text-xs text-muted-foreground">{note.type}</p>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center h-40">
+                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            {notes.length > 0 ? notes.map((note) => (
+                                <div key={note.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
+                                    <div className="flex items-center gap-3">
+                                        <FileText className="h-5 w-5 text-muted-foreground" />
+                                        <div>
+                                            <p className="font-semibold">{note.title}</p>
+                                            <p className="text-xs text-muted-foreground">{note.type}</p>
+                                        </div>
                                     </div>
+                                    <span className="text-xs text-muted-foreground">
+                                        {formatDistanceToNow(note.createdAt, { addSuffix: true, locale: es })}
+                                    </span>
                                 </div>
-                                <span className="text-xs text-muted-foreground">{note.date}</span>
-                            </div>
-                        ))}
-                    </div>
+                            )) : (
+                                <p className="text-center text-sm text-muted-foreground py-4">No hay notas guardadas.</p>
+                            )}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
