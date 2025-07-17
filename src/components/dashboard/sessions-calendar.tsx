@@ -170,8 +170,8 @@ export function SessionsCalendar() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12">
-        <Card className="lg:col-span-9 h-full">
+      <div className="grid grid-cols-1">
+        <Card className="h-full">
           <div className="grid grid-cols-12 h-full">
             <div className="col-span-3 lg:col-span-2 p-2 border-r flex flex-col">
               <CardHeader className="p-2">
@@ -264,42 +264,6 @@ export function SessionsCalendar() {
             </div>
           </div>
         </Card>
-
-        <div className="lg:col-span-3 ml-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Sesiones del{" "}
-                {format(selectedDate, "d 'de' MMMM", { locale: es })}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                 <div className="flex justify-center items-center h-48">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                </div>
-              ) : selectedDaySessions.length > 0 ? (
-                <div className="space-y-4">
-                  {selectedDaySessions.map((session) => (
-                    <div
-                      key={session.id}
-                      className="bg-card p-4 rounded-lg border border-border"
-                    >
-                      <p className="font-semibold">{session.patientName}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {format(session.date, "p", { locale: es })}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground">
-                  No hay sesiones para este día.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
