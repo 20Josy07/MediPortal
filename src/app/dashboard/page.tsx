@@ -43,8 +43,8 @@ export default function DashboardPage() {
       <div className="space-y-4">
         <h3 className="mb-4 text-xl font-semibold">Resumen de la semana</h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="text-center">
+            <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Pacientes activos
               </CardTitle>
@@ -53,8 +53,8 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">15</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="text-center">
+            <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Sesiones completadas (semana)
               </CardTitle>
@@ -63,8 +63,8 @@ export default function DashboardPage() {
               <div className="text-2xl font-bold">8</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="text-center">
+            <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 Ingresos estimados (semana)
               </CardTitle>
