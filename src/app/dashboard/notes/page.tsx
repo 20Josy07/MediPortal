@@ -287,7 +287,9 @@ export default function SmartNotesPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+          
+          {/* Main content: Note creation and AI assistant */}
+          <div className="lg:col-span-2 space-y-8">
               <Tabs defaultValue="voice">
                   <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="voice">Nota de Voz</TabsTrigger>
@@ -346,9 +348,7 @@ export default function SmartNotesPage() {
                       </Card>
                   </TabsContent>
               </Tabs>
-          </div>
-
-          <div className="space-y-8">
+              
               <Card>
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6" /> Asistente de IA</CardTitle>
@@ -378,7 +378,10 @@ export default function SmartNotesPage() {
                       </div>
                   </CardContent>
               </Card>
-
+          </div>
+          
+          {/* Sidebar: Notes history */}
+          <div className="lg:col-span-1">
               <Card>
                   <CardHeader>
                       <CardTitle>Historial de Notas</CardTitle>
@@ -392,6 +395,7 @@ export default function SmartNotesPage() {
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                           </div>
                       ) : (
+                        <ScrollArea className="h-[calc(100vh-350px)]">
                           <div className="space-y-4">
                               {notes.length > 0 ? notes.map((note) => (
                                   <div key={note.id} onClick={() => handleViewNote(note)} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
@@ -412,6 +416,7 @@ export default function SmartNotesPage() {
                                   </p>
                               )}
                           </div>
+                        </ScrollArea>
                       )}
                   </CardContent>
               </Card>
