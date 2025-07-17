@@ -34,15 +34,6 @@ import { PatientForm } from "./patient-form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 
-const mockPatients: Patient[] = [
-    { id: '1', name: 'Isabella Rossi', email: 'isabella.rossi@example.com', phone: '+57 310 123 4567', nextSession: '2024-08-10T10:00', status: 'Activo' },
-    { id: '2', name: 'Lucas Gómez', email: 'lucas.gomez@example.com', phone: '+57 320 987 6543', nextSession: null, status: 'Inactivo' },
-    { id: '3', name: 'Sofía Hernández', email: 'sofia.hernandez@example.com', phone: '+57 300 555 1234', nextSession: '2024-08-15T15:00', status: 'Activo' },
-    { id: '4', name: 'Juan Pérez', email: 'juan.perez@example.com', phone: '+57 315 765 4321', nextSession: '2024-08-20T09:00', status: 'Activo' },
-    { id: '5', name: 'María García', email: 'maria.garcia@example.com', phone: '+57 311 222 3344', nextSession: null, status: 'Inactivo' },
-    { id: '6', name: 'Carlos Ruiz', email: 'carlos.ruiz@example.com', phone: '+57 313 777 8899', nextSession: '2024-09-01T11:00', status: 'Activo' },
-];
-
 export function PatientTableWrapper() {
   const { user, db, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -55,12 +46,7 @@ export function PatientTableWrapper() {
 
   useEffect(() => {
     const fetchPatients = async () => {
-      if (authLoading) {
-        return;
-      }
-      
-      if (!user || !db) {
-        setPatients(mockPatients); 
+      if (authLoading || !user || !db) {
         setIsLoading(false);
         return;
       }
@@ -69,19 +55,13 @@ export function PatientTableWrapper() {
       try {
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
         const patientSnapshot = await getDocs(patientsCollection);
-        
-        if (patientSnapshot.empty) {
-          setPatients(mockPatients);
-        } else {
-          const patientList = patientSnapshot.docs.map(
-            (doc) => ({ id: doc.id, ...doc.data() } as Patient)
-          );
-          setPatients(patientList);
-        }
+        const patientList = patientSnapshot.docs.map(
+          (doc) => ({ id: doc.id, ...doc.data() } as Patient)
+        );
+        setPatients(patientList);
       } catch (error) {
         console.error("Error fetching patients:", error);
-        toast({ variant: "destructive", title: "Failed to fetch patients." });
-        setPatients(mockPatients);
+        toast({ variant: "destructive", title: "Error al cargar los pacientes." });
       } finally {
         setIsLoading(false);
       }
@@ -98,21 +78,26 @@ export function PatientTableWrapper() {
   const handleFormSubmit = async (data: Omit<Patient, "id">) => {
     if (!user || !db) {
       toast({ variant: "destructive", title: "Error de autenticación. Intenta de nuevo." });
-      return
+      return;
     };
     
+    const dataToSave = {
+      ...data,
+      nextSession: data.nextSession || null,
+    };
+
     try {
       if (selectedPatient) {
         // Update
         const patientDoc = doc(db, `users/${user.uid}/patients`, selectedPatient.id);
-        await updateDoc(patientDoc, data);
-        setPatients(patients.map(p => p.id === selectedPatient.id ? { ...p, ...data } as Patient : p));
+        await updateDoc(patientDoc, dataToSave);
+        setPatients(patients.map(p => p.id === selectedPatient.id ? { id: p.id, ...dataToSave } : p));
         toast({ title: "Paciente actualizado exitosamente." });
       } else {
         // Create
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
-        const docRef = await addDoc(patientsCollection, data);
-        setPatients([...patients, { id: docRef.id, ...data }]);
+        const docRef = await addDoc(patientsCollection, dataToSave);
+        setPatients([...patients, { id: docRef.id, ...dataToSave }]);
         toast({ title: "Paciente agregado exitosamente." });
       }
       setIsFormOpen(false);
