@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import type { Note, Patient } from "@/lib/types";
 import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import * as pdfjs from 'pdfjs-dist/build/pdf';
+import mammoth from 'mammoth';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,11 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+
+// Configure PDF.js worker
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+}
 
 const aiChatHistory = [
     { from: "user", text: "Resume la última sesión con el paciente Carlos Vega." },
@@ -45,10 +52,13 @@ export default function SmartNotesPage() {
   const [textNoteContent, setTextNoteContent] = useState("");
   const [editableNoteContent, setEditableNoteContent] = useState("");
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
+  const [isFileProcessing, setIsFileProcessing] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -253,6 +263,46 @@ export default function SmartNotesPage() {
     }
   };
   
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsFileProcessing(true);
+    try {
+      let text = '';
+      if (file.type === 'text/plain') {
+        text = await file.text();
+      } else if (file.type === 'application/pdf') {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjs.getDocument(arrayBuffer).promise;
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          fullText += textContent.items.map((item: any) => item.str).join(' ');
+        }
+        text = fullText;
+      } else if (file.name.endsWith('.docx')) {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        text = result.value;
+      } else {
+        toast({ variant: "destructive", title: "Formato de archivo no soportado." });
+        return;
+      }
+      setTextNoteContent(current => current + '\n\n' + text);
+      toast({ title: "Documento procesado y añadido a la nota." });
+    } catch (error) {
+      console.error("Error processing file:", error);
+      toast({ variant: "destructive", title: "Error al procesar el archivo." });
+    } finally {
+      setIsFileProcessing(false);
+       if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   const formatTime = (timeInSeconds: number) => {
     const minutes = Math.floor(timeInSeconds / 60).toString().padStart(2, '0');
     const seconds = (timeInSeconds % 60).toString().padStart(2, '0');
@@ -288,7 +338,6 @@ export default function SmartNotesPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* Main content: Note creation and AI assistant */}
           <div className="lg:col-span-2 space-y-8">
               <Tabs defaultValue="voice">
                   <TabsList className="grid w-full grid-cols-2">
@@ -341,7 +390,17 @@ export default function SmartNotesPage() {
                             disabled={!selectedPatientId}
                           />
                           <div className="mt-4 flex justify-between items-center">
-                              <Button variant="outline" disabled={!selectedPatientId}><Paperclip className="mr-2 h-4 w-4" /> Adjuntar Archivo</Button>
+                              <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={!selectedPatientId || isFileProcessing}>
+                                {isFileProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Paperclip className="mr-2 h-4 w-4" />}
+                                Adjuntar Archivo
+                              </Button>
+                              <input 
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                className="hidden"
+                                accept=".txt,.pdf,.docx"
+                              />
                               <Button onClick={handleSaveTextNote} disabled={!selectedPatientId}>Guardar Nota</Button>
                           </div>
                       </CardContent>
@@ -380,7 +439,6 @@ export default function SmartNotesPage() {
               </Card>
           </div>
           
-          {/* Sidebar: Notes history */}
           <div className="lg:col-span-1">
               <Card>
                   <CardHeader>
