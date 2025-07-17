@@ -75,7 +75,7 @@ export function PatientTableWrapper() {
       patient.name.toLowerCase().includes(searchTerm.toLowerCase())
     ), [patients, searchTerm]);
 
-  const handleFormSubmit = async (data: Omit<Patient, "id" | "nextSession">) => {
+  const handleFormSubmit = async (data: Omit<Patient, "id">) => {
     if (!user || !db) {
       toast({ variant: "destructive", title: "Error de autenticación. Intenta de nuevo." });
       return;
@@ -95,7 +95,7 @@ export function PatientTableWrapper() {
       } else {
         // Create
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
-        const newPatientData = { ...dataToSave, nextSession: null };
+        const newPatientData = { ...dataToSave };
         const docRef = await addDoc(patientsCollection, newPatientData);
         setPatients([...patients, { id: docRef.id, ...newPatientData }]);
         toast({ title: "Paciente agregado exitosamente." });
@@ -161,7 +161,6 @@ export function PatientTableWrapper() {
             <TableRow>
               <TableHead>Paciente</TableHead>
               <TableHead>Contacto</TableHead>
-              <TableHead>Próxima Sesión</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Acciones</TableHead>
             </TableRow>
@@ -169,7 +168,7 @@ export function PatientTableWrapper() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={4} className="h-24 text-center">
                   <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                 </TableCell>
               </TableRow>
@@ -181,7 +180,6 @@ export function PatientTableWrapper() {
                     <div className="text-sm text-muted-foreground">{patient.email}</div>
                   </TableCell>
                   <TableCell>{patient.phone}</TableCell>
-                  <TableCell>{patient.nextSession ? new Date(patient.nextSession).toLocaleString() : 'No agendada'}</TableCell>
                   <TableCell>
                     <Badge variant={patient.status === 'Activo' ? 'default' : 'destructive'} className={patient.status === 'Activo' ? 'bg-green-600/90' : 'bg-red-600/90'}>
                       {patient.status}
@@ -204,7 +202,7 @@ export function PatientTableWrapper() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={4} className="h-24 text-center">
                   No se encontraron pacientes.
                 </TableCell>
               </TableRow>
