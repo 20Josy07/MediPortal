@@ -111,7 +111,7 @@ export function DashboardNavbar() {
       </header>
 
       <Dialog open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>Configura tu cuenta</DialogTitle>
             <DialogDescription>

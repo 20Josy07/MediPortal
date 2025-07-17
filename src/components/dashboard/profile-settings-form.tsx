@@ -122,13 +122,13 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
             </div>
         ) : (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <FormField
                   control={form.control}
                   name="fullName"
                   render={({ field }) => (
-                    <FormItem className="col-span-2">
+                    <FormItem>
                       <FormLabel>Nombre Completo</FormLabel>
                       <FormControl>
                         <Input {...field} />
@@ -137,20 +137,21 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
                     </FormItem>
                   )}
                 />
+                 <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Correo Electrónico</FormLabel>
+                        <FormControl>
+                            <Input {...field} disabled />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
             </div>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Correo Electrónico</FormLabel>
-                  <FormControl>
-                    <Input {...field} disabled />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+           
             <FormField
               control={form.control}
               name="phone"
