@@ -75,7 +75,7 @@ export function DashboardSidebar() {
               asChild
               isActive={pathname === "/dashboard/notes"}
             >
-              <Link href="#">
+              <Link href="/dashboard/notes">
                 <NotebookText />
                 Notas
               </Link>
