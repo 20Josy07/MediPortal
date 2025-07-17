@@ -175,7 +175,7 @@ export function SessionsCalendar() {
     Cancelada: { icon: XCircle, color: "text-red-500", text: "Cancelada" },
   };
 
-  const IconComponent = selectedSession ? statusDetails[selectedSession.status].icon : null;
+  const IconComponent = selectedSession ? statusDetails[selectedSession.status].icon : HelpCircle;
 
   const renderMonthView = () => (
     <>
@@ -206,7 +206,7 @@ export function SessionsCalendar() {
               {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
                   <div
                     key={session.id}
-                    onClick={() => handleSessionClick(session)}
+                    onClick={(e) => { e.stopPropagation(); handleSessionClick(session); }}
                     className={cn(
                       "text-xs leading-tight rounded-md px-2 py-1 text-white truncate cursor-pointer",
                       getStatusColor(session.status)
@@ -242,6 +242,22 @@ export function SessionsCalendar() {
 
   return (
     <>
+      <div className="flex justify-between items-center mb-4">
+         <Tabs defaultValue="month" onValueChange={(value) => setView(value as any)} className="w-auto">
+            <TabsList className="h-8">
+              <TabsTrigger value="month" className="h-6 px-2 text-xs">Mes</TabsTrigger>
+              <TabsTrigger value="week" className="h-6 px-2 text-xs">Semana</TabsTrigger>
+              <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
+            </TabsList>
+         </Tabs>
+         <Button
+            onClick={() => setIsFormOpen(true)}
+            className="h-9 text-sm"
+          >
+            Agendar
+          </Button>
+      </div>
+
       <Card className="h-full">
         <div className="grid grid-cols-12 h-full">
           <div className="col-span-3 lg:col-span-2 p-2 border-r flex flex-col">
@@ -262,14 +278,6 @@ export function SessionsCalendar() {
                     ))}
                 </div>
             </CardContent>
-            <div className="p-2 mt-auto text-center">
-              <Button
-                onClick={() => setIsFormOpen(true)}
-                className="h-9 text-sm w-full"
-              >
-                Agendar
-              </Button>
-            </div>
           </div>
           <div className="col-span-9 lg:col-span-10 p-4">
             {isLoading ? (
@@ -278,21 +286,12 @@ export function SessionsCalendar() {
               </div>
             ) : (
                 <>
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground flex-grow">
-                      {weekdays.map((day) => (
-                        <div key={day} className="font-medium capitalize">
-                          {day}
-                        </div>
-                      ))}
-                    </div>
-                    <Tabs defaultValue="month" onValueChange={(value) => setView(value as any)} className="w-auto ml-4">
-                      <TabsList className="h-8">
-                        <TabsTrigger value="month" className="h-6 px-2 text-xs">Mes</TabsTrigger>
-                        <TabsTrigger value="week" className="h-6 px-2 text-xs">Semana</TabsTrigger>
-                        <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
+                  <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-4">
+                    {weekdays.map((day) => (
+                      <div key={day} className="font-medium capitalize">
+                        {day}
+                      </div>
+                    ))}
                   </div>
                   {view === 'month' && renderMonthView()}
                   {view === 'week' && renderWeekView()}
@@ -344,9 +343,7 @@ export function SessionsCalendar() {
                   <Badge variant="outline">{selectedSession.type}</Badge>
                 </div>
                 <div className="flex items-center gap-4">
-                  {IconComponent && (
-                     <IconComponent className={cn("w-5 h-5", statusDetails[selectedSession.status].color)} />
-                  )}
+                  <IconComponent className={cn("w-5 h-5", statusDetails[selectedSession.status].color)} />
                   <span className={cn("font-semibold", statusDetails[selectedSession.status].color)}>
                     {statusDetails[selectedSession.status].text}
                   </span>
@@ -359,5 +356,3 @@ export function SessionsCalendar() {
     </>
   );
 }
-
-  
