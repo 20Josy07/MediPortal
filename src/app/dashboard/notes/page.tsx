@@ -342,7 +342,7 @@ export default function SmartNotesPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           
           <div className="lg:col-span-2 space-y-8">
               <Tabs defaultValue="voice">
@@ -446,44 +446,59 @@ export default function SmartNotesPage() {
           </div>
           
           <div className="lg:col-span-1">
-              <Card className="h-full flex flex-col">
-                  <CardHeader>
-                      <CardTitle>Historial de Notas</CardTitle>
-                       <CardDescription>
-                          {selectedPatientId ? `Mostrando notas para ${patients.find(p => p.id === selectedPatientId)?.name}` : 'Selecciona un paciente para ver sus notas'}
-                       </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                      {isLoading ? (
-                          <div className="flex justify-center items-center h-full">
-                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <Card className="flex flex-col max-h-[calc(100vh-12rem)]">
+              <CardHeader>
+                <CardTitle>Historial de Notas</CardTitle>
+                <CardDescription>
+                  {selectedPatientId
+                    ? `Mostrando notas para ${
+                        patients.find((p) => p.id === selectedPatientId)?.name
+                      }`
+                    : "Selecciona un paciente para ver sus notas"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow p-2 overflow-hidden">
+                {isLoading ? (
+                  <div className="flex justify-center items-center h-full">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <ScrollArea className="h-full">
+                    <div className="space-y-2 p-2">
+                      {notes.length > 0 ? (
+                        notes.map((note) => (
+                          <div
+                            key={note.id}
+                            onClick={() => handleViewNote(note)}
+                            className="flex items-center justify-between p-3 rounded-md hover:bg-muted/50 cursor-pointer"
+                          >
+                            <div className="flex items-center gap-3">
+                              <FileText className="h-5 w-5 text-muted-foreground" />
+                              <div className="flex-1 overflow-hidden">
+                                <p className="font-semibold truncate">{note.title}</p>
+                                <p className="text-xs text-muted-foreground">{note.type}</p>
+                              </div>
+                            </div>
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">
+                              {formatDistanceToNow(note.createdAt, {
+                                addSuffix: true,
+                                locale: es,
+                              })}
+                            </span>
                           </div>
+                        ))
                       ) : (
-                        <ScrollArea className="h-full">
-                          <div className="space-y-4 h-full">
-                              {notes.length > 0 ? notes.map((note) => (
-                                  <div key={note.id} onClick={() => handleViewNote(note)} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
-                                      <div className="flex items-center gap-3">
-                                          <FileText className="h-5 w-5 text-muted-foreground" />
-                                          <div>
-                                              <p className="font-semibold">{note.title}</p>
-                                              <p className="text-xs text-muted-foreground">{note.type}</p>
-                                          </div>
-                                      </div>
-                                      <span className="text-xs text-muted-foreground">
-                                          {formatDistanceToNow(note.createdAt, { addSuffix: true, locale: es })}
-                                      </span>
-                                  </div>
-                              )) : (
-                                  <p className="text-center text-sm text-muted-foreground h-full flex items-center justify-center">
-                                    {selectedPatientId ? 'No hay notas para este paciente.' : 'Selecciona un paciente.'}
-                                  </p>
-                              )}
-                          </div>
-                        </ScrollArea>
+                        <p className="text-center text-sm text-muted-foreground h-full flex items-center justify-center p-4">
+                          {selectedPatientId
+                            ? "No hay notas para este paciente."
+                            : "Selecciona un paciente."}
+                        </p>
                       )}
-                  </CardContent>
-              </Card>
+                    </div>
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
         </div>
