@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -118,7 +119,7 @@ export function DashboardNavbar() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-              <ProfileSettingsForm />
+              <ProfileSettingsForm onSuccess={() => setIsProfileModalOpen(false)} />
           </div>
         </DialogContent>
       </Dialog>

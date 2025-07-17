@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc } from "firebase/firestore";
-import type { Note } from "./types";
+import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
+import type { Note, UserProfile } from "./types";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -55,6 +55,21 @@ export const updateNote = async (db: Firestore, userId: string, patientId: strin
 export const deleteNote = async (db: Firestore, userId: string, patientId: string, noteId: string) => {
   const noteDoc = doc(db, `users/${userId}/patients/${patientId}/notes`, noteId);
   await deleteDoc(noteDoc);
+};
+
+export const getUserProfile = async (db: Firestore, userId: string): Promise<UserProfile | null> => {
+  const userDocRef = doc(db, `users/${userId}`);
+  const docSnap = await getDoc(userDocRef);
+  if (docSnap.exists()) {
+    return docSnap.data() as UserProfile;
+  }
+  return null;
+};
+
+export const updateUserProfile = async (db: Firestore, userId: string, data: Partial<UserProfile>) => {
+  const userDocRef = doc(db, `users/${userId}`);
+  // Use setDoc with merge: true to create the document if it doesn't exist, or update it if it does.
+  await setDoc(userDocRef, data, { merge: true });
 };
 
 

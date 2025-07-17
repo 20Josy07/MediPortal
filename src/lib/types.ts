@@ -28,6 +28,14 @@ export interface Note {
   content?: string;
 }
 
+export interface UserProfile {
+  fullName: string;
+  email: string;
+  phone?: string;
+  licenseNumber?: string;
+  specialization?: string;
+}
+
 // Schema for chatWithNotes flow input
 export const ChatWithNotesInputSchema = z.object({
   question: z.string().describe('The user question about the notes.'),

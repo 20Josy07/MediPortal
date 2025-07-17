@@ -1,48 +1,109 @@
 
 "use client";
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { User, Loader2 } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import { getUserProfile, updateUserProfile } from "@/lib/firebase";
+import type { UserProfile } from "@/lib/types";
 
 const profileSchema = z.object({
-  firstName: z.string().min(1, "El nombre es requerido."),
-  lastName: z.string().min(1, "El apellido es requerido."),
+  fullName: z.string().min(1, "El nombre completo es requerido."),
   email: z.string().email("Correo electrónico inválido."),
-  phone: z.string().min(1, "El teléfono es requerido."),
-  licenseNumber: z.string().min(1, "El número de licencia es requerido."),
-  specialization: z.string().min(1, "La especialización es requerida."),
+  phone: z.string().optional(),
+  licenseNumber: z.string().optional(),
+  specialization: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-export function ProfileSettingsForm() {
+interface ProfileSettingsFormProps {
+  onSuccess?: () => void;
+}
+
+export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
+  const { user, db } = useAuth();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: "Dr. Maria",
-      lastName: "Martinez",
-      email: "dr.martinez@clinic.com",
-      phone: "+57 300 123 4567",
-      licenseNumber: "PSY-12345-COL",
-      specialization: "clinical_psychology",
+      fullName: "",
+      email: "",
+      phone: "",
+      licenseNumber: "",
+      specialization: "",
     },
   });
 
-  function onSubmit(data: ProfileFormValues) {
-    console.log(data);
+  useEffect(() => {
+    async function loadProfile() {
+      if (!user || !db) return;
+      setIsFetching(true);
+      try {
+        const profile = await getUserProfile(db, user.uid);
+        if (profile) {
+          form.reset({
+            fullName: profile.fullName || user.displayName || "",
+            email: profile.email || user.email || "",
+            phone: profile.phone || "",
+            licenseNumber: profile.licenseNumber || "",
+            specialization: profile.specialization || "",
+          });
+        } else {
+            form.reset({
+                fullName: user.displayName || "",
+                email: user.email || "",
+                phone: "",
+                licenseNumber: "",
+                specialization: "",
+            });
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        toast({
+          variant: "destructive",
+          title: "Error al cargar el perfil",
+          description: "No se pudieron obtener los datos de tu perfil.",
+        });
+      } finally {
+        setIsFetching(false);
+      }
+    }
+    loadProfile();
+  }, [user, db, form, toast]);
+
+  async function onSubmit(data: ProfileFormValues) {
+    if (!user || !db) return;
+    setIsLoading(true);
+    try {
+      await updateUserProfile(db, user.uid, data);
+      toast({
+        title: "Perfil actualizado",
+        description: "Tu información se ha guardado correctamente.",
+      });
+      onSuccess?.();
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast({
+        variant: "destructive",
+        title: "Error al guardar",
+        description: "No se pudo actualizar tu perfil.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -55,35 +116,27 @@ export function ProfileSettingsForm() {
         </div>
       </CardHeader>
       <CardContent>
+        {isFetching ? (
+            <div className="flex justify-center items-center h-48">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Apellido</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+               <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel>Nombre Completo</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
             </div>
             <FormField
               control={form.control}
@@ -92,7 +145,7 @@ export function ProfileSettingsForm() {
                 <FormItem>
                   <FormLabel>Correo Electrónico</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} disabled />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -132,7 +185,7 @@ export function ProfileSettingsForm() {
                   <FormLabel>Especialización</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -158,8 +211,15 @@ export function ProfileSettingsForm() {
                 </FormItem>
               )}
             />
+             <div className="flex justify-end pt-4">
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Guardar Cambios
+                </Button>
+            </div>
           </form>
         </Form>
+        )}
       </CardContent>
     </Card>
   );
