@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { useState, useEffect, useRef } from "react";
+import { collection, getDocs, query, orderBy, addDoc } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Note } from "@/lib/types";
@@ -13,8 +13,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2 } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
+import { addNote } from "@/lib/firebase";
 
 
 const aiChatHistory = [
@@ -26,8 +28,12 @@ export default function SmartNotesPage() {
   const { user, db, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -60,6 +66,72 @@ export default function SmartNotesPage() {
   }, [user, db, authLoading, toast]);
 
 
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorderRef.current.onstop = async () => {
+        setIsTranscribing(true);
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+          const base64Audio = reader.result as string;
+          try {
+            const { transcription } = await transcribeAudio({ audioDataUri: base64Audio });
+            
+            if (transcription && user && db) {
+              const newNote: Omit<Note, 'id'> = {
+                title: `Nota de voz - ${new Date().toLocaleString()}`,
+                type: 'Voz',
+                content: transcription,
+                createdAt: new Date(),
+              };
+              const addedNote = await addNote(db, user.uid, newNote);
+              setNotes(prevNotes => [addedNote, ...prevNotes]);
+              toast({ title: "Nota de voz guardada y transcrita." });
+            }
+          } catch (err) {
+            console.error("Transcription error:", err);
+            toast({ variant: "destructive", title: "Error al transcribir la nota." });
+          } finally {
+             setIsTranscribing(false);
+             // Stop all media tracks to turn off the recording indicator
+             stream.getTracks().forEach(track => track.stop());
+          }
+        };
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Error starting recording:", error);
+      toast({ variant: "destructive", title: "No se pudo iniciar la grabación.", description: "Por favor, permite el acceso al micrófono." });
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const handleMicClick = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+
   return (
     <div className="flex-1 space-y-6">
        <div>
@@ -89,12 +161,20 @@ export default function SmartNotesPage() {
                         <Button
                             size="icon"
                             className={`h-24 w-24 rounded-full transition-all duration-300 ${isRecording ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-primary hover:bg-primary/90"}`}
-                            onClick={() => setIsRecording(!isRecording)}
+                            onClick={handleMicClick}
+                            disabled={isTranscribing}
                             >
-                            <Mic className="h-10 w-10" />
+                            {isTranscribing ? (
+                                <Loader2 className="h-10 w-10 animate-spin" />
+                            ) : isRecording ? (
+                                <StopCircle className="h-10 w-10" />
+                            ) : (
+                                <Mic className="h-10 w-10" />
+                            )}
                         </Button>
-                        <p className="text-muted-foreground">{isRecording ? "Grabando..." : "Iniciar Grabación"}</p>
-                        {isRecording && <p className="text-lg font-mono">01:23</p>}
+                        <p className="text-muted-foreground">
+                            {isTranscribing ? "Transcribiendo..." : isRecording ? "Grabando..." : "Iniciar Grabación"}
+                        </p>
                     </CardContent>
                     </Card>
                 </TabsContent>

@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
+import { getFirestore, type Firestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import type { Note } from "./types";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -32,5 +33,18 @@ if (
     "Firebase configuration is missing or incomplete. Make sure to set up your environment variables."
   );
 }
+
+export const addNote = async (db: Firestore, userId: string, noteData: Omit<Note, 'id'>): Promise<Note> => {
+  const notesCollection = collection(db, `users/${userId}/notes`);
+  const docRef = await addDoc(notesCollection, {
+    ...noteData,
+    createdAt: serverTimestamp(),
+  });
+  return {
+    id: docRef.id,
+    ...noteData,
+    createdAt: new Date(), // Return optimistic date
+  };
+};
 
 export { app, auth, db };
