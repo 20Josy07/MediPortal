@@ -158,13 +158,13 @@ export function SessionsCalendar() {
   const getStatusColor = (status: "Confirmada" | "Pendiente" | "Cancelada") => {
     switch (status) {
       case "Confirmada":
-        return "bg-green-500/80 text-green-950 shadow-sm";
+        return "bg-green-500/80 text-white";
       case "Pendiente":
-        return "bg-yellow-400/80 text-yellow-950 shadow-sm";
+        return "bg-yellow-400/80 text-white";
       case "Cancelada":
-        return "bg-red-500/80 text-red-950 shadow-sm";
+        return "bg-red-500/80 text-white";
       default:
-        return "bg-gray-400/80 text-gray-950 shadow-sm";
+        return "bg-gray-400/80 text-white";
     }
   };
 
@@ -238,22 +238,21 @@ export function SessionsCalendar() {
                           {format(day, "d")}
                         </span>
                         <div className="absolute top-8 left-1 right-1 flex flex-col gap-1">
-                          {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 2).map((session) => (
+                          {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
                               <div
                                 key={session.id}
                                 className={cn(
-                                  "text-[10px] leading-tight rounded-sm px-1 py-0.5",
+                                  "text-xs leading-tight rounded-md px-2 py-1 truncate",
                                   getStatusColor(session.status)
                                 )}
-                                title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
+                                title={session.patientName}
                               >
-                                <div>{format(session.date, "HH:mm")}</div>
-                                <div>{session.patientName}</div>
+                                {session.patientName}
                               </div>
                             ))}
-                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 2 && (
-                              <div className="text-primary/80 text-[10px] font-bold px-1 py-0.5">
-                                ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 2} más
+                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 3 && (
+                              <div className="text-primary/80 text-xs font-bold px-1 py-0.5 mt-1">
+                                ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 3} más
                               </div>
                            )}
                         </div>
