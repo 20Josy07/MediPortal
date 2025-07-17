@@ -37,14 +37,20 @@ export function DashboardNavbar() {
   
   const getTitle = () => {
     const segments = pathname.split('/').filter(Boolean);
-    if (segments.length === 1 && segments[0] === 'dashboard') {
-      return 'Principal';
-    }
-    if (segments.length > 1) {
-      const lastSegment = segments[segments.length - 1];
-      return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace('-', ' ');
-    }
-    return 'Dashboard';
+    const lastSegment = segments[segments.length - 1];
+
+    const titleMap: { [key: string]: string } = {
+      dashboard: 'Principal',
+      patients: 'Pacientes',
+      sessions: 'Sesiones',
+      analysis: 'Análisis',
+      metrics: 'Métricas',
+      documents: 'Documentos',
+      billing: 'Facturación',
+      settings: 'Configuración',
+    };
+
+    return titleMap[lastSegment] || 'Dashboard';
   }
 
   return (
@@ -54,7 +60,6 @@ export function DashboardNavbar() {
           <SidebarTrigger />
         </div>
         <h1 className="text-lg font-semibold whitespace-nowrap">
-          {pathname.includes('/dashboard') && !pathname.endsWith('/dashboard') ? 'Dashboard / ' : 'Dashboard '}
           {getTitle()}
         </h1>
       </div>
