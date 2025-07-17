@@ -3,7 +3,7 @@ export interface Patient {
   name: string;
   email: string;
   phone: string;
-  nextSession?: string | null;
+  nextSession: string | null;
   status: "Activo" | "Inactivo";
 }
 

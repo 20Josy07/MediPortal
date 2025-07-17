@@ -75,7 +75,7 @@ export function PatientTableWrapper() {
       patient.name.toLowerCase().includes(searchTerm.toLowerCase())
     ), [patients, searchTerm]);
 
-  const handleFormSubmit = async (data: Omit<Patient, "id">) => {
+  const handleFormSubmit = async (data: Omit<Patient, "id" | "nextSession">) => {
     if (!user || !db) {
       toast({ variant: "destructive", title: "Error de autenticación. Intenta de nuevo." });
       return;
@@ -83,7 +83,6 @@ export function PatientTableWrapper() {
     
     const dataToSave = {
       ...data,
-      nextSession: data.nextSession || null,
     };
 
     try {
@@ -91,13 +90,14 @@ export function PatientTableWrapper() {
         // Update
         const patientDoc = doc(db, `users/${user.uid}/patients`, selectedPatient.id);
         await updateDoc(patientDoc, dataToSave);
-        setPatients(patients.map(p => p.id === selectedPatient.id ? { id: p.id, ...dataToSave } : p));
+        setPatients(patients.map(p => p.id === selectedPatient.id ? { ...p, ...dataToSave } : p));
         toast({ title: "Paciente actualizado exitosamente." });
       } else {
         // Create
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
-        const docRef = await addDoc(patientsCollection, dataToSave);
-        setPatients([...patients, { id: docRef.id, ...dataToSave }]);
+        const newPatientData = { ...dataToSave, nextSession: null };
+        const docRef = await addDoc(patientsCollection, newPatientData);
+        setPatients([...patients, { id: docRef.id, ...newPatientData }]);
         toast({ title: "Paciente agregado exitosamente." });
       }
       setIsFormOpen(false);

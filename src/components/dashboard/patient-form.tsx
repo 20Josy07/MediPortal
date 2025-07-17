@@ -26,14 +26,13 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
   email: z.string().email({ message: "Introduce un correo electrónico válido." }),
   phone: z.string().min(10, { message: "El teléfono debe tener al menos 10 caracteres." }),
-  nextSession: z.string().optional().nullable(),
   status: z.enum(["Activo", "Inactivo"]),
 });
 
 type PatientFormValues = z.infer<typeof formSchema>;
 
 interface PatientFormProps {
-  patient?: Patient | null;
+  patient?: Omit<Patient, "nextSession"> | null;
   onSubmit: (data: PatientFormValues) => void;
   onCancel: () => void;
 }
@@ -45,7 +44,6 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
       name: patient?.name || "",
       email: patient?.email || "",
       phone: patient?.phone || "",
-      nextSession: patient?.nextSession || "",
       status: patient?.status || "Activo",
     },
   });
@@ -87,19 +85,6 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
               <FormLabel>Teléfono</FormLabel>
               <FormControl>
                 <Input placeholder="+57 310 123 4567" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="nextSession"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Próxima Sesión (opcional)</FormLabel>
-              <FormControl>
-                <Input type="datetime-local" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
