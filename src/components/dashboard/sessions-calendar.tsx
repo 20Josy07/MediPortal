@@ -179,13 +179,6 @@ export function SessionsCalendar() {
 
   const renderMonthView = () => (
     <>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground">
-        {weekdays.map((day) => (
-          <div key={day} className="font-medium capitalize">
-            {day}
-          </div>
-        ))}
-      </div>
       <div className="grid grid-cols-7 grid-rows-5 gap-1 mt-2">
         {days.map((day) => (
           <div
@@ -252,15 +245,8 @@ export function SessionsCalendar() {
       <Card className="h-full">
         <div className="grid grid-cols-12 h-full">
           <div className="col-span-3 lg:col-span-2 p-2 border-r flex flex-col">
-            <CardHeader className="p-2 flex-row justify-between items-center">
+            <CardHeader className="p-2">
                 <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
-                 <Tabs defaultValue="month" onValueChange={(value) => setView(value as any)} className="w-auto">
-                  <TabsList className="h-8">
-                    <TabsTrigger value="month" className="h-6 px-2 text-xs">Mes</TabsTrigger>
-                    <TabsTrigger value="week" className="h-6 px-2 text-xs">Semana</TabsTrigger>
-                    <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
-                  </TabsList>
-                </Tabs>
             </CardHeader>
             <CardContent className="p-2 flex-grow">
                 <div className="flex flex-col gap-1">
@@ -292,6 +278,22 @@ export function SessionsCalendar() {
               </div>
             ) : (
                 <>
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground flex-grow">
+                      {weekdays.map((day) => (
+                        <div key={day} className="font-medium capitalize">
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                    <Tabs defaultValue="month" onValueChange={(value) => setView(value as any)} className="w-auto ml-4">
+                      <TabsList className="h-8">
+                        <TabsTrigger value="month" className="h-6 px-2 text-xs">Mes</TabsTrigger>
+                        <TabsTrigger value="week" className="h-6 px-2 text-xs">Semana</TabsTrigger>
+                        <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
                   {view === 'month' && renderMonthView()}
                   {view === 'week' && renderWeekView()}
                   {view === 'day' && renderDayView()}
