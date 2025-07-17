@@ -1,3 +1,6 @@
+
+import { z } from 'zod';
+
 export interface Patient {
   id: string;
   name: string;
@@ -24,3 +27,16 @@ export interface Note {
   createdAt: Date;
   content?: string;
 }
+
+// Schema for chatWithNotes flow input
+export const ChatWithNotesInputSchema = z.object({
+  question: z.string().describe('The user question about the notes.'),
+  notesContent: z.string().describe('The concatenated content of the relevant clinical notes.'),
+});
+export type ChatWithNotesInput = z.infer<typeof ChatWithNotesInputSchema>;
+
+// Schema for chatWithNotes flow output
+export const ChatWithNotesOutputSchema = z.object({
+  answer: z.string().describe("The AI's answer to the user's question based on the provided notes."),
+});
+export type ChatWithNotesOutput = z.infer<typeof ChatWithNotesOutputSchema>;

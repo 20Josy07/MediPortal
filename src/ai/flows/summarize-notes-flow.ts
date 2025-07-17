@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI flow to summarize and answer questions about clinical notes.
@@ -8,18 +9,8 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ChatWithNotesInputSchema, ChatWithNotesOutputSchema, type ChatWithNotesInput, type ChatWithNotesOutput } from '@/lib/types';
 
-export const ChatWithNotesInputSchema = z.object({
-  question: z.string().describe('The user question about the notes.'),
-  notesContent: z.string().describe('The concatenated content of the relevant clinical notes.'),
-});
-export type ChatWithNotesInput = z.infer<typeof ChatWithNotesInputSchema>;
-
-export const ChatWithNotesOutputSchema = z.object({
-  answer: z.string().describe("The AI's answer to the user's question based on the provided notes."),
-});
-export type ChatWithNotesOutput = z.infer<typeof ChatWithNotesOutputSchema>;
 
 export async function chatWithNotes(input: ChatWithNotesInput): Promise<ChatWithNotesOutput> {
   return chatWithNotesFlow(input);
