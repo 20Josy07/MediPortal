@@ -6,6 +6,9 @@ import {
   collection,
   getDocs,
   addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 import {
   format,
@@ -22,6 +25,10 @@ import {
   getHours,
   getMinutes,
   isSameWeek,
+  addDays,
+  subDays,
+  addWeeks,
+  subWeeks,
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Clock, User, Tag, CheckCircle, HelpCircle, XCircle, Loader2 } from "lucide-react";
@@ -122,11 +129,21 @@ export function SessionsCalendar() {
 
     try {
       const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
-      const docRef = await addDoc(sessionsCollection, sessionData);
-      const newSession = { id: docRef.id, ...sessionData };
-      setSessions([...sessions, newSession]);
-      toast({ title: "Sesión agendada exitosamente." });
+      if (selectedSession) {
+        // Update logic here if needed
+        const sessionDoc = doc(db, `users/${user.uid}/sessions`, selectedSession.id);
+        await updateDoc(sessionDoc, sessionData);
+        setSessions(sessions.map(s => s.id === selectedSession.id ? { id: s.id, ...sessionData } : s));
+        toast({ title: "Sesión actualizada exitosamente." });
+      } else {
+        const docRef = await addDoc(sessionsCollection, sessionData);
+        const newSession = { id: docRef.id, ...sessionData };
+        setSessions([...sessions, newSession]);
+        toast({ title: "Sesión agendada exitosamente." });
+      }
+
       setIsFormOpen(false);
+      setSelectedSession(null);
     } catch (error) {
       console.error("Error saving session:", error);
       toast({
@@ -140,6 +157,35 @@ export function SessionsCalendar() {
     setSelectedSession(session);
     setIsDetailOpen(true);
   };
+
+  const handleAddNewSession = (date?: Date) => {
+    setSelectedSession(null);
+    setSelectedDate(date || new Date());
+    setIsFormOpen(true);
+  };
+  
+  const handleEditSession = () => {
+    if(selectedSession) {
+      setIsDetailOpen(false);
+      setIsFormOpen(true);
+    }
+  }
+  
+  const handleDeleteSession = async () => {
+    if (!user || !selectedSession || !db) return;
+    try {
+      const sessionDoc = doc(db, `users/${user.uid}/sessions`, selectedSession.id);
+      await deleteDoc(sessionDoc);
+      setSessions(sessions.filter(s => s.id !== selectedSession.id));
+      toast({ title: "Sesión eliminada exitosamente." });
+      setIsDetailOpen(false);
+      setSelectedSession(null);
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      toast({ variant: "destructive", title: "Error al eliminar la sesión." });
+    }
+  };
+
 
   const start = startOfWeek(startOfMonth(currentDate), { locale: es });
   const end = endOfWeek(endOfMonth(currentDate), { locale: es });
@@ -181,6 +227,32 @@ export function SessionsCalendar() {
   };
 
   const IconComponent = selectedSession ? statusDetails[selectedSession.status].icon : HelpCircle;
+  
+  const changeDate = (amount: number) => {
+    if (view === "month") {
+      setCurrentDate(prev => amount > 0 ? addMonths(prev, 1) : subMonths(prev, 1));
+    } else if (view === "week") {
+      setCurrentDate(prev => amount > 0 ? addWeeks(prev, 1) : subWeeks(prev, 1));
+    } else {
+      setCurrentDate(prev => amount > 0 ? addDays(prev, 1) : subDays(prev, 1));
+    }
+  };
+  
+  const formatHeader = () => {
+      if (view === 'month') {
+          return format(currentDate, "MMMM yyyy", { locale: es });
+      }
+      if (view === 'week') {
+          const start = startOfWeek(currentDate, { locale: es });
+          const end = endOfWeek(currentDate, { locale: es });
+          if (isSameMonth(start, end)) {
+              return `${format(start, 'd')} - ${format(end, 'd')} de ${format(end, 'MMMM, yyyy', { locale: es })}`;
+          }
+          return `${format(start, 'd \'de\' MMMM', { locale: es })} - ${format(end, 'd \'de\' MMMM, yyyy', { locale: es })}`;
+      }
+      return format(currentDate, "eeee, d 'de' MMMM, yyyy", { locale: es });
+  };
+
 
   const renderMonthView = () => (
     <>
@@ -305,28 +377,70 @@ export function SessionsCalendar() {
   };
   
 
-  const renderDayView = () => (
-     <div className="flex h-full items-center justify-center">
-      <p className="text-muted-foreground">Vista de Día (Próximamente)</p>
-    </div>
-  );
-  
-  const changeMonth = (amount: number) => {
-      setCurrentDate(prev => amount > 0 ? addMonths(prev, 1) : subMonths(prev, 1));
-  }
+  const renderDayView = () => {
+    const timeSlots = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM
+    const daySessions = sessions.filter(session => isSameDay(session.date, currentDate));
 
+    return (
+      <div className="grid grid-cols-[auto,1fr] h-full overflow-y-auto">
+        <div className="grid-rows-[auto,1fr]">
+            <div className="h-10"></div>
+            <div className="relative">
+                {timeSlots.map((hour) => (
+                    <div key={hour} className="h-16 flex items-start justify-end pr-2 text-xs text-muted-foreground relative -top-2">
+                        <span>{format(new Date(0,0,0,hour), 'h a')}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        <div className="border-l border-border relative">
+          <div className="sticky top-0 bg-background z-10 h-10 flex flex-col items-center justify-center border-b border-border">
+            <span className={cn("text-lg font-bold", isSameDay(currentDate, new Date()) && "text-primary")}>{format(currentDate, 'd')}</span>
+          </div>
+          <div className="relative">
+            {timeSlots.map((hour) => (
+              <div key={hour} className="h-16 border-b border-border"></div>
+            ))}
+            {daySessions.map(session => {
+              const startHour = getHours(session.date);
+              const startMinute = getMinutes(session.date);
+              const top = ((startHour - 7) * 64) + (startMinute / 60 * 64);
+              const height = 64;
+              return (
+                  <div
+                    key={session.id}
+                    onClick={() => handleSessionClick(session)}
+                    className={cn(
+                        "absolute w-[calc(100%-8px)] left-[4px] rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex flex-col overflow-hidden",
+                        getStatusColor(session.status)
+                    )}
+                    style={{ top: `${top}px`, height: `${height}px` }}
+                  >
+                    <span className="font-bold truncate">{session.patientName}</span>
+                    <span className="truncate">{session.type}</span>
+                    <span>{format(session.date, 'p', { locale: es })}</span>
+                  </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
   return (
     <>
       <div className="flex justify-between items-center mb-4">
          <div className="flex items-center gap-4">
-             <span className="text-xl font-bold">
-                 {format(currentDate, "MMMM yyyy", { locale: es })}
+             <span className="text-xl font-bold capitalize">
+                 {formatHeader()}
              </span>
               <div className="flex items-center gap-1">
-                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => changeMonth(-1)}>
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => changeDate(-1)}>
                     <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => changeMonth(1)}>
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => changeDate(1)}>
                     <ChevronRight className="h-4 w-4" />
                 </Button>
                  <Button variant="outline" className="h-8 px-3" onClick={() => setCurrentDate(new Date())}>
@@ -343,7 +457,7 @@ export function SessionsCalendar() {
                 </TabsList>
             </Tabs>
             <Button
-                onClick={() => setIsFormOpen(true)}
+                onClick={() => handleAddNewSession()}
                 className="h-9 text-sm"
             >
                 Agendar
@@ -402,15 +516,16 @@ export function SessionsCalendar() {
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Agendar Nueva Sesión</DialogTitle>
+            <DialogTitle>{selectedSession ? 'Editar Sesión' : 'Agendar Nueva Sesión'}</DialogTitle>
             <DialogDescription>
               Completa los detalles para agendar una nueva cita.
             </DialogDescription>
           </DialogHeader>
           <SessionForm
+            session={selectedSession}
             patients={patients}
             onSubmit={handleFormSubmit}
-            onCancel={() => setIsFormOpen(false)}
+            onCancel={() => { setIsFormOpen(false); setSelectedSession(null); }}
             initialDate={selectedDate}
           />
         </DialogContent>
@@ -445,6 +560,11 @@ export function SessionsCalendar() {
                     {statusDetails[selectedSession.status].text}
                   </span>
                 </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsDetailOpen(false)}>Cerrar</Button>
+                <Button variant="destructive" onClick={handleDeleteSession}>Eliminar</Button>
+                <Button onClick={handleEditSession}>Editar</Button>
               </div>
             </>
           )}
