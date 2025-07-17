@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { collection, getDocs } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
@@ -112,8 +113,10 @@ export default function AnalysisPage() {
                       </p>
                     </div>
                   </div>
-                  <Button variant="destructive" className="mt-6 w-full">
-                    Explorar Detecciones
+                   <Button asChild variant="destructive" className="mt-6 w-full">
+                    <Link href="/dashboard/analysis/conversation">
+                      Explorar Detecciones
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
