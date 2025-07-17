@@ -54,7 +54,7 @@ const collections = [
 
 export default function DocumentsPage() {
   return (
-    <div className="flex-1 space-y-8 p-4 pt-6 md:p-8">
+    <div className="flex-1 space-y-8">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">
           Mis Documentos de Práctica

@@ -13,32 +13,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import {
-  Bell,
-  Users,
-  Calendar,
-  BarChart2,
-  LineChart,
-  FileText,
-  CreditCard,
-  Settings,
-  LifeBuoy,
-  Home,
-  Video,
-} from "lucide-react";
+import { Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   return (
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+    <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">
           Dashboard Principal
         </h2>
-        <div className="flex items-center space-x-4">
-          <Bell className="h-6 w-6" />
-          <div className="h-8 w-8 rounded-full bg-gray-300"></div>
-        </div>
       </div>
       <div className="space-y-4">
         <h3 className="mb-4 text-xl font-semibold">Resumen de la semana</h3>

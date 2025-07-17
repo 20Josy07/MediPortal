@@ -6,6 +6,7 @@ import { useAuth } from "@/context/auth-context";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Loader2 } from "lucide-react";
+import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
 
 export default function DashboardLayout({
   children,
@@ -32,7 +33,10 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <DashboardSidebar />
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset>
+        <DashboardNavbar />
+        <main className="flex-1 space-y-4 p-4 md:p-8">{children}</main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
