@@ -6,8 +6,6 @@ import {
   collection,
   getDocs,
   addDoc,
-  query,
-  where,
 } from "firebase/firestore";
 import {
   format,
@@ -20,6 +18,7 @@ import {
   isSameDay,
   addMonths,
   subMonths,
+  setMonth
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
@@ -29,7 +28,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
 import {
   Dialog,
@@ -62,7 +60,6 @@ export function SessionsCalendar() {
       }
       setIsLoading(true);
       try {
-        // Fetch Patients
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
         const patientSnapshot = await getDocs(patientsCollection);
         const patientList = patientSnapshot.docs.map(
@@ -70,7 +67,6 @@ export function SessionsCalendar() {
         );
         setPatients(patientList);
 
-        // Fetch Sessions
         const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
         const sessionSnapshot = await getDocs(sessionsCollection);
         const sessionList = sessionSnapshot.docs.map((doc) => {
@@ -78,7 +74,7 @@ export function SessionsCalendar() {
           return {
             id: doc.id,
             ...data,
-            date: (data.date as any).toDate(), // Convert Firestore Timestamp to Date
+            date: (data.date as any).toDate(),
           } as Session;
         });
         setSessions(sessionList);
@@ -143,7 +139,11 @@ export function SessionsCalendar() {
       (a, b) => a.date.getTime() - b.date.getTime()
     );
   }, [selectedDate, sessionsByDay]);
-  
+
+  const months = Array.from({ length: 12 }, (_, i) => 
+    format(new Date(currentDate.getFullYear(), i), "MMMM", { locale: es })
+  );
+
   return (
     <>
       <div className="flex items-center justify-end mb-6 gap-4">
@@ -173,113 +173,139 @@ export function SessionsCalendar() {
           </Button>
           <Button onClick={() => setIsFormOpen(true)}>Agendar Nueva Sesión</Button>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <CardContent className="p-4">
-            {isLoading ? (
-              <div className="flex justify-center items-center h-[560px]">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground">
-                  {weekdays.map((day) => (
-                    <div key={day} className="font-medium capitalize">
-                      {day}
-                    </div>
-                  ))}
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+              <CardHeader className="p-4">
+                  <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-2">
+                  <div className="flex flex-col gap-1">
+                      {months.map((month, index) => (
+                          <Button 
+                              key={month}
+                              variant={format(currentDate, 'M') === String(index + 1) ? "default" : "ghost"}
+                              className="capitalize w-full justify-start"
+                              onClick={() => setCurrentDate(setMonth(currentDate, index))}
+                          >
+                              {month}
+                          </Button>
+                      ))}
+                  </div>
+              </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-7">
+          <Card>
+            <CardContent className="p-4">
+              {isLoading ? (
+                <div className="flex justify-center items-center h-[560px]">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-                <div className="grid grid-cols-7 grid-rows-5 gap-1 mt-2">
-                  {days.map((day) => (
-                    <div
-                      key={day.toString()}
-                      onClick={() => setSelectedDate(day)}
-                      className={cn(
-                        "relative p-2 h-28 rounded-md cursor-pointer transition-colors",
-                        !isSameMonth(day, currentDate) &&
-                          "text-muted-foreground/50 bg-card/50",
-                        isSameMonth(day, currentDate) &&
-                          "bg-card hover:bg-accent/10",
-                        isSameDay(day, selectedDate) &&
-                          "bg-primary/20 border border-primary"
-                      )}
-                    >
-                      <span
+              ) : (
+                <>
+                  <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground">
+                    {weekdays.map((day) => (
+                      <div key={day} className="font-medium capitalize">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-7 grid-rows-5 gap-1 mt-2">
+                    {days.map((day) => (
+                      <div
+                        key={day.toString()}
+                        onClick={() => setSelectedDate(day)}
                         className={cn(
-                          "absolute top-2 left-2 text-xs font-semibold",
-                          isSameDay(day, new Date()) && "text-primary font-bold"
+                          "relative p-2 h-28 rounded-md cursor-pointer transition-colors overflow-hidden",
+                          !isSameMonth(day, currentDate) &&
+                            "text-muted-foreground/50 bg-card/50",
+                          isSameMonth(day, currentDate) &&
+                            "bg-card hover:bg-accent/10",
+                          isSameDay(day, selectedDate) &&
+                            "bg-primary/20 border border-primary"
                         )}
                       >
-                        {format(day, "d")}
-                      </span>
-                      <div className="absolute bottom-2 left-2 right-2 space-y-1">
-                        {(sessionsByDay[format(day, "yyyy-MM-dd")] || [])
-                          .slice(0, 2)
-                          .map((session) => (
-                            <div
-                              key={session.id}
-                              className="bg-primary/80 text-primary-foreground text-[10px] rounded-sm px-1 py-0.5 truncate"
-                            >
-                              {format(session.date, "HH:mm")} -{" "}
-                              {session.patientName}
-                            </div>
-                          ))}
-                         {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 2 && (
-                            <div className="text-primary/80 text-[10px] font-bold px-1 py-0.5 truncate">
-                              ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 2} más
-                            </div>
-                         )}
+                        <span
+                          className={cn(
+                            "absolute top-2 left-2 text-xs font-semibold",
+                            isSameDay(day, new Date()) && "text-primary font-bold"
+                          )}
+                        >
+                          {format(day, "d")}
+                        </span>
+                        <div className="absolute top-8 left-1 right-1 flex flex-col gap-1">
+                          {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
+                              <div
+                                key={session.id}
+                                className="bg-primary/80 text-primary-foreground text-[10px] rounded-sm px-1.5 py-0.5 truncate"
+                                title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
+                              >
+                                <span className="font-bold">{format(session.date, "HH:mm")}</span> {session.patientName}
+                              </div>
+                            ))}
+                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 3 && (
+                              <div className="text-primary/80 text-[10px] font-bold px-1 py-0.5 truncate">
+                                ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 3} más
+                              </div>
+                           )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                Sesiones del{" "}
+                {format(selectedDate, "d 'de' MMMM", { locale: es })}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                 <div className="flex justify-center items-center h-48">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                </div>
+              ) : selectedDaySessions.length > 0 ? (
+                <div className="space-y-4">
+                  {selectedDaySessions.map((session) => (
+                    <div
+                      key={session.id}
+                      className="bg-card p-4 rounded-lg border border-border"
+                    >
+                      <p className="font-semibold">{session.patientName}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {format(session.date, "p", { locale: es })}
+                      </p>
+                      <div className="flex justify-between items-center mt-1">
+                         <p className="text-sm capitalize">
+                          <span className="text-muted-foreground">Tipo: </span>
+                          {session.type}
+                        </p>
+                        <p className="text-sm capitalize">
+                          <span className="text-muted-foreground">Estado: </span>
+                          {session.status}
+                        </p>
                       </div>
                     </div>
                   ))}
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Sesiones del{" "}
-              {format(selectedDate, "d 'de' MMMM", { locale: es })}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-               <div className="flex justify-center items-center h-48">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
-              </div>
-            ) : selectedDaySessions.length > 0 ? (
-              <div className="space-y-4">
-                {selectedDaySessions.map((session) => (
-                  <div
-                    key={session.id}
-                    className="bg-card p-4 rounded-lg border border-border"
-                  >
-                    <p className="font-semibold">{session.patientName}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {format(session.date, "p", { locale: es })}
-                    </p>
-                    <div className="flex justify-between items-center mt-1">
-                       <p className="text-sm capitalize">
-                        <span className="text-muted-foreground">Tipo: </span>
-                        {session.type}
-                      </p>
-                      <p className="text-sm capitalize">
-                        <span className="text-muted-foreground">Estado: </span>
-                        {session.status}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">
-                No hay sesiones para este día.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+              ) : (
+                <p className="text-muted-foreground">
+                  No hay sesiones para este día.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
