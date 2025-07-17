@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,7 @@ import { SidebarTrigger } from "../ui/sidebar";
 export function DashboardNavbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await logout();
@@ -33,12 +34,28 @@ export function DashboardNavbar() {
     }
     return name.substring(0, 2);
   };
+  
+  const getTitle = () => {
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length === 1 && segments[0] === 'dashboard') {
+      return 'Dashboard Principal';
+    }
+    if (segments.length > 1) {
+      const lastSegment = segments[segments.length - 1];
+      return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace('-', ' ');
+    }
+    return 'Dashboard';
+  }
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <div className="hidden md:block">
-        <SidebarTrigger />
+      <div className="flex items-center gap-2">
+         <div className="hidden md:block">
+          <SidebarTrigger />
+        </div>
+        <h1 className="text-lg font-semibold">{getTitle()}</h1>
       </div>
+     
       <div className="flex w-full items-center justify-end gap-4">
         <Button variant="ghost" size="icon" className="rounded-full">
           <Bell className="h-5 w-5" />

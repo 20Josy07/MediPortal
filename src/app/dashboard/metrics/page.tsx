@@ -9,12 +9,10 @@ import { Button } from "@/components/ui/button";
 import { GrowthHistoryChart } from "@/components/dashboard/metrics/growth-history-chart";
 import { AttendanceChart } from "@/components/dashboard/metrics/attendance-chart";
 import { DollarSign, Calendar, Users, ArrowUp, ChevronDown } from "lucide-react";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 export default function MetricsPage() {
   return (
     <div className="flex-1 space-y-4">
-      <DashboardHeader title="Métricas de la Práctica" />
       <div className="space-y-2">
         <p className="text-muted-foreground">
           Monitorea el crecimiento y la eficiencia de tu consultorio.

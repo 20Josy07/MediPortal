@@ -26,7 +26,6 @@ import {
   Search,
   Send,
 } from "lucide-react";
-import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 const invoices = [
   {
@@ -74,7 +73,6 @@ const statusIcons: { [key: string]: React.ElementType } = {
 export default function BillingPage() {
   return (
     <div className="flex-1 space-y-6">
-      <DashboardHeader title="Gestión Financiera" />
       <div className="flex items-center justify-end space-x-4">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
