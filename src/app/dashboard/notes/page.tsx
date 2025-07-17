@@ -445,8 +445,8 @@ export default function SmartNotesPage() {
               </Card>
           </div>
           
-          <div className="lg:col-span-1">
-            <Card className="flex flex-col max-h-[calc(100vh-12rem)]">
+          <div className="lg:col-span-1 flex flex-col">
+            <Card className="flex-1 flex flex-col">
               <CardHeader>
                 <CardTitle>Historial de Notas</CardTitle>
                 <CardDescription>
@@ -458,45 +458,43 @@ export default function SmartNotesPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow p-2 overflow-hidden">
-                {isLoading ? (
-                  <div className="flex justify-center items-center h-full">
-                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                  </div>
-                ) : (
-                  <ScrollArea className="h-full">
-                    <div className="space-y-2 p-2">
-                      {notes.length > 0 ? (
-                        notes.map((note) => (
-                          <div
-                            key={note.id}
-                            onClick={() => handleViewNote(note)}
-                            className="flex items-center justify-between p-3 rounded-md hover:bg-muted/50 cursor-pointer"
-                          >
-                            <div className="flex items-center gap-3">
-                              <FileText className="h-5 w-5 text-muted-foreground" />
-                              <div className="flex-1 overflow-hidden">
-                                <p className="font-semibold truncate">{note.title}</p>
-                                <p className="text-xs text-muted-foreground">{note.type}</p>
-                              </div>
+                <ScrollArea className="h-full">
+                  <div className="space-y-2 p-2">
+                    {isLoading ? (
+                      <div className="flex justify-center items-center h-full">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      </div>
+                    ) : notes.length > 0 ? (
+                      notes.map((note) => (
+                        <div
+                          key={note.id}
+                          onClick={() => handleViewNote(note)}
+                          className="flex items-center justify-between p-3 rounded-md hover:bg-muted/50 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <FileText className="h-5 w-5 text-muted-foreground" />
+                            <div className="flex-1 overflow-hidden">
+                              <p className="font-semibold truncate">{note.title}</p>
+                              <p className="text-xs text-muted-foreground">{note.type}</p>
                             </div>
-                            <span className="text-xs text-muted-foreground whitespace-nowrap">
-                              {formatDistanceToNow(note.createdAt, {
-                                addSuffix: true,
-                                locale: es,
-                              })}
-                            </span>
                           </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-sm text-muted-foreground h-full flex items-center justify-center p-4">
-                          {selectedPatientId
-                            ? "No hay notas para este paciente."
-                            : "Selecciona un paciente."}
-                        </p>
-                      )}
-                    </div>
-                  </ScrollArea>
-                )}
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {formatDistanceToNow(note.createdAt, {
+                              addSuffix: true,
+                              locale: es,
+                            })}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center text-sm text-muted-foreground h-full flex items-center justify-center p-4">
+                        {selectedPatientId
+                          ? "No hay notas para este paciente."
+                          : "Selecciona un paciente."}
+                      </p>
+                    )}
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </div>
