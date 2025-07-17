@@ -144,6 +144,19 @@ export function SessionsCalendar() {
     format(new Date(currentDate.getFullYear(), i), "MMMM", { locale: es })
   );
 
+  const getStatusColor = (status: "Confirmada" | "Pendiente" | "Cancelada") => {
+    switch (status) {
+      case "Confirmada":
+        return "bg-green-200 text-green-900";
+      case "Pendiente":
+        return "bg-yellow-200 text-yellow-900";
+      case "Cancelada":
+        return "bg-red-200 text-red-900";
+      default:
+        return "bg-gray-200 text-gray-900";
+    }
+  };
+
   return (
     <>
       <div className="flex items-center justify-end mb-6 gap-4">
@@ -216,7 +229,10 @@ export function SessionsCalendar() {
                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
                               <div
                                 key={session.id}
-                                className="bg-yellow-200 text-yellow-900 text-[10px] rounded-sm px-2 py-1 shadow-sm break-words"
+                                className={cn(
+                                  "text-[10px] rounded-sm px-2 py-1 shadow-sm break-words",
+                                  getStatusColor(session.status)
+                                )}
                                 title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
                               >
                                 <div>{format(session.date, "HH:mm")}</div>
