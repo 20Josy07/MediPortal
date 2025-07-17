@@ -170,7 +170,7 @@ export function SessionsCalendar() {
 
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12">
         <Card className="lg:col-span-9 h-full">
           <div className="grid grid-cols-12 h-full">
             <div className="col-span-3 lg:col-span-2 p-2 border-r flex flex-col">
@@ -191,10 +191,10 @@ export function SessionsCalendar() {
                       ))}
                   </div>
               </CardContent>
-              <div className="p-2 mt-auto">
-                 <Button onClick={() => setIsFormOpen(true)} className="w-full">
-                    Agendar Nueva Sesión
-                 </Button>
+              <div className="p-2 mt-auto text-center">
+                <Button onClick={() => setIsFormOpen(true)} className="h-9 text-sm">
+                  Agendar Nueva Sesión
+                </Button>
               </div>
             </div>
             <div className="col-span-9 lg:col-span-10 p-4">
@@ -239,13 +239,13 @@ export function SessionsCalendar() {
                               <div
                                 key={session.id}
                                 className={cn(
-                                  "text-[10px] leading-tight rounded-sm px-1 py-0.5 shadow-md",
+                                  "text-[10px] leading-tight rounded-sm px-1 py-0.5",
                                   getStatusColor(session.status)
                                 )}
                                 title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
                               >
                                 <div>{format(session.date, "HH:mm")}</div>
-                                <div className="whitespace-normal">{session.patientName}</div>
+                                <div>{session.patientName}</div>
                               </div>
                             ))}
                            {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 2 && (
@@ -263,7 +263,7 @@ export function SessionsCalendar() {
           </div>
         </Card>
 
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 ml-6">
           <Card>
             <CardHeader>
               <CardTitle>
