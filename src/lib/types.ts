@@ -9,7 +9,9 @@ export interface Patient {
 
 export interface Session {
   id: string;
+  patientId: string;
   patientName: string;
   date: Date;
+  type: "Individual" | "Pareja" | "Familiar";
   status: "Confirmada" | "Pendiente" | "Cancelada";
 }
