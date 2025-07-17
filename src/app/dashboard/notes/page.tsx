@@ -446,20 +446,20 @@ export default function SmartNotesPage() {
           </div>
           
           <div className="lg:col-span-1">
-              <Card className="h-full">
+              <Card className="h-full flex flex-col">
                   <CardHeader>
                       <CardTitle>Historial de Notas</CardTitle>
                        <CardDescription>
                           {selectedPatientId ? `Mostrando notas para ${patients.find(p => p.id === selectedPatientId)?.name}` : 'Selecciona un paciente para ver sus notas'}
                        </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-grow">
                       {isLoading ? (
-                          <div className="flex justify-center items-center h-40">
+                          <div className="flex justify-center items-center h-full">
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                           </div>
                       ) : (
-                        <ScrollArea className="h-[calc(100vh-350px)]">
+                        <ScrollArea className="h-full">
                           <div className="space-y-4">
                               {notes.length > 0 ? notes.map((note) => (
                                   <div key={note.id} onClick={() => handleViewNote(note)} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
