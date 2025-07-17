@@ -174,7 +174,7 @@ export function SessionsCalendar() {
           <Button onClick={() => setIsFormOpen(true)}>Agendar Nueva Sesión</Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12">
         <div className="lg:col-span-2">
             <Card>
               <CardHeader className="p-4">
@@ -265,7 +265,7 @@ export function SessionsCalendar() {
           </Card>
         </div>
 
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 lg:ml-6">
           <Card>
             <CardHeader>
               <CardTitle>
