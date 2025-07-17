@@ -119,7 +119,7 @@ export function DashboardSidebar() {
               asChild
               isActive={pathname === "/dashboard/documents"}
             >
-              <Link href="#">
+              <Link href="/dashboard/documents">
                 <FileText />
                 Documentos
               </Link>
