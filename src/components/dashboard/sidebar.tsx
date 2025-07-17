@@ -86,7 +86,7 @@ export function DashboardSidebar() {
               asChild
               isActive={pathname === "/dashboard/sessions"}
             >
-              <Link href="#">
+              <Link href="/dashboard/sessions">
                 <Calendar />
                 Sesiones
               </Link>

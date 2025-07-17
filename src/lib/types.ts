@@ -6,3 +6,10 @@ export interface Patient {
   nextSession?: string | null;
   status: "Activo" | "Inactivo";
 }
+
+export interface Session {
+  id: string;
+  patientName: string;
+  date: Date;
+  status: "Confirmada" | "Pendiente" | "Cancelada";
+}
