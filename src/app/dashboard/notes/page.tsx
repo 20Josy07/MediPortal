@@ -453,7 +453,7 @@ export default function SmartNotesPage() {
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                           </div>
                       ) : (
-                        <ScrollArea className="h-[80vh]">
+                        <ScrollArea>
                           <div className="space-y-4">
                               {notes.length > 0 ? notes.map((note) => (
                                   <div key={note.id} onClick={() => handleViewNote(note)} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
