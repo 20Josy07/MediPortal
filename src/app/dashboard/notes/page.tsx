@@ -267,6 +267,11 @@ export default function SmartNotesPage() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (!selectedPatientId) {
+        toast({ variant: "destructive", title: "Selecciona un paciente primero." });
+        return;
+    }
+
     setIsFileProcessing(true);
     try {
       let text = '';
@@ -282,12 +287,13 @@ export default function SmartNotesPage() {
           fullText += textContent.items.map((item: any) => item.str).join(' ');
         }
         text = fullText;
-      } else if (file.name.endsWith('.docx')) {
+      } else if (file.name.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         const arrayBuffer = await file.arrayBuffer();
         const result = await mammoth.extractRawText({ arrayBuffer });
         text = result.value;
       } else {
-        toast({ variant: "destructive", title: "Formato de archivo no soportado." });
+        toast({ variant: "destructive", title: "Formato de archivo no soportado.", description: "Por favor, sube un .txt, .pdf, or .docx." });
+        setIsFileProcessing(false);
         return;
       }
       setTextNoteContent(current => current + '\n\n' + text);
@@ -399,7 +405,7 @@ export default function SmartNotesPage() {
                                 ref={fileInputRef}
                                 onChange={handleFileChange}
                                 className="hidden"
-                                accept=".txt,.pdf,.docx"
+                                accept=".txt,.pdf,.docx,.doc"
                               />
                               <Button onClick={handleSaveTextNote} disabled={!selectedPatientId}>Guardar Nota</Button>
                           </div>
@@ -440,7 +446,7 @@ export default function SmartNotesPage() {
           </div>
           
           <div className="lg:col-span-1">
-              <Card>
+              <Card className="h-full">
                   <CardHeader>
                       <CardTitle>Historial de Notas</CardTitle>
                        <CardDescription>
@@ -453,7 +459,7 @@ export default function SmartNotesPage() {
                               <Loader2 className="h-6 w-6 animate-spin text-primary" />
                           </div>
                       ) : (
-                        <ScrollArea>
+                        <ScrollArea className="h-[calc(100vh-350px)]">
                           <div className="space-y-4">
                               {notes.length > 0 ? notes.map((note) => (
                                   <div key={note.id} onClick={() => handleViewNote(note)} className="flex items-center justify-between p-2 rounded-md hover:bg-muted/50 cursor-pointer">
