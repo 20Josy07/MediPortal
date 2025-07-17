@@ -16,12 +16,10 @@ import {
   endOfWeek,
   isSameMonth,
   isSameDay,
-  addMonths,
-  subMonths,
   setMonth
 } from "date-fns";
 import { es } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Clock, User, Tag, CheckCircle, HelpCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,6 +34,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
@@ -51,6 +50,8 @@ export function SessionsCalendar() {
   const [patients, setPatients] = React.useState<Patient[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [selectedSession, setSelectedSession] = React.useState<Session | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -127,6 +128,12 @@ export function SessionsCalendar() {
       });
     }
   };
+  
+  const handleSessionClick = (session: Session) => {
+    setSelectedSession(session);
+    setIsDetailOpen(true);
+  };
+
 
   const start = startOfWeek(startOfMonth(currentDate), { locale: es });
   const end = endOfWeek(endOfMonth(currentDate), { locale: es });
@@ -144,13 +151,6 @@ export function SessionsCalendar() {
     }, {} as Record<string, Session[]>);
   }, [sessions]);
 
-  const selectedDaySessions = React.useMemo(() => {
-    const dayKey = format(selectedDate, "yyyy-MM-dd");
-    return (sessionsByDay[dayKey] || []).sort(
-      (a, b) => a.date.getTime() - b.date.getTime()
-    );
-  }, [selectedDate, sessionsByDay]);
-
   const months = Array.from({ length: 12 }, (_, i) => 
     format(new Date(currentDate.getFullYear(), i), "MMMM", { locale: es })
   );
@@ -167,6 +167,14 @@ export function SessionsCalendar() {
         return "bg-gray-400/80";
     }
   };
+  
+  const statusDetails: { [key in Session['status']]: { icon: React.ElementType, color: string, text: string } } = {
+    Confirmada: { icon: CheckCircle, color: "text-green-500", text: "Confirmada" },
+    Pendiente: { icon: HelpCircle, color: "text-yellow-500", text: "Pendiente" },
+    Cancelada: { icon: XCircle, color: "text-red-500", text: "Cancelada" },
+  };
+
+  const IconComponent = selectedSession ? statusDetails[selectedSession.status].icon : null;
 
   return (
     <>
@@ -241,8 +249,9 @@ export function SessionsCalendar() {
                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
                               <div
                                 key={session.id}
+                                onClick={() => handleSessionClick(session)}
                                 className={cn(
-                                  "text-xs leading-tight rounded-md px-2 py-1 text-white",
+                                  "text-xs leading-tight rounded-md px-2 py-1 text-white truncate cursor-pointer",
                                   getStatusColor(session.status)
                                 )}
                                 title={session.patientName}
@@ -280,6 +289,43 @@ export function SessionsCalendar() {
             onCancel={() => setIsFormOpen(false)}
             initialDate={selectedDate}
           />
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent>
+          {selectedSession && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Detalles de la Sesión</DialogTitle>
+                <DialogDescription>
+                   {format(selectedSession.date, "eeee, d 'de' MMMM, yyyy", { locale: es })}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="flex items-center gap-4">
+                  <User className="w-5 h-5 text-muted-foreground" />
+                  <span className="font-medium">{selectedSession.patientName}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Clock className="w-5 h-5 text-muted-foreground" />
+                  <span>{format(selectedSession.date, "p", { locale: es })}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Tag className="w-5 h-5 text-muted-foreground" />
+                  <Badge variant="outline">{selectedSession.type}</Badge>
+                </div>
+                <div className="flex items-center gap-4">
+                  {IconComponent && (
+                     <IconComponent className={cn("w-5 h-5", statusDetails[selectedSession.status].color)} />
+                  )}
+                  <span className={cn("font-semibold", statusDetails[selectedSession.status].color)}>
+                    {statusDetails[selectedSession.status].text}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </>
