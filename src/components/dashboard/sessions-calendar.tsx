@@ -216,10 +216,10 @@ export function SessionsCalendar() {
                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
                               <div
                                 key={session.id}
-                                className="bg-primary/80 text-primary-foreground text-[10px] rounded-sm px-1.5 py-0.5 truncate"
+                                className="bg-primary/80 text-primary-foreground text-[10px] rounded-lg px-2 py-1 truncate"
                                 title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
                               >
-                                <span className="font-bold">{format(session.date, "HH:mm")}</span> {session.patientName}
+                                {format(session.date, "HH:mm")} {session.patientName}
                               </div>
                             ))}
                            {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 3 && (
