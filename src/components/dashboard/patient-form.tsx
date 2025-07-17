@@ -14,13 +14,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  age: z.coerce.number().min(0, { message: "Age must be a positive number." }),
-  medicalHistory: z.string().min(10, { message: "Medical history must be at least 10 characters." }),
-  notes: z.string().optional(),
+  name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
+  email: z.string().email({ message: "Introduce un correo electrónico válido." }),
+  phone: z.string().min(10, { message: "El teléfono debe tener al menos 10 caracteres." }),
+  nextSession: z.string().optional().nullable(),
+  status: z.enum(["Activo", "Inactivo"]),
 });
 
 type PatientFormValues = z.infer<typeof formSchema>;
@@ -36,9 +43,10 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: patient?.name || "",
-      age: patient?.age || 0,
-      medicalHistory: patient?.medicalHistory || "",
-      notes: patient?.notes || "",
+      email: patient?.email || "",
+      phone: patient?.phone || "",
+      nextSession: patient?.nextSession || "",
+      status: patient?.status || "Activo",
     },
   });
 
@@ -50,9 +58,9 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Name</FormLabel>
+              <FormLabel>Nombre Completo</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder="Isabella Rossi" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -60,12 +68,12 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
         />
         <FormField
           control={form.control}
-          name="age"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Age</FormLabel>
+              <FormLabel>Correo Electrónico</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="42" {...field} />
+                <Input type="email" placeholder="isabella.rossi@example.com" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -73,12 +81,12 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
         />
         <FormField
           control={form.control}
-          name="medicalHistory"
+          name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Medical History</FormLabel>
+              <FormLabel>Teléfono</FormLabel>
               <FormControl>
-                <Textarea placeholder="e.g., Hypertension, Type 2 Diabetes" {...field} />
+                <Input placeholder="+57 310 123 4567" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -86,20 +94,41 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
         />
         <FormField
           control={form.control}
-          name="notes"
+          name="nextSession"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Additional Notes</FormLabel>
+              <FormLabel>Próxima Sesión (opcional)</FormLabel>
               <FormControl>
-                <Textarea placeholder="Optional notes about the patient..." {...field} />
+                <Input type="datetime-local" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-            <Button type="submit">Save</Button>
+         <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Estado</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un estado" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Activo">Activo</SelectItem>
+                  <SelectItem value="Inactivo">Inactivo</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="flex justify-end gap-2 pt-4">
+            <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+            <Button type="submit">Guardar</Button>
         </div>
       </form>
     </Form>

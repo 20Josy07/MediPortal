@@ -75,7 +75,7 @@ export function DashboardSidebar() {
               asChild
               isActive={pathname === "/dashboard/patients"}
             >
-              <Link href="#">
+              <Link href="/dashboard/patients">
                 <Users />
                 Pacientes
               </Link>
