@@ -130,7 +130,7 @@ export function DashboardSidebar() {
               asChild
               isActive={pathname === "/dashboard/billing"}
             >
-              <Link href="#">
+              <Link href="/dashboard/billing">
                 <CreditCard />
                 Facturación
               </Link>
