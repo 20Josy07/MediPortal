@@ -289,14 +289,6 @@ export function SessionsCalendar() {
                       <p className="text-sm text-muted-foreground">
                         {format(session.date, "p", { locale: es })}
                       </p>
-                      <div className="flex justify-between items-center mt-1">
-                         <p className="text-sm capitalize">
-                          {session.type}
-                        </p>
-                        <p className="text-sm capitalize">
-                          {session.status}
-                        </p>
-                      </div>
                     </div>
                   ))}
                 </div>
