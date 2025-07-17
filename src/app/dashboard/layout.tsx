@@ -35,7 +35,7 @@ export default function DashboardLayout({
       <DashboardSidebar />
       <SidebarInset>
         <DashboardNavbar />
-        <main className="flex-1 space-y-4 p-4 md:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-8">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

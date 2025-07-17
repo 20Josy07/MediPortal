@@ -146,9 +146,7 @@ export function SessionsCalendar() {
   
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-3xl font-bold tracking-tight">Mi Agenda</h2>
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-end mb-6 gap-4">
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -174,7 +172,6 @@ export function SessionsCalendar() {
             Hoy
           </Button>
           <Button onClick={() => setIsFormOpen(true)}>Agendar Nueva Sesión</Button>
-        </div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Card className="lg:col-span-2">

@@ -12,6 +12,7 @@ import {
   Shield,
   BookOpen,
 } from "lucide-react";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 const collections = [
   {
@@ -55,11 +56,7 @@ const collections = [
 export default function DocumentsPage() {
   return (
     <div className="flex-1 space-y-8">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Mis Documentos de Práctica
-        </h2>
-      </div>
+      <DashboardHeader title="Mis Documentos de Práctica" />
 
       <div className="flex items-center gap-4">
         <div className="relative flex-1">

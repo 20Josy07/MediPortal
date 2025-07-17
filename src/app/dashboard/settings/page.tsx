@@ -1,12 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 export default function SettingsPage() {
   return (
     <div className="flex-1 space-y-4">
+      <DashboardHeader title="Configuración" />
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Configuración
-        </h2>
         <p className="text-muted-foreground">
           Gestiona la configuración de tu cuenta y de la aplicación.
         </p>

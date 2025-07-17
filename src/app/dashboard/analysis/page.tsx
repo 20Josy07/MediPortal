@@ -10,14 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, ArrowUp, Mic, FileText, Eye } from "lucide-react";
 import { MostFrequentTopicsChart } from "@/components/dashboard/analysis/most-frequent-topics-chart";
 import { EmotionalTrendsChart } from "@/components/dashboard/analysis/emotional-trends-chart";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 export default function AnalysisPage() {
   return (
     <div className="flex-1 space-y-4">
+      <DashboardHeader title="Análisis de la Práctica (IA)" />
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Análisis de la Práctica (IA)
-        </h2>
         <p className="text-muted-foreground">
           Insights agregados de todos los pacientes para una visión global.
         </p>

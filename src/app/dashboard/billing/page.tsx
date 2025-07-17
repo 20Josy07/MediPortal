@@ -26,6 +26,7 @@ import {
   Search,
   Send,
 } from "lucide-react";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 const invoices = [
   {
@@ -73,24 +74,20 @@ const statusIcons: { [key: string]: React.ElementType } = {
 export default function BillingPage() {
   return (
     <div className="flex-1 space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Gestión Financiera
-        </h2>
-        <div className="flex items-center space-x-4">
-          <div className="relative flex-1 max-w-xs">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Buscar..." className="pl-10" />
-          </div>
-          <Button variant="outline">
-            <Plus className="mr-2 h-4 w-4" />
-            Registrar Gasto
-          </Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Nueva Factura
-          </Button>
+      <DashboardHeader title="Gestión Financiera" />
+      <div className="flex items-center justify-end space-x-4">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input placeholder="Buscar..." className="pl-10" />
         </div>
+        <Button variant="outline">
+          <Plus className="mr-2 h-4 w-4" />
+          Registrar Gasto
+        </Button>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Nueva Factura
+        </Button>
       </div>
 
       <Tabs defaultValue="invoices">

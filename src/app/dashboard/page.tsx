@@ -15,15 +15,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 export default function DashboardPage() {
   return (
     <div className="flex-1 space-y-4">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Dashboard Principal
-        </h2>
-      </div>
+      <DashboardHeader title="Dashboard Principal" />
       <div className="space-y-4">
         <h3 className="mb-4 text-xl font-semibold">Resumen de la semana</h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
