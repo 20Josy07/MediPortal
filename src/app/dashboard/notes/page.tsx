@@ -469,21 +469,20 @@ export default function SmartNotesPage() {
                         <div
                           key={note.id}
                           onClick={() => handleViewNote(note)}
-                          className="flex items-center justify-between p-3 rounded-md hover:bg-muted/50 cursor-pointer"
+                          className="flex items-start p-3 rounded-md hover:bg-muted/50 cursor-pointer"
                         >
-                          <div className="flex items-center gap-3">
-                            <FileText className="h-5 w-5 text-muted-foreground" />
-                            <div className="flex-1 overflow-hidden">
-                              <p className="font-semibold truncate">{note.title}</p>
-                              <p className="text-xs text-muted-foreground">{note.type}</p>
-                            </div>
+                          <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
+                          <div className="flex-1 ml-3 overflow-hidden">
+                            <p className="font-semibold truncate">{note.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {note.type}
+                              {' | '}
+                              {formatDistanceToNow(note.createdAt, {
+                                addSuffix: true,
+                                locale: es,
+                              })}
+                            </p>
                           </div>
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">
-                            {formatDistanceToNow(note.createdAt, {
-                              addSuffix: true,
-                              locale: es,
-                            })}
-                          </span>
                         </div>
                       ))
                     ) : (
@@ -532,7 +531,7 @@ export default function SmartNotesPage() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                      <AlertDialogTitle>¿Estás absolutely seguro?</AlertDialogTitle>
                       <AlertDialogDescription>
                         Esta acción no se puede deshacer. Esto eliminará permanentemente tu nota.
                       </AlertDialogDescription>
@@ -555,3 +554,4 @@ export default function SmartNotesPage() {
     </>
   );
 }
+
