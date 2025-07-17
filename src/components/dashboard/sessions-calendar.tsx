@@ -120,7 +120,7 @@ export function SessionsCalendar() {
   const start = startOfWeek(startOfMonth(currentDate), { locale: es });
   const end = endOfWeek(endOfMonth(currentDate), { locale: es });
   const days = eachDayOfInterval({ start, end });
-  const weekdays = ["lu", "ma", "mi", "ju", "vi", "sá", "do"];
+  const weekdays = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
   const sessionsByDay = React.useMemo(() => {
     return sessions.reduce((acc, session) => {
@@ -147,13 +147,13 @@ export function SessionsCalendar() {
   const getStatusColor = (status: "Confirmada" | "Pendiente" | "Cancelada") => {
     switch (status) {
       case "Confirmada":
-        return "bg-green-200 text-green-900";
+        return "bg-green-300 text-green-900 shadow-sm";
       case "Pendiente":
-        return "bg-yellow-200 text-yellow-900";
+        return "bg-yellow-300 text-yellow-900 shadow-sm";
       case "Cancelada":
-        return "bg-red-200 text-red-900";
+        return "bg-red-300 text-red-900 shadow-sm";
       default:
-        return "bg-gray-200 text-gray-900";
+        return "bg-gray-300 text-gray-900 shadow-sm";
     }
   };
 
@@ -230,7 +230,7 @@ export function SessionsCalendar() {
                               <div
                                 key={session.id}
                                 className={cn(
-                                  "text-[10px] rounded-sm px-2 py-1 shadow-sm break-words",
+                                  "text-[10px] rounded-sm px-2 py-1 break-words",
                                   getStatusColor(session.status)
                                 )}
                                 title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
