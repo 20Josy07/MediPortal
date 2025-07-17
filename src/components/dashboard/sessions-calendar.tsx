@@ -216,7 +216,7 @@ export function SessionsCalendar() {
                           {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
                               <div
                                 key={session.id}
-                                className="bg-primary/80 text-primary-foreground text-[10px] rounded-lg px-2 py-1 truncate"
+                                className="bg-yellow-200 text-yellow-900 text-[10px] rounded-sm px-2 py-1 truncate shadow-sm"
                                 title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
                               >
                                 {format(session.date, "HH:mm")} {session.patientName}
