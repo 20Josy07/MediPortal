@@ -457,7 +457,7 @@ export default function SmartNotesPage() {
                     : "Selecciona un paciente para ver sus notas"}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow p-2 overflow-hidden">
+              <CardContent className="p-2 overflow-hidden flex-grow">
                 <ScrollArea className="h-full">
                   <div className="space-y-2 p-2">
                     {isLoading ? (
