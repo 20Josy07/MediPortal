@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -11,15 +12,15 @@ export default function SmartNotesPage() {
   return (
     <div className="flex-1 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Smart Notes</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Notas Inteligentes</h1>
         <p className="text-muted-foreground">
-          AI-powered transcription and SOAP note generation
+          Transcripción y generación de notas SOAP con IA
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Voice Recording</CardTitle>
+          <CardTitle>Grabación de Voz</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center gap-4 p-8">
@@ -30,7 +31,7 @@ export default function SmartNotesPage() {
             >
               <Mic className="h-10 w-10" />
             </Button>
-            <p className="text-muted-foreground">Start Recording</p>
+            <p className="text-muted-foreground">Iniciar Grabación</p>
           </div>
         </CardContent>
       </Card>
