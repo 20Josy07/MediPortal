@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
+import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
 import { addNote, updateNote, deleteNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -30,10 +31,10 @@ if (typeof window !== 'undefined') {
   pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 }
 
-const aiChatHistory = [
-    { from: "user", text: "Resume la última sesión con el paciente Carlos Vega." },
-    { from: "ai", text: "Claro. Durante la última sesión, Carlos Vega expresó una notable disminución en sus niveles de ansiedad laboral. Mencionó haber aplicado con éxito las técnicas de mindfulness discutidas. Sin embargo, señaló la persistencia de conflictos de comunicación con su pareja, identificando este como el principal foco para la próxima sesión." },
-];
+type ChatMessage = {
+  from: "user" | "ai";
+  text: string;
+};
 
 export default function SmartNotesPage() {
   const { user, db, loading: authLoading } = useAuth();
@@ -53,11 +54,16 @@ export default function SmartNotesPage() {
   const [editableNoteContent, setEditableNoteContent] = useState("");
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
   const [isFileProcessing, setIsFileProcessing] = useState(false);
+  
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const chatScrollAreaRef = useRef<HTMLDivElement>(null);
 
 
   useEffect(() => {
@@ -114,6 +120,15 @@ export default function SmartNotesPage() {
     };
     fetchNotes();
   }, [selectedPatientId, user, db, toast]);
+
+  useEffect(() => {
+    if (chatScrollAreaRef.current) {
+        chatScrollAreaRef.current.scrollTo({
+            top: chatScrollAreaRef.current.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+  }, [chatHistory]);
 
 
   const startRecording = async () => {
@@ -308,6 +323,37 @@ export default function SmartNotesPage() {
       }
     }
   };
+  
+  const handleAiChatSubmit = async () => {
+    if (!chatInput.trim()) return;
+    if (!selectedPatientId || notes.length === 0) {
+      toast({ variant: "destructive", title: "No hay notas para analizar.", description: "Selecciona un paciente con notas." });
+      return;
+    }
+
+    const newUserMessage: ChatMessage = { from: 'user', text: chatInput };
+    setChatHistory(prev => [...prev, newUserMessage]);
+    setChatInput("");
+    setIsAiLoading(true);
+
+    try {
+      const notesContent = notes.map(n => `Nota: ${n.title}\nContenido: ${n.content}`).join('\n\n---\n\n');
+      const result = await chatWithNotes({ question: chatInput, notesContent });
+      
+      if (result.answer) {
+        const newAiMessage: ChatMessage = { from: 'ai', text: result.answer };
+        setChatHistory(prev => [...prev, newAiMessage]);
+      }
+    } catch (error) {
+      console.error("AI chat error:", error);
+      toast({ variant: "destructive", title: "Error del asistente de IA." });
+      const errorAiMessage: ChatMessage = { from: 'ai', text: "Lo siento, no pude procesar tu solicitud." };
+      setChatHistory(prev => [...prev, errorAiMessage]);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
 
   const formatTime = (timeInSeconds: number) => {
     const minutes = Math.floor(timeInSeconds / 60).toString().padStart(2, '0');
@@ -418,27 +464,57 @@ export default function SmartNotesPage() {
                   <CardHeader>
                       <CardTitle className="flex items-center gap-2"><Bot className="h-6 w-6" /> Asistente de IA</CardTitle>
                       <CardDescription>
-                          Pide resúmenes, análisis o ideas.
+                          Pide resúmenes, análisis o ideas sobre las notas del paciente seleccionado.
                       </CardDescription>
                   </CardHeader>
                   <CardContent>
-                      <ScrollArea className="h-64 w-full rounded-md border p-4 mb-4">
+                      <ScrollArea className="h-64 w-full rounded-md border p-4 mb-4" ref={chatScrollAreaRef}>
                         <div className="space-y-4">
-                            {aiChatHistory.map((message, index) => (
+                            {chatHistory.length === 0 && (
+                              <div className="flex justify-center items-center h-full">
+                                <p className="text-muted-foreground text-sm">El historial del chat aparecerá aquí.</p>
+                              </div>
+                            )}
+                            {chatHistory.map((message, index) => (
                                 <div key={index} className={`flex items-start gap-3 ${message.from === 'user' ? 'justify-end' : ''}`}>
-                                    {message.from === 'ai' && <div className="bg-primary rounded-full p-2"><Bot className="h-5 w-5 text-primary-foreground" /></div>}
+                                    {message.from === 'ai' && <div className="bg-primary rounded-full p-2 flex-shrink-0"><Bot className="h-5 w-5 text-primary-foreground" /></div>}
                                     <div className={`rounded-lg p-3 max-w-[85%] text-sm ${message.from === 'user' ? 'bg-muted' : 'bg-card'}`}>
                                         <p>{message.text}</p>
                                     </div>
-                                    {message.from === 'user' && <div className="bg-muted rounded-full p-2"><User className="h-5 w-5" /></div>}
+                                    {message.from === 'user' && <div className="bg-muted rounded-full p-2 flex-shrink-0"><User className="h-5 w-5" /></div>}
                                 </div>
                             ))}
+                            {isAiLoading && (
+                              <div className="flex items-start gap-3">
+                                <div className="bg-primary rounded-full p-2 flex-shrink-0"><Bot className="h-5 w-5 text-primary-foreground" /></div>
+                                <div className="rounded-lg p-3 max-w-[85%] text-sm bg-card flex items-center">
+                                  <Loader2 className="h-4 w-4 animate-spin"/>
+                                </div>
+                              </div>
+                            )}
                         </div>
                       </ScrollArea>
                       <div className="relative">
-                          <Textarea placeholder="Pregúntale algo a la IA..." className="pr-16" />
-                          <Button size="icon" className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8">
-                              <Send className="h-4 w-4" />
+                          <Textarea 
+                            placeholder={!selectedPatientId ? "Selecciona un paciente para chatear" : "Pregúntale algo a la IA..."} 
+                            className="pr-16" 
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleAiChatSubmit();
+                              }
+                            }}
+                            disabled={!selectedPatientId || isAiLoading}
+                          />
+                          <Button 
+                            size="icon" 
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8"
+                            onClick={handleAiChatSubmit}
+                            disabled={!selectedPatientId || isAiLoading || !chatInput.trim()}
+                          >
+                              {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                           </Button>
                       </div>
                   </CardContent>
@@ -554,4 +630,3 @@ export default function SmartNotesPage() {
     </>
   );
 }
-
