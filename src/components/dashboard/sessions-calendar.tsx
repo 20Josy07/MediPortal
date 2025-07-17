@@ -158,13 +158,13 @@ export function SessionsCalendar() {
   const getStatusColor = (status: "Confirmada" | "Pendiente" | "Cancelada") => {
     switch (status) {
       case "Confirmada":
-        return "bg-green-500/80 text-white";
+        return "bg-green-500/80";
       case "Pendiente":
-        return "bg-yellow-400/80 text-white";
+        return "bg-yellow-400/80";
       case "Cancelada":
-        return "bg-red-500/80 text-white";
+        return "bg-red-500/80";
       default:
-        return "bg-gray-400/80 text-white";
+        return "bg-gray-400/80";
     }
   };
 
@@ -242,7 +242,7 @@ export function SessionsCalendar() {
                               <div
                                 key={session.id}
                                 className={cn(
-                                  "text-xs leading-tight rounded-md px-2 py-1 truncate",
+                                  "text-xs leading-tight rounded-md px-2 py-1 text-white",
                                   getStatusColor(session.status)
                                 )}
                                 title={session.patientName}
@@ -291,11 +291,9 @@ export function SessionsCalendar() {
                       </p>
                       <div className="flex justify-between items-center mt-1">
                          <p className="text-sm capitalize">
-                          <span className="text-muted-foreground">Tipo: </span>
                           {session.type}
                         </p>
                         <p className="text-sm capitalize">
-                          <span className="text-muted-foreground">Estado: </span>
                           {session.status}
                         </p>
                       </div>
