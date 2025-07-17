@@ -21,6 +21,7 @@ import {
   CreditCard,
   LifeBuoy,
   Home,
+  NotebookText,
 } from "lucide-react";
 
 export function DashboardSidebar() {
@@ -66,6 +67,17 @@ export function DashboardSidebar() {
               <Link href="/dashboard/sessions">
                 <Calendar />
                 Sesiones
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/notes"}
+            >
+              <Link href="#">
+                <NotebookText />
+                Notas
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
