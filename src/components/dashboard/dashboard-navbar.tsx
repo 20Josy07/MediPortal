@@ -38,7 +38,7 @@ export function DashboardNavbar() {
   const getTitle = () => {
     const segments = pathname.split('/').filter(Boolean);
     if (segments.length === 1 && segments[0] === 'dashboard') {
-      return 'Dashboard Principal';
+      return 'Principal';
     }
     if (segments.length > 1) {
       const lastSegment = segments[segments.length - 1];
@@ -53,7 +53,10 @@ export function DashboardNavbar() {
          <div className="hidden md:block">
           <SidebarTrigger />
         </div>
-        <h1 className="text-lg font-semibold">{getTitle()}</h1>
+        <h1 className="text-lg font-semibold whitespace-nowrap">
+          {pathname.includes('/dashboard') && !pathname.endsWith('/dashboard') ? 'Dashboard / ' : 'Dashboard '}
+          {getTitle()}
+        </h1>
       </div>
      
       <div className="flex w-full items-center justify-end gap-4">
