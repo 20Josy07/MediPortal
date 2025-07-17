@@ -148,8 +148,9 @@ export default function DashboardPage() {
                     <Badge className="bg-green-600/90">Confirmada</Badge>
                   </TableCell>
                   <TableCell>
-                    <Button variant="outline" size="icon" className="h-9 w-9">
-                      <Video className="h-4 w-4" />
+                    <Button variant="outline" size="sm">
+                      <Video className="mr-2 h-4 w-4" />
+                      Join
                     </Button>
                   </TableCell>
                 </TableRow>
