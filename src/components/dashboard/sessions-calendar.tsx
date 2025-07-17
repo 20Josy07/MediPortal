@@ -16,10 +16,15 @@ import {
   endOfWeek,
   isSameMonth,
   isSameDay,
-  setMonth
+  setMonth,
+  addMonths,
+  subMonths,
+  getHours,
+  getMinutes,
+  isSameWeek,
 } from "date-fns";
 import { es } from "date-fns/locale";
-import { Clock, User, Tag, CheckCircle, HelpCircle, XCircle, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, User, Tag, CheckCircle, HelpCircle, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -159,13 +164,13 @@ export function SessionsCalendar() {
   const getStatusColor = (status: "Confirmada" | "Pendiente" | "Cancelada") => {
     switch (status) {
       case "Confirmada":
-        return "bg-green-500/80";
+        return "bg-green-500/80 hover:bg-green-500";
       case "Pendiente":
-        return "bg-yellow-400/80";
+        return "bg-yellow-400/80 hover:bg-yellow-400";
       case "Cancelada":
-        return "bg-red-500/80";
+        return "bg-red-500/80 hover:bg-red-500";
       default:
-        return "bg-gray-400/80";
+        return "bg-gray-400/80 hover:bg-gray-400";
     }
   };
   
@@ -228,78 +233,170 @@ export function SessionsCalendar() {
     </>
   );
 
-  const renderWeekView = () => (
-    <div className="flex h-full items-center justify-center">
-      <p className="text-muted-foreground">Vista de Semana (Próximamente)</p>
-    </div>
-  );
+  const renderWeekView = () => {
+    const weekDays = eachDayOfInterval({
+      start: startOfWeek(currentDate, { locale: es }),
+      end: endOfWeek(currentDate, { locale: es }),
+    });
+
+    const timeSlots = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM
+
+    const weekSessions = sessions.filter(session => isSameWeek(session.date, currentDate, { locale: es }));
+  
+    return (
+      <div className="grid grid-cols-[auto,1fr] h-full overflow-y-auto">
+        {/* Time column */}
+        <div className="grid-rows-[auto,1fr]">
+            <div className="h-10"></div> {/* Spacer for header */}
+            <div className="relative">
+                {timeSlots.map((hour) => (
+                    <div key={hour} className="h-16 flex items-start justify-end pr-2 text-xs text-muted-foreground relative -top-2">
+                        <span>{format(new Date(0,0,0,hour), 'h a')}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+
+        {/* Days columns */}
+        <div className="grid grid-cols-7">
+          {weekDays.map((day, dayIndex) => (
+            <div key={day.toString()} className="border-l border-border relative">
+              <div className="sticky top-0 bg-background z-10 h-10 flex flex-col items-center justify-center border-b border-border">
+                <span className="text-xs text-muted-foreground uppercase">{format(day, 'E', { locale: es })}</span>
+                <span className={cn("text-lg font-bold", isSameDay(day, new Date()) && "text-primary")}>{format(day, 'd')}</span>
+              </div>
+              <div className="relative">
+                {/* Grid lines */}
+                {timeSlots.map((hour) => (
+                  <div key={hour} className="h-16 border-b border-border"></div>
+                ))}
+
+                {/* Sessions */}
+                {weekSessions
+                  .filter(session => isSameDay(session.date, day))
+                  .map(session => {
+                      const startHour = getHours(session.date);
+                      const startMinute = getMinutes(session.date);
+                      const top = ((startHour - 7) * 64) + (startMinute / 60 * 64);
+                      const height = 64; // Assuming 1-hour sessions
+
+                      return (
+                          <div
+                            key={session.id}
+                            onClick={() => handleSessionClick(session)}
+                            className={cn(
+                                "absolute w-[calc(100%-4px)] left-[2px] rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex flex-col overflow-hidden",
+                                getStatusColor(session.status)
+                            )}
+                            style={{ top: `${top}px`, height: `${height}px` }}
+                          >
+                            <span className="font-bold truncate">{session.patientName}</span>
+                            <span className="truncate">{session.type}</span>
+                          </div>
+                      )
+                  })
+                }
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
 
   const renderDayView = () => (
      <div className="flex h-full items-center justify-center">
       <p className="text-muted-foreground">Vista de Día (Próximamente)</p>
     </div>
   );
+  
+  const changeMonth = (amount: number) => {
+      setCurrentDate(prev => amount > 0 ? addMonths(prev, 1) : subMonths(prev, 1));
+  }
 
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-         <Tabs defaultValue="month" onValueChange={(value) => setView(value as any)} className="w-auto">
-            <TabsList className="h-8">
-              <TabsTrigger value="month" className="h-6 px-2 text-xs">Mes</TabsTrigger>
-              <TabsTrigger value="week" className="h-6 px-2 text-xs">Semana</TabsTrigger>
-              <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
-            </TabsList>
-         </Tabs>
-         <Button
-            onClick={() => setIsFormOpen(true)}
-            className="h-9 text-sm"
-          >
-            Agendar
-          </Button>
+         <div className="flex items-center gap-4">
+             <span className="text-xl font-bold">
+                 {format(currentDate, "MMMM yyyy", { locale: es })}
+             </span>
+              <div className="flex items-center gap-1">
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => changeMonth(-1)}>
+                    <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => changeMonth(1)}>
+                    <ChevronRight className="h-4 w-4" />
+                </Button>
+                 <Button variant="outline" className="h-8 px-3" onClick={() => setCurrentDate(new Date())}>
+                    Hoy
+                </Button>
+              </div>
+         </div>
+         <div className="flex items-center gap-4">
+            <Tabs defaultValue="month" onValueChange={(value) => setView(value as any)} className="w-auto">
+                <TabsList className="h-8">
+                <TabsTrigger value="month" className="h-6 px-2 text-xs">Mes</TabsTrigger>
+                <TabsTrigger value="week" className="h-6 px-2 text-xs">Semana</TabsTrigger>
+                <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
+                </TabsList>
+            </Tabs>
+            <Button
+                onClick={() => setIsFormOpen(true)}
+                className="h-9 text-sm"
+            >
+                Agendar
+            </Button>
+         </div>
       </div>
 
-      <Card className="h-full">
-        <div className="grid grid-cols-12 h-full">
-          <div className="col-span-3 lg:col-span-2 p-2 border-r flex flex-col">
-            <CardHeader className="p-2">
-                <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-2 flex-grow">
-                <div className="flex flex-col gap-1">
-                    {months.map((month, index) => (
-                        <Button 
-                            key={month}
-                            variant={format(currentDate, 'M') === String(index + 1) ? "default" : "ghost"}
-                            className="capitalize w-full justify-start text-sm h-8"
-                            onClick={() => setCurrentDate(setMonth(currentDate, index))}
-                        >
-                            {month}
-                        </Button>
-                    ))}
-                </div>
-            </CardContent>
-          </div>
-          <div className="col-span-9 lg:col-span-10 p-4">
+      <Card className="h-full flex-grow overflow-hidden">
+        <CardContent className="p-0 h-full">
             {isLoading ? (
               <div className="flex justify-center items-center h-[560px]">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : (
                 <>
-                  <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-4">
-                    {weekdays.map((day) => (
-                      <div key={day} className="font-medium capitalize">
-                        {day}
-                      </div>
-                    ))}
-                  </div>
-                  {view === 'month' && renderMonthView()}
+                  {view === 'month' && (
+                     <div className="grid grid-cols-12 h-full">
+                        <div className="col-span-3 lg:col-span-2 p-2 border-r flex flex-col">
+                           <CardHeader className="p-2">
+                               <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
+                           </CardHeader>
+                           <CardContent className="p-2 flex-grow">
+                               <div className="flex flex-col gap-1">
+                                   {months.map((month, index) => (
+                                       <Button 
+                                           key={month}
+                                           variant={format(currentDate, 'M') === String(index + 1) ? "default" : "ghost"}
+                                           className="capitalize w-full justify-start text-sm h-8"
+                                           onClick={() => setCurrentDate(setMonth(currentDate, index))}
+                                       >
+                                           {month}
+                                       </Button>
+                                   ))}
+                               </div>
+                           </CardContent>
+                        </div>
+                        <div className="col-span-9 lg:col-span-10 p-4">
+                            <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground mb-4">
+                                {weekdays.map((day) => (
+                                <div key={day} className="font-medium capitalize">
+                                    {day}
+                                </div>
+                                ))}
+                            </div>
+                            {renderMonthView()}
+                        </div>
+                    </div>
+                  )}
                   {view === 'week' && renderWeekView()}
                   {view === 'day' && renderDayView()}
                 </>
             )}
-          </div>
-        </div>
+        </CardContent>
       </Card>
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
