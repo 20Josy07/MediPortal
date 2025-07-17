@@ -93,7 +93,7 @@ export function SessionsCalendar() {
     fetchData();
   }, [user, db, authLoading, toast]);
 
-  const handleFormSubmit = async (data: Omit<Session, "id">) => {
+  const handleFormSubmit = async (data: Omit<Session, "id" | "patientName">) => {
     if (!user || !db) {
       toast({
         variant: "destructive",
@@ -101,10 +101,21 @@ export function SessionsCalendar() {
       });
       return;
     }
+    const selectedPatient = patients.find(p => p.id === data.patientId);
+    if (!selectedPatient) {
+        toast({ variant: "destructive", title: "Paciente no encontrado."});
+        return;
+    }
+
+    const sessionData = {
+        ...data,
+        patientName: selectedPatient.name,
+    };
+
     try {
       const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
-      const docRef = await addDoc(sessionsCollection, data);
-      const newSession = { id: docRef.id, ...data };
+      const docRef = await addDoc(sessionsCollection, sessionData);
+      const newSession = { id: docRef.id, ...sessionData };
       setSessions([...sessions, newSession]);
       toast({ title: "Sesión agendada exitosamente." });
       setIsFormOpen(false);
@@ -165,7 +176,7 @@ export function SessionsCalendar() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-2">
-          <Card>
+            <Card>
               <CardHeader className="p-4">
                   <CardTitle className="text-center text-lg">{currentDate.getFullYear()}</CardTitle>
               </CardHeader>
@@ -230,7 +241,7 @@ export function SessionsCalendar() {
                               <div
                                 key={session.id}
                                 className={cn(
-                                  "text-[10px] rounded-sm px-2 py-1 break-words",
+                                  "text-[10px] rounded-sm px-1 py-0.5",
                                   getStatusColor(session.status)
                                 )}
                                 title={`${format(session.date, "p", { locale: es })} - ${session.patientName}`}
