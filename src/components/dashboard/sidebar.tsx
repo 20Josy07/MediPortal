@@ -108,7 +108,7 @@ export function DashboardSidebar() {
               asChild
               isActive={pathname === "/dashboard/metrics"}
             >
-              <Link href="#">
+              <Link href="/dashboard/metrics">
                 <LineChart />
                 Métricas
               </Link>
