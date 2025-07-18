@@ -8,11 +8,12 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Shield, Settings2, Mail, MessageSquare } from "lucide-react";
+import { User, Bell, Shield, Settings2, Mail, MessageSquare, Smartphone } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
 
 
 const NotificationSettings = () => (
@@ -79,6 +80,43 @@ const NotificationSettings = () => (
     </div>
 );
 
+const SecuritySettings = () => (
+    <div className="space-y-8">
+      <div>
+        <h4 className="text-base font-semibold mb-4">Contraseña</h4>
+        <div className="space-y-4 max-w-md">
+          <div className="space-y-2">
+            <Label htmlFor="current-password">Contraseña Actual</Label>
+            <Input id="current-password" type="password" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="new-password">Nueva Contraseña</Label>
+            <Input id="new-password" type="password" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-password">Confirmar Nueva Contraseña</Label>
+            <Input id="confirm-password" type="password" />
+          </div>
+          <Button>Actualizar Contraseña</Button>
+        </div>
+      </div>
+      <Separator />
+      <div>
+        <h4 className="text-base font-semibold mb-4">Autenticación de Dos Factores</h4>
+        <div className="flex items-center justify-between max-w-md">
+           <div className="flex items-start gap-3">
+            <Smartphone className="h-5 w-5 text-muted-foreground mt-1" />
+            <div>
+              <Label htmlFor="2fa-switch" className="font-semibold">Habilitar 2FA</Label>
+              <p className="text-sm text-muted-foreground">Añade una capa extra de seguridad a tu cuenta.</p>
+            </div>
+          </div>
+          <Switch id="2fa-switch" />
+        </div>
+      </div>
+    </div>
+);
+
 
 const settingsItems = [
   {
@@ -97,7 +135,7 @@ const settingsItems = [
     icon: Shield,
     title: "Seguridad",
     description: "Gestiona la configuración de seguridad de tu cuenta",
-    content: "Aquí puedes gestionar la configuración de seguridad.",
+    content: <SecuritySettings />,
   },
   {
     icon: Settings2,
