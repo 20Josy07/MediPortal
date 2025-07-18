@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { BrainCircuit } from "lucide-react";
 
 const icon = (name: string) => `https://img.icons8.com/ios-filled/50/ffffff/${name}.png`;
 
@@ -13,8 +15,8 @@ export default function Home() {
       <header className="navbar">
         <div className="navbar-left">
             <div className="logo">
-                <Image src="https://i.postimg.cc/59L8Lbsj/og-image.png" alt="Alumbra Logo" width={32} height={32} className="logo-image" />
-                <span className="prototype-text">prototype</span>
+                <BrainCircuit className="h-8 w-8 text-white" />
+                <Badge variant="outline" className="border-white text-white font-bold tracking-wider">BETA</Badge>
             </div>
         </div>
         <nav className="navbar-right">
