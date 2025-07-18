@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Shield, KeyRound, Settings2 } from "lucide-react";
+import { User, Bell, Shield, Settings2 } from "lucide-react";
 
 const settingsItems = [
   {
@@ -30,12 +30,6 @@ const settingsItems = [
     content: "Aquí puedes gestionar la configuración de seguridad.",
   },
   {
-    icon: KeyRound,
-    title: "Claves API e Integraciones",
-    description: "Gestiona las conexiones con servicios de terceros",
-    content: "Aquí puedes gestionar tus claves API e integraciones.",
-  },
-    {
     icon: Settings2,
     title: "Configuración de la Clínica",
     description: "Configura la información y preferencias de la clínica",
