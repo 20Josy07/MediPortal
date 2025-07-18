@@ -16,7 +16,7 @@ export default function Home() {
         <div className="navbar-left">
             <div className="logo">
                 <Image src="https://i.postimg.cc/59L8Lbsj/og-image.png" alt="Alumbra Logo" width={32} height={32} className="logo-image" />
-                <Badge variant="outline" className="border-white text-white font-bold tracking-wider">BETA</Badge>
+                <span className="ml-2 text-xs font-semibold text-white border border-white/50 px-2 py-0.5 rounded-full">BETA</span>
             </div>
         </div>
         <nav className="navbar-right">
