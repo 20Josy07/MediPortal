@@ -8,7 +8,77 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Shield, Settings2 } from "lucide-react";
+import { User, Bell, Shield, Settings2, Mail, MessageSquare } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+
+
+const NotificationSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <h4 className="text-base font-semibold mb-4">Recordatorios de Citas</h4>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-start gap-3">
+              <Mail className="h-5 w-5 text-muted-foreground mt-1" />
+              <div>
+                <Label htmlFor="email-notifications" className="font-semibold">Notificaciones por Correo Electrónico</Label>
+                <p className="text-sm text-muted-foreground">Recibir recordatorios de citas por correo electrónico.</p>
+              </div>
+            </div>
+            <Switch id="email-notifications" defaultChecked />
+          </div>
+          <div className="flex items-center justify-between">
+             <div className="flex items-start gap-3">
+              <MessageSquare className="h-5 w-5 text-muted-foreground mt-1" />
+              <div>
+                <Label htmlFor="whatsapp-notifications" className="font-semibold">Notificaciones de WhatsApp</Label>
+                <p className="text-sm text-muted-foreground">Recibir recordatorios por WhatsApp.</p>
+              </div>
+            </div>
+            <Switch id="whatsapp-notifications" />
+          </div>
+        </div>
+      </div>
+      <Separator />
+       <div>
+        <h4 className="text-base font-semibold mb-4">Temporización de Recordatorios</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="first-reminder">Primer Recordatorio</Label>
+             <Select defaultValue="24h">
+              <SelectTrigger id="first-reminder">
+                <SelectValue placeholder="Seleccionar..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1h">1 hora antes</SelectItem>
+                <SelectItem value="12h">12 horas antes</SelectItem>
+                <SelectItem value="24h">24 horas antes</SelectItem>
+                 <SelectItem value="48h">48 horas antes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="second-reminder">Segundo Recordatorio</Label>
+            <Select defaultValue="1h">
+              <SelectTrigger id="second-reminder">
+                <SelectValue placeholder="Seleccionar..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Ninguno</SelectItem>
+                <SelectItem value="1h">1 hora antes</SelectItem>
+                <SelectItem value="2h">2 horas antes</SelectItem>
+                <SelectItem value="3h">3 horas antes</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+    </div>
+);
+
 
 const settingsItems = [
   {
@@ -21,7 +91,7 @@ const settingsItems = [
     icon: Bell,
     title: "Notificaciones",
     description: "Configura las preferencias de recordatorios y alertas",
-    content: "Aquí puedes gestionar tus preferencias de notificaciones.",
+    content: <NotificationSettings />,
   },
   {
     icon: Shield,
