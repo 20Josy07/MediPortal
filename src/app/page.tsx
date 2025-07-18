@@ -15,7 +15,7 @@ export default function Home() {
       <header className="navbar">
         <div className="navbar-left">
             <div className="logo">
-                <BrainCircuit className="h-8 w-8 text-white" />
+                <Image src="https://i.postimg.cc/59L8Lbsj/og-image.png" alt="Alumbra Logo" width={32} height={32} className="logo-image" />
                 <Badge variant="outline" className="border-white text-white font-bold tracking-wider">BETA</Badge>
             </div>
         </div>
