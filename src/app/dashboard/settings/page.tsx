@@ -13,33 +13,33 @@ import { User, Bell, Shield, KeyRound, Settings2 } from "lucide-react";
 const settingsItems = [
   {
     icon: User,
-    title: "Profile Settings",
-    description: "Manage your personal information",
-    content: "Here you can manage your profile settings.",
+    title: "Configuración del Perfil",
+    description: "Administra tu información personal",
+    content: "Aquí puedes gestionar la configuración de tu perfil.",
   },
   {
     icon: Bell,
-    title: "Notifications",
-    description: "Configure reminder and alert preferences",
-    content: "Here you can manage your notification preferences.",
+    title: "Notificaciones",
+    description: "Configura las preferencias de recordatorios y alertas",
+    content: "Aquí puedes gestionar tus preferencias de notificaciones.",
   },
   {
     icon: Shield,
-    title: "Security",
-    description: "Manage your account security settings",
-    content: "Here you can manage your security settings.",
+    title: "Seguridad",
+    description: "Gestiona la configuración de seguridad de tu cuenta",
+    content: "Aquí puedes gestionar la configuración de seguridad.",
   },
   {
     icon: KeyRound,
-    title: "API Keys & Integrations",
-    description: "Manage third-party service connections",
-    content: "Here you can manage your API keys and integrations.",
+    title: "Claves API e Integraciones",
+    description: "Gestiona las conexiones con servicios de terceros",
+    content: "Aquí puedes gestionar tus claves API e integraciones.",
   },
     {
     icon: Settings2,
-    title: "Clinic Settings",
-    description: "Configure clinic information and preferences",
-    content: "Here you can manage your clinic settings.",
+    title: "Configuración de la Clínica",
+    description: "Configura la información y preferencias de la clínica",
+    content: "Aquí puedes gestionar la configuración de tu clínica.",
   },
 ];
 
@@ -47,9 +47,9 @@ export default function SettingsPage() {
   return (
     <div className="flex-1 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Configuración</h1>
         <p className="text-muted-foreground mt-1">
-          Configure your account and application preferences
+          Configura tu cuenta y las preferencias de la aplicación
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export default function SettingsPage() {
       </Accordion>
 
       <div className="flex justify-end">
-        <Button>Save Changes</Button>
+        <Button>Guardar Cambios</Button>
       </div>
     </div>
   );
