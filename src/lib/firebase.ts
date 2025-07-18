@@ -1,3 +1,4 @@
+
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -112,21 +113,28 @@ export const updateUserProfileAndPhoto = async (
   profileData: Partial<UserProfile>,
   photoFile: File | null
 ) => {
-  let photoURL = user.photoURL;
+  const authUpdate: { displayName: string; photoURL?: string } = {
+    displayName: profileData.fullName!,
+  };
+  const firestoreUpdate: Partial<UserProfile> = { ...profileData };
 
   if (photoFile) {
-    photoURL = await uploadProfilePhoto(user.uid, photoFile);
+    const newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
+    authUpdate.photoURL = newPhotoURL;
+    firestoreUpdate.photoURL = newPhotoURL;
+  } else if (profileData.photoURL === null) {
+      // This case handles removing the photo if needed, though not implemented in UI
+      authUpdate.photoURL = '';
+      firestoreUpdate.photoURL = '';
   }
 
+
   // Update Firebase Auth profile
-  await updateProfile(user, {
-    displayName: profileData.fullName,
-    photoURL: photoURL,
-  });
+  await updateProfile(user, authUpdate);
 
   // Update Firestore profile
   const userDocRef = doc(db, `users/${user.uid}`);
-  await setDoc(userDocRef, { ...profileData, photoURL }, { merge: true });
+  await setDoc(userDocRef, firestoreUpdate, { merge: true });
 };
 
 
