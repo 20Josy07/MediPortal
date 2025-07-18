@@ -8,7 +8,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md rounded-2xl bg-background p-10 text-center shadow-[0_10px_30px_rgba(255,255,255,0.5)] backdrop-blur-sm">
         <div className="mb-8">
           <Image
-            src="/og-image.png"
+            src="https://i.postimg.cc/59L8Lbsj/og-image.png"
             alt="Logo Alumbra"
             width={100}
             height={100}

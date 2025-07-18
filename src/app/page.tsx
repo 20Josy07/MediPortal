@@ -13,7 +13,7 @@ export default function Home() {
       <header className="navbar">
         <div className="navbar-left">
             <div className="logo">
-                <Image src="/og-image.png" alt="Alumbra Logo" width={32} height={32} className="logo-image" />
+                <Image src="https://i.postimg.cc/59L8Lbsj/og-image.png" alt="Alumbra Logo" width={32} height={32} className="logo-image" />
                 <span className="prototype-text">prototype</span>
             </div>
         </div>

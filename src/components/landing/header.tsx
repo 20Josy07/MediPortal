@@ -16,7 +16,7 @@ export function LandingHeader() {
   return (
     <header className="px-4 lg:px-12 py-4 flex items-center justify-between bg-[#3D224E] border-b border-white/10 sticky top-0 z-50">
       <Link href="/" className="flex items-center gap-2" prefetch={false}>
-        <Image src="/og-image.png" alt="Alumbra Logo" width={32} height={32} />
+        <Image src="https://i.postimg.cc/59L8Lbsj/og-image.png" alt="Alumbra Logo" width={32} height={32} />
         <span className="font-bold border border-white/50 rounded-full px-3 py-1 text-sm">prototype</span>
       </Link>
       
@@ -45,7 +45,7 @@ export function LandingHeader() {
         </SheetTrigger>
         <SheetContent side="right" className="bg-background border-l-border">
           <Link href="/" className="mr-6 flex items-center gap-2 mb-6">
-             <Image src="/og-image.png" alt="Alumbra Logo" width={32} height={32} />
+             <Image src="https://i.postimg.cc/59L8Lbsj/og-image.png" alt="Alumbra Logo" width={32} height={32} />
              <span className="font-bold">Alumbra</span>
           </Link>
           <div className="grid gap-4 py-6">
