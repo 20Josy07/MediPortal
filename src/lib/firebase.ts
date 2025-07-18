@@ -113,30 +113,32 @@ export const updateUserProfileAndPhoto = async (
   profileData: Partial<UserProfile>,
   photoFile: File | null
 ) => {
+  // Data for Firestore update
   const firestoreUpdate: Partial<UserProfile> = { ...profileData };
-  let newPhotoURL: string | null = null;
+  
+  // Data for Auth profile update
+  const authUpdate: { displayName?: string; photoURL?: string } = {};
 
-  if (photoFile) {
-    newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
-    firestoreUpdate.photoURL = newPhotoURL;
-  }
-
-  // First, update Firestore, which is generally faster and more critical
-  const userDocRef = doc(db, `users/${user.uid}`);
-  await setDoc(userDocRef, firestoreUpdate, { merge: true });
-
-  // Prepare auth profile update
-  const authUpdate: { displayName: string; photoURL?: string } = {
-    displayName: profileData.fullName!,
-  };
-
-  if (newPhotoURL) {
-    authUpdate.photoURL = newPhotoURL;
+  if (profileData.fullName) {
+    authUpdate.displayName = profileData.fullName;
   }
   
-  // Now, update the Firebase Auth profile. This can sometimes be slower to propagate
-  // but won't block the UI from completing.
-  await updateProfile(user, authUpdate);
+  // If a new photo is provided, upload it and get the URL
+  if (photoFile) {
+    const newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
+    firestoreUpdate.photoURL = newPhotoURL;
+    authUpdate.photoURL = newPhotoURL;
+  }
+
+  // Perform updates only if there's something to update
+  if (Object.keys(firestoreUpdate).length > 0) {
+    const userDocRef = doc(db, `users/${user.uid}`);
+    await setDoc(userDocRef, firestoreUpdate, { merge: true });
+  }
+
+  if (Object.keys(authUpdate).length > 0) {
+    await updateProfile(user, authUpdate);
+  }
 };
 
 
