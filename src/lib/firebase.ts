@@ -113,28 +113,30 @@ export const updateUserProfileAndPhoto = async (
   profileData: Partial<UserProfile>,
   photoFile: File | null
 ) => {
+  const firestoreUpdate: Partial<UserProfile> = { ...profileData };
+  let newPhotoURL: string | null = null;
+
+  if (photoFile) {
+    newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
+    firestoreUpdate.photoURL = newPhotoURL;
+  }
+
+  // First, update Firestore, which is generally faster and more critical
+  const userDocRef = doc(db, `users/${user.uid}`);
+  await setDoc(userDocRef, firestoreUpdate, { merge: true });
+
+  // Prepare auth profile update
   const authUpdate: { displayName: string; photoURL?: string } = {
     displayName: profileData.fullName!,
   };
-  const firestoreUpdate: Partial<UserProfile> = { ...profileData };
 
-  if (photoFile) {
-    const newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
+  if (newPhotoURL) {
     authUpdate.photoURL = newPhotoURL;
-    firestoreUpdate.photoURL = newPhotoURL;
-  } else if (profileData.photoURL === null) {
-      // This case handles removing the photo if needed, though not implemented in UI
-      authUpdate.photoURL = '';
-      firestoreUpdate.photoURL = '';
   }
-
-
-  // Update Firebase Auth profile
+  
+  // Now, update the Firebase Auth profile. This can sometimes be slower to propagate
+  // but won't block the UI from completing.
   await updateProfile(user, authUpdate);
-
-  // Update Firestore profile
-  const userDocRef = doc(db, `users/${user.uid}`);
-  await setDoc(userDocRef, firestoreUpdate, { merge: true });
 };
 
 
