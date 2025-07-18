@@ -10,6 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/icons";
 import {
@@ -22,10 +25,16 @@ import {
   LifeBuoy,
   Home,
   NotebookText,
+  HelpCircle,
+  MessageSquare,
+  Video,
 } from "lucide-react";
+import * as React from 'react';
+
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const [open, setOpen] = React.useState(false);
 
   return (
     <Sidebar className="border-r">
@@ -127,18 +136,44 @@ export function DashboardSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="p-2 flex flex-col gap-2">
+       <SidebarFooter className="p-2 flex flex-col gap-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              asChild
-              isActive={pathname === "/dashboard/support"}
+              onClick={() => setOpen(!open)}
+              isActive={pathname.startsWith("/dashboard/support")}
             >
-              <Link href="#">
-                <LifeBuoy />
-                Ayuda/Soporte
-              </Link>
+              <LifeBuoy />
+              Ayuda/Soporte
             </SidebarMenuButton>
+             {open && (
+              <SidebarMenuSub>
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton asChild isActive={pathname === '/dashboard/support/quick-guide'}>
+                    <Link href="#">
+                      <HelpCircle />
+                      Guía rápida
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                <SidebarMenuSubItem>
+                   <SidebarMenuSubButton asChild isActive={pathname === '/dashboard/support/chat'}>
+                    <Link href="#">
+                      <MessageSquare />
+                      Soporte técnico / Chat
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+                 <SidebarMenuSubItem>
+                   <SidebarMenuSubButton asChild isActive={pathname === '/dashboard/support/tutorials'}>
+                    <Link href="#">
+                      <Video />
+                      Tutoriales en video
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              </SidebarMenuSub>
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
