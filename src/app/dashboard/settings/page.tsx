@@ -8,101 +8,34 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Shield, Settings2, Mail, MessageSquare, Smartphone } from "lucide-react";
+import { User, Bell, Shield, Settings2, CreditCard, Puzzle, KeyRound, Eye, Smartphone, Calendar, Video, MessageSquare, Mail, Banknote } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-
-const NotificationSettings = () => (
-    <div className="space-y-6">
-      <div>
-        <h4 className="text-base font-semibold mb-4">Recordatorios de Citas</h4>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-start gap-3">
-              <Mail className="h-5 w-5 text-muted-foreground mt-1" />
-              <div>
-                <Label htmlFor="email-notifications" className="font-semibold">Notificaciones por Correo Electrónico</Label>
-                <p className="text-sm text-muted-foreground">Recibir recordatorios de citas por correo electrónico.</p>
-              </div>
-            </div>
-            <Switch id="email-notifications" defaultChecked />
-          </div>
-          <div className="flex items-center justify-between">
-             <div className="flex items-start gap-3">
-              <MessageSquare className="h-5 w-5 text-muted-foreground mt-1" />
-              <div>
-                <Label htmlFor="whatsapp-notifications" className="font-semibold">Notificaciones de WhatsApp</Label>
-                <p className="text-sm text-muted-foreground">Recibir recordatorios por WhatsApp.</p>
-              </div>
-            </div>
-            <Switch id="whatsapp-notifications" />
-          </div>
-        </div>
-      </div>
-      <Separator />
-       <div>
-        <h4 className="text-base font-semibold mb-4">Temporización de Recordatorios</h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="first-reminder">Primer Recordatorio</Label>
-             <Select defaultValue="24h">
-              <SelectTrigger id="first-reminder">
-                <SelectValue placeholder="Seleccionar..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1h">1 hora antes</SelectItem>
-                <SelectItem value="12h">12 horas antes</SelectItem>
-                <SelectItem value="24h">24 horas antes</SelectItem>
-                 <SelectItem value="48h">48 horas antes</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="second-reminder">Segundo Recordatorio</Label>
-            <Select defaultValue="1h">
-              <SelectTrigger id="second-reminder">
-                <SelectValue placeholder="Seleccionar..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Ninguno</SelectItem>
-                <SelectItem value="1h">1 hora antes</SelectItem>
-                <SelectItem value="2h">2 horas antes</SelectItem>
-                <SelectItem value="3h">3 horas antes</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-    </div>
-);
 
 const SecuritySettings = () => (
     <div className="space-y-8">
       <div>
-        <h4 className="text-base font-semibold mb-4">Contraseña</h4>
+        <h4 className="text-base font-semibold mb-2">Cambiar contraseña</h4>
         <div className="space-y-4 max-w-md">
-          <div className="space-y-2">
-            <Label htmlFor="current-password">Contraseña Actual</Label>
-            <Input id="current-password" type="password" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="new-password">Nueva Contraseña</Label>
-            <Input id="new-password" type="password" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirmar Nueva Contraseña</Label>
-            <Input id="confirm-password" type="password" />
-          </div>
-          <Button>Actualizar Contraseña</Button>
+           <Button variant="outline"><KeyRound className="mr-2 h-4 w-4" /> Actualizar Contraseña</Button>
         </div>
       </div>
       <Separator />
       <div>
-        <h4 className="text-base font-semibold mb-4">Autenticación de Dos Factores</h4>
+        <h4 className="text-base font-semibold mb-4">Sesiones Activas</h4>
+        <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Actualmente tienes 2 sesiones activas.</p>
+            <Button variant="outline"><Eye className="mr-2 h-4 w-4" /> Ver Sesiones Activas</Button>
+        </div>
+      </div>
+       <Separator />
+      <div>
+        <h4 className="text-base font-semibold mb-4">Autenticación de Dos Factores (2FA)</h4>
         <div className="flex items-center justify-between max-w-md">
            <div className="flex items-start gap-3">
             <Smartphone className="h-5 w-5 text-muted-foreground mt-1" />
@@ -117,20 +50,127 @@ const SecuritySettings = () => (
     </div>
 );
 
+const NotificationSettings = () => (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-start gap-3">
+            <Bell className="h-5 w-5 text-muted-foreground mt-1" />
+            <div>
+            <Label htmlFor="reminders-switch" className="font-semibold">Activar/desactivar recordatorios</Label>
+            <p className="text-sm text-muted-foreground">Controla todos los recordatorios de citas.</p>
+            </div>
+        </div>
+        <Switch id="reminders-switch" defaultChecked />
+      </div>
+      <Separator />
+      <div>
+        <h4 className="text-base font-semibold mb-4">Canal Preferido</h4>
+        <RadioGroup defaultValue="email" className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="email" id="email" />
+                <Label htmlFor="email" className="flex items-center gap-2"><Mail className="h-4 w-4" /> Correo Electrónico</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="whatsapp" id="whatsapp" />
+                <Label htmlFor="whatsapp" className="flex items-center gap-2"><MessageSquare className="h-4 w-4" /> WhatsApp</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="sms" id="sms" />
+                <Label htmlFor="sms" className="flex items-center gap-2">📱 SMS</Label>
+            </div>
+        </RadioGroup>
+      </div>
+       <Separator />
+       <div>
+        <h4 className="text-base font-semibold mb-4">Frecuencia</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+             <Select defaultValue="24h">
+              <SelectTrigger id="frequency">
+                <SelectValue placeholder="Seleccionar..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="24h">1 día antes</SelectItem>
+                <SelectItem value="1h">1 hora antes</SelectItem>
+                <SelectItem value="custom">Personalizado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+      <Separator />
+      <div>
+        <h4 className="text-base font-semibold mb-4">Notificar a</h4>
+        <RadioGroup defaultValue="both" className="flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="patient" id="patient" />
+                <Label htmlFor="patient">Solo al paciente</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="me" id="me" />
+                <Label htmlFor="me">Solo a mí</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem value="both" id="both" />
+                <Label htmlFor="both">A ambos</Label>
+            </div>
+        </RadioGroup>
+      </div>
+    </div>
+);
+
+
+const IntegrationSettings = () => (
+    <div className="space-y-6">
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <Label htmlFor="google-calendar-switch" className="font-semibold">Google Calendar</Label>
+            </div>
+            <Switch id="google-calendar-switch" />
+        </div>
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <Video className="h-5 w-5 text-muted-foreground" />
+                <Label htmlFor="zoom-meet-switch" className="font-semibold">Zoom / Meet</Label>
+            </div>
+            <Switch id="zoom-meet-switch" />
+        </div>
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                <Label htmlFor="whatsapp-switch" className="font-semibold">WhatsApp</Label>
+            </div>
+            <Switch id="whatsapp-switch" />
+        </div>
+         <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <CreditCard className="h-5 w-5 text-muted-foreground" />
+                <Label htmlFor="payments-switch" className="font-semibold">Pasarela de Pagos</Label>
+            </div>
+            <Switch id="payments-switch" />
+        </div>
+    </div>
+);
+
+
+const BillingSettings = () => (
+    <div className="space-y-4">
+        <p className="text-muted-foreground">Plan Actual: <span className="font-bold text-foreground">Profesional</span></p>
+        <Button variant="outline">Cambiar de Plan</Button>
+        <Separator />
+        <h4 className="text-base font-semibold">Historial de Pagos</h4>
+        <p className="text-sm text-muted-foreground">No hay facturas disponibles.</p>
+        <Button variant="outline">Ver Historial</Button>
+         <Separator />
+        <h4 className="text-base font-semibold">Datos de Facturación</h4>
+        <p className="text-sm text-muted-foreground">Actualiza tu información de pago.</p>
+        <Button variant="outline">Gestionar Datos</Button>
+    </div>
+);
+
 
 const settingsItems = [
-  {
-    icon: User,
-    title: "Configuración del Perfil",
-    description: "Administra tu información personal",
-    content: "Aquí puedes gestionar la configuración de tu perfil.",
-  },
-  {
-    icon: Bell,
-    title: "Notificaciones",
-    description: "Configura las preferencias de recordatorios y alertas",
-    content: <NotificationSettings />,
-  },
   {
     icon: Shield,
     title: "Seguridad",
@@ -138,10 +178,22 @@ const settingsItems = [
     content: <SecuritySettings />,
   },
   {
-    icon: Settings2,
-    title: "Configuración de la Clínica",
-    description: "Configura la información y preferencias de la clínica",
-    content: "Aquí puedes gestionar la configuración de tu clínica.",
+    icon: Bell,
+    title: "Notificaciones",
+    description: "Ajusta cómo y cuándo recibes recordatorios.",
+    content: <NotificationSettings />,
+  },
+  {
+    icon: Puzzle,
+    title: "Integraciones",
+    description: "Conecta tus herramientas favoritas.",
+    content: <IntegrationSettings />,
+  },
+  {
+    icon: Banknote,
+    title: "Plan y Facturación",
+    description: "Revisa tu plan actual y gestiona tu suscripción.",
+    content: <BillingSettings />,
   },
 ];
 
