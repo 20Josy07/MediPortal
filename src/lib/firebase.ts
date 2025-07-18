@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth, updateProfile, type User } from "firebase/auth";
+import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
@@ -34,6 +34,31 @@ if (
     "Firebase configuration is missing or incomplete. Make sure to set up your environment variables."
   );
 }
+
+export const signInWithGoogle = async (auth: Auth, db: Firestore): Promise<User> => {
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    const userDocRef = doc(db, 'users', user.uid);
+    const docSnap = await getDoc(userDocRef);
+
+    if (!docSnap.exists()) {
+      await setDoc(userDocRef, {
+        fullName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        createdAt: serverTimestamp(),
+      });
+    }
+    
+    return user;
+  } catch (error) {
+    console.error("Error during Google sign-in:", error);
+    throw error;
+  }
+};
 
 export const addNote = async (db: Firestore, userId: string, patientId: string, noteData: Omit<Note, 'id'>): Promise<Note> => {
   const notesCollection = collection(db, `users/${userId}/patients/${patientId}/notes`);

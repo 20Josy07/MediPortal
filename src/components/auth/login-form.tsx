@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -21,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { FacebookIcon, GoogleIcon, LinkedinIcon, MicrosoftIcon } from "../icons";
+import { signInWithGoogle } from "@/lib/firebase";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Por favor, introduce un correo válido." }),
@@ -30,8 +32,9 @@ const formSchema = z.object({
 export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
-  const { auth } = useAuth();
+  const { auth, db } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,6 +66,31 @@ export function LoginForm() {
       });
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  const handleGoogleSignIn = async () => {
+    if (!auth || !db) {
+       toast({
+        variant: "destructive",
+        title: "Error de configuración",
+        description: "Firebase no está disponible. Por favor, contacta al soporte.",
+      });
+      return;
+    }
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle(auth, db);
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Google Sign In Error:", error);
+      toast({
+        variant: "destructive",
+        title: "Error de inicio de sesión con Google",
+        description: "No se pudo iniciar sesión con Google. Por favor, inténtalo de nuevo.",
+      });
+    } finally {
+      setIsGoogleLoading(false);
     }
   }
 
@@ -117,9 +145,14 @@ export function LoginForm() {
       <div className="flex-center mt-6">
         <p className="social-login-text mb-4 text-sm text-white/70">O inicia sesión con</p>
         <div className="flex items-center justify-center gap-5">
-           <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#d62976]">
-              <GoogleIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
-           </a>
+           <Button
+              onClick={handleGoogleSignIn}
+              disabled={isGoogleLoading}
+              variant="outline"
+              className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#d62976] p-0 border-0"
+            >
+              {isGoogleLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <GoogleIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />}
+           </Button>
            <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#00acee]">
               <FacebookIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
            </a>
