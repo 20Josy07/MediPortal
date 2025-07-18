@@ -34,6 +34,7 @@ export interface UserProfile {
   phone?: string;
   licenseNumber?: string;
   specialization?: string;
+  photoURL?: string;
 }
 
 // Schema for chatWithNotes flow input

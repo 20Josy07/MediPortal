@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,10 +10,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Loader2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, Loader2, Upload } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { getUserProfile, updateUserProfile } from "@/lib/firebase";
+import { getUserProfile, updateUserProfileAndPhoto } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 
 const profileSchema = z.object({
@@ -35,6 +36,9 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -61,6 +65,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
             licenseNumber: profile.licenseNumber || "",
             specialization: profile.specialization || "",
           });
+          setPreview(profile.photoURL || user.photoURL || null);
         } else {
             form.reset({
                 fullName: user.displayName || "",
@@ -69,6 +74,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
                 licenseNumber: "",
                 specialization: "",
             });
+            setPreview(user.photoURL || null);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -84,15 +90,25 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
     loadProfile();
   }, [user, db, form, toast]);
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setSelectedFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
   async function onSubmit(data: ProfileFormValues) {
     if (!user || !db) return;
     setIsLoading(true);
     try {
-      await updateUserProfile(db, user.uid, data);
+      await updateUserProfileAndPhoto(user, db, data, selectedFile);
       toast({
         title: "Perfil actualizado",
         description: "Tu información se ha guardado correctamente.",
       });
+      // Force a reload of the user object to get the new photoURL
+      await user.reload();
       onSuccess?.();
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -106,13 +122,23 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
     }
   }
 
+  const getInitials = (name: string) => {
+    const names = name.split(' ');
+    if (names.length > 1) {
+      return names[0][0] + names[names.length - 1][0];
+    }
+    return name.substring(0, 2);
+  };
+
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center gap-4">
-        <User className="h-6 w-6 text-muted-foreground" />
-        <div>
-          <CardTitle className="text-lg">Configuración del Perfil</CardTitle>
-          <CardDescription>Maneja tu información personal</CardDescription>
+      <CardHeader>
+        <div className="flex items-center gap-4">
+            <User className="h-6 w-6 text-muted-foreground" />
+            <div>
+            <CardTitle className="text-lg">Configuración del Perfil</CardTitle>
+            <CardDescription>Maneja tu información personal</CardDescription>
+            </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -123,6 +149,29 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
         ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+             <div className="flex items-center gap-4">
+                <Avatar className="h-20 w-20">
+                    <AvatarImage src={preview || undefined} alt="User avatar" />
+                    <AvatarFallback className="text-2xl">
+                    {getInitials(form.getValues("fullName") || user?.displayName || "U")}
+                    </AvatarFallback>
+                </Avatar>
+                <div>
+                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4"/>
+                        Cambiar Foto
+                    </Button>
+                    <input 
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/png, image/jpeg, image/gif"
+                        onChange={handleFileChange}
+                    />
+                    <p className="text-xs text-muted-foreground mt-2">JPG, GIF o PNG. 1MB max.</p>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <FormField
                   control={form.control}

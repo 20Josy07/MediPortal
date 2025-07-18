@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
+import { getAuth, type Auth, updateProfile, type User } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
@@ -70,6 +71,37 @@ export const updateUserProfile = async (db: Firestore, userId: string, data: Par
   const userDocRef = doc(db, `users/${userId}`);
   // Use setDoc with merge: true to create the document if it doesn't exist, or update it if it does.
   await setDoc(userDocRef, data, { merge: true });
+};
+
+const uploadProfilePhoto = async (userId: string, file: File): Promise<string> => {
+    const storage = getStorage(app);
+    const storageRef = ref(storage, `users/${userId}/profile-photo/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+};
+
+export const updateUserProfileAndPhoto = async (
+  user: User,
+  db: Firestore,
+  profileData: Partial<UserProfile>,
+  photoFile: File | null
+) => {
+  let photoURL = user.photoURL;
+
+  if (photoFile) {
+    photoURL = await uploadProfilePhoto(user.uid, photoFile);
+  }
+
+  // Update Firebase Auth profile
+  await updateProfile(user, {
+    displayName: profileData.fullName,
+    photoURL: photoURL,
+  });
+
+  // Update Firestore profile
+  const userDocRef = doc(db, `users/${user.uid}`);
+  await setDoc(userDocRef, { ...profileData, photoURL }, { merge: true });
 };
 
 
