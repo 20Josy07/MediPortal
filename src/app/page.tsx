@@ -38,7 +38,7 @@ export default function Home() {
       </header>
 
       <main className="flex-grow pt-20">
-        <section className="hero-section">
+        <section className="hero-section bg-hero">
           <div className="hero-content">
             <div className="tag">
                 <span>✨ Fácil • Privado • Impulsado por IA</span>
