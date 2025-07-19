@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -93,7 +94,7 @@ export function DashboardSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={pathname === "/dashboard/analysis"}
+              isActive={pathname.startsWith("/dashboard/analysis")}
             >
               <Link href="/dashboard/analysis">
                 <BarChart2 />
@@ -158,9 +159,9 @@ export function DashboardSidebar() {
                 </SidebarMenuSubItem>
                 <SidebarMenuSubItem>
                    <SidebarMenuSubButton asChild isActive={pathname === '/dashboard/support/chat'}>
-                    <Link href="#">
+                    <Link href="/dashboard/support/chat">
                       <MessageSquare />
-                      Soporte técnico / Chat
+                      Preguntas Frecuentes
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>

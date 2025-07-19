@@ -51,6 +51,8 @@ export function DashboardNavbar() {
       sessions: 'Sesiones',
       notes: 'Notas',
       analysis: 'Análisis',
+      conversation: 'Análisis de Conversación',
+      chat: 'Preguntas Frecuentes',
       metrics: 'Métricas',
       documents: 'Documentos',
       billing: 'Facturación',
