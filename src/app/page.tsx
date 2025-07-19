@@ -56,7 +56,8 @@ export default function Home() {
                 alt="Psicólogo usando Alumbra en una tablet" 
                 width={600}
                 height={600}
-                className="rounded-lg max-w-md w-full h-auto drop-shadow-2xl"
+                className="rounded-lg max-w-md w-full h-auto"
+                style={{ filter: 'drop-shadow(0 20px 25px rgba(0, 0, 0, 0.4))' }}
                 data-ai-hint="psychologist tablet"
                 priority
               />
