@@ -22,7 +22,7 @@ import { ProfileSettingsForm } from "./profile-settings-form";
 
 
 export function DashboardNavbar() {
-  const { user, logout } = useAuth();
+  const { user, userProfile, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -59,6 +59,9 @@ export function DashboardNavbar() {
 
     return titleMap[lastSegment] || 'Dashboard';
   }
+  
+  const displayName = userProfile?.fullName || user?.displayName;
+  const photoURL = userProfile?.photoURL || user?.photoURL;
 
   return (
     <>
@@ -81,10 +84,10 @@ export function DashboardNavbar() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-10 rounded-full p-2">
                  <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.photoURL || undefined} alt="User avatar" />
-                  <AvatarFallback>{getInitials(user?.displayName)}</AvatarFallback>
+                  <AvatarImage src={photoURL || undefined} alt="User avatar" />
+                  <AvatarFallback>{getInitials(displayName)}</AvatarFallback>
                 </Avatar>
-                <span className="hidden md:inline-block ml-2">{user?.displayName || 'Usuario'}</span>
+                <span className="hidden md:inline-block ml-2">{displayName || 'Usuario'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

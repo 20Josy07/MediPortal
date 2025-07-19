@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Loader2, Upload } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { getUserProfile, updateUserProfile } from "@/lib/firebase";
+import { updateUserProfile } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 
 const profileSchema = z.object({
@@ -33,7 +33,7 @@ interface ProfileSettingsFormProps {
 }
 
 export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
-  const { user, db } = useAuth();
+  const { user, userProfile, db } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -54,33 +54,20 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   const photoUrlValue = form.watch("photoURL");
 
   useEffect(() => {
-    async function loadProfile() {
-      if (!user || !db) return;
+    if (user || userProfile) {
       setIsFetching(true);
-      try {
-        const profile = await getUserProfile(db, user.uid);
-        const initialValues = {
-          fullName: profile?.fullName || user.displayName || "",
-          email: profile?.email || user.email || "",
-          phone: profile?.phone || "",
-          licenseNumber: profile?.licenseNumber || "",
-          specialization: profile?.specialization || "",
-          photoURL: profile?.photoURL || user.photoURL || "",
-        };
-        form.reset(initialValues);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        toast({
-          variant: "destructive",
-          title: "Error al cargar el perfil",
-          description: "No se pudieron obtener los datos de tu perfil.",
-        });
-      } finally {
-        setIsFetching(false);
-      }
+      const initialValues = {
+        fullName: userProfile?.fullName || user?.displayName || "",
+        email: userProfile?.email || user?.email || "",
+        phone: userProfile?.phone || "",
+        licenseNumber: userProfile?.licenseNumber || "",
+        specialization: userProfile?.specialization || "",
+        photoURL: userProfile?.photoURL || user?.photoURL || "",
+      };
+      form.reset(initialValues);
+      setIsFetching(false);
     }
-    loadProfile();
-  }, [user, db, form, toast]);
+  }, [user, userProfile, form]);
 
 
   async function onSubmit(data: ProfileFormValues) {

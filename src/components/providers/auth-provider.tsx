@@ -41,7 +41,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (doc.exists()) {
           setUserProfile(doc.data() as UserProfile);
         } else {
-          // This might happen for a brief moment for new users
            setUserProfile({
             fullName: user.displayName || "",
             email: user.email || "",
@@ -64,25 +63,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const fullUser = useMemo(() => {
-    if (!user) return null;
-    return {
-      ...user,
-      displayName: userProfile?.fullName ?? user.displayName,
-      photoURL: userProfile?.photoURL ?? user.photoURL,
-      email: userProfile?.email ?? user.email,
-    } as User;
-  }, [user, userProfile]);
-
   const value = useMemo(
     () => ({
-      user: fullUser,
+      user,
+      userProfile,
       loading,
       logout,
       auth,
       db,
     }),
-    [fullUser, loading]
+    [user, userProfile, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
