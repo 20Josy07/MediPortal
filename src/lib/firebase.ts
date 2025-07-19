@@ -97,20 +97,21 @@ export const updateUserProfile = async (
   db: Firestore,
   profileData: Partial<UserProfile>
 ) => {
-  // Data for Auth profile update
-  const authUpdate: { displayName?: string; photoURL?: string } = {};
+  // 1. Prepare the data for Firestore.
+  // This can include the long Data URL for the photo.
+  const firestoreData = { ...profileData };
+  const userDocRef = doc(db, `users/${user.uid}`);
+  await setDoc(userDocRef, firestoreData, { merge: true });
+
+  // 2. Prepare the data for Firebase Auth profile update.
+  // IMPORTANT: Do NOT include the photoURL if it's a long Data URL.
+  // Firebase Auth has a length limit on photoURL.
+  const authUpdate: { displayName?: string } = {};
   if (profileData.fullName && profileData.fullName !== user.displayName) {
     authUpdate.displayName = profileData.fullName;
   }
-  if (profileData.photoURL && profileData.photoURL !== user.photoURL) {
-    authUpdate.photoURL = profileData.photoURL;
-  }
 
-  // Update Firestore document
-  const userDocRef = doc(db, `users/${user.uid}`);
-  await setDoc(userDocRef, profileData, { merge: true });
-
-  // Update Auth profile if there are changes
+  // 3. Update Auth profile only if there are changes.
   if (Object.keys(authUpdate).length > 0) {
     await updateProfile(user, authUpdate);
   }
