@@ -39,7 +39,7 @@ export default function Home() {
 
       <main className="flex-grow pt-20">
         <section className="hero-section bg-hero">
-          <div className="hero-content">
+          <div className="hero-content text-gray-800">
             <div className="tag">
                 <span>✨ Fácil • Privado • Impulsado por IA</span>
             </div>
@@ -47,7 +47,7 @@ export default function Home() {
             <p>Alumbra te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
                 <Button asChild className="primary-button"><Link href="/login">Inicia sesión ahora</Link></Button>
-                <Button asChild className="secondary-button" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
+                <Button asChild className="secondary-button !text-gray-800 border-gray-800 hover:bg-gray-800 hover:text-white" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
             </div>
           </div>
           <div className="hero-image">
