@@ -99,17 +99,22 @@ export const updateUserProfile = async (
 ) => {
   // Data for Auth profile update
   const authUpdate: { displayName?: string; photoURL?: string } = {};
-  if (profileData.fullName) authUpdate.displayName = profileData.fullName;
-  if (typeof profileData.photoURL === 'string') authUpdate.photoURL = profileData.photoURL;
+  if (profileData.fullName && profileData.fullName !== user.displayName) {
+    authUpdate.displayName = profileData.fullName;
+  }
+  if (profileData.photoURL && profileData.photoURL !== user.photoURL) {
+    authUpdate.photoURL = profileData.photoURL;
+  }
 
   // Update Firestore document
   const userDocRef = doc(db, `users/${user.uid}`);
   await setDoc(userDocRef, profileData, { merge: true });
 
-  // Update Auth profile
+  // Update Auth profile if there are changes
   if (Object.keys(authUpdate).length > 0) {
     await updateProfile(user, authUpdate);
   }
 };
+
 
 export { app, auth, db };

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Loader2 } from "lucide-react";
+import { User, Loader2, Upload } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { getUserProfile, updateUserProfile } from "@/lib/firebase";
@@ -23,7 +23,7 @@ const profileSchema = z.object({
   phone: z.string().optional(),
   licenseNumber: z.string().optional(),
   specialization: z.string().optional(),
-  photoURL: z.string().url({ message: "Por favor, introduce una URL válida." }).optional().or(z.literal('')),
+  photoURL: z.string().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -37,6 +37,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -91,7 +92,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
         title: "Perfil actualizado",
         description: "Tu información se ha guardado correctamente.",
       });
-      // Force a reload of the user object to get the new photoURL
       await user.reload();
       onSuccess?.();
     } catch (error) {
@@ -105,6 +105,25 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
       setIsLoading(false);
     }
   }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+          variant: "destructive",
+          title: "Archivo demasiado grande",
+          description: "Por favor, selecciona una imagen de menos de 2MB.",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        form.setValue("photoURL", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const getInitials = (name: string) => {
     if (!name) return "U";
@@ -134,27 +153,26 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
         ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-             <div className="flex items-center gap-4">
-                <Avatar className="h-20 w-20">
+             <div className="flex items-center gap-6">
+                <Avatar className="h-24 w-24">
                     <AvatarImage src={photoUrlValue || undefined} alt="User avatar" />
-                    <AvatarFallback className="text-2xl">
+                    <AvatarFallback className="text-3xl">
                     {getInitials(form.getValues("fullName") || "U")}
                     </AvatarFallback>
                 </Avatar>
-                <div className="w-full">
-                     <FormField
-                      control={form.control}
-                      name="photoURL"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>URL de la Foto de Perfil</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://example.com/photo.jpg" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                <div className="flex flex-col gap-2">
+                     <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Cambiar Foto
+                     </Button>
+                     <p className="text-xs text-muted-foreground">JPG, PNG, GIF. Máximo 2MB.</p>
+                     <input 
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/png, image/jpeg, image/gif"
+                      />
                 </div>
             </div>
 
