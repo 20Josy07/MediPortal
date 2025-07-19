@@ -156,7 +156,7 @@
     }
 
     .hero-content p {
-        @apply text-xl leading-relaxed mb-8 text-white/70;
+        @apply text-xl leading-relaxed mb-8 text-black;
     }
 
     .buttons {
