@@ -43,8 +43,8 @@ export default function Home() {
             <div className="tag">
                 <span>✨ Fácil • Privado • Impulsado por IA</span>
             </div>
-            <h1><span className="alumbra-highlight">Alumbra</span>: Organiza tus citas, notas y evolución clínica desde un solo lugar.</h1>
-            <p>Alumbra te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
+            <h1><span className="alumbra-highlight">Alumbra</span><span className="text-primary">: Organiza tus citas, notas y evolución clínica desde un solo lugar.</span></h1>
+            <p className="text-black">Alumbra te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
                 <Button asChild className="primary-button"><Link href="/login">Inicia sesión ahora</Link></Button>
                 <Button asChild className="secondary-button !text-gray-800 border-gray-800 hover:bg-gray-800 hover:text-white" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
