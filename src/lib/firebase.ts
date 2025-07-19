@@ -1,7 +1,6 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
@@ -93,53 +92,24 @@ export const getUserProfile = async (db: Firestore, userId: string): Promise<Use
   return null;
 };
 
-export const updateUserProfile = async (db: Firestore, userId: string, data: Partial<UserProfile>) => {
-  const userDocRef = doc(db, `users/${userId}`);
-  // Use setDoc with merge: true to create the document if it doesn't exist, or update it if it does.
-  await setDoc(userDocRef, data, { merge: true });
-};
-
-const uploadProfilePhoto = async (userId: string, file: File): Promise<string> => {
-    const storage = getStorage(app);
-    const storageRef = ref(storage, `users/${userId}/profile-photo/${file.name}`);
-    await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(storageRef);
-    return downloadURL;
-};
-
-export const updateUserProfileAndPhoto = async (
+export const updateUserProfile = async (
   user: User,
   db: Firestore,
-  profileData: Partial<UserProfile>,
-  photoFile: File | null
+  profileData: Partial<UserProfile>
 ) => {
-  // Data for Firestore update
-  const firestoreUpdate: Partial<UserProfile> = { ...profileData };
-  
   // Data for Auth profile update
   const authUpdate: { displayName?: string; photoURL?: string } = {};
+  if (profileData.fullName) authUpdate.displayName = profileData.fullName;
+  if (typeof profileData.photoURL === 'string') authUpdate.photoURL = profileData.photoURL;
 
-  if (profileData.fullName) {
-    authUpdate.displayName = profileData.fullName;
-  }
-  
-  // If a new photo is provided, upload it and get the URL
-  if (photoFile) {
-    const newPhotoURL = await uploadProfilePhoto(user.uid, photoFile);
-    firestoreUpdate.photoURL = newPhotoURL;
-    authUpdate.photoURL = newPhotoURL;
-  }
+  // Update Firestore document
+  const userDocRef = doc(db, `users/${user.uid}`);
+  await setDoc(userDocRef, profileData, { merge: true });
 
-  // Perform updates only if there's something to update
-  if (Object.keys(firestoreUpdate).length > 0) {
-    const userDocRef = doc(db, `users/${user.uid}`);
-    await setDoc(userDocRef, firestoreUpdate, { merge: true });
-  }
-
+  // Update Auth profile
   if (Object.keys(authUpdate).length > 0) {
     await updateProfile(user, authUpdate);
   }
 };
-
 
 export { app, auth, db };

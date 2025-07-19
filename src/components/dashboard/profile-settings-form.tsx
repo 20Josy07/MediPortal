@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,10 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Loader2, Upload } from "lucide-react";
+import { User, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { getUserProfile, updateUserProfileAndPhoto } from "@/lib/firebase";
+import { getUserProfile, updateUserProfile } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 
 const profileSchema = z.object({
@@ -23,6 +23,7 @@ const profileSchema = z.object({
   phone: z.string().optional(),
   licenseNumber: z.string().optional(),
   specialization: z.string().optional(),
+  photoURL: z.string().url({ message: "Por favor, introduce una URL válida." }).optional().or(z.literal('')),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -36,9 +37,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -48,8 +46,11 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
       phone: "",
       licenseNumber: "",
       specialization: "",
+      photoURL: "",
     },
   });
+
+  const photoUrlValue = form.watch("photoURL");
 
   useEffect(() => {
     async function loadProfile() {
@@ -57,25 +58,15 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
       setIsFetching(true);
       try {
         const profile = await getUserProfile(db, user.uid);
-        if (profile) {
-          form.reset({
-            fullName: profile.fullName || user.displayName || "",
-            email: profile.email || user.email || "",
-            phone: profile.phone || "",
-            licenseNumber: profile.licenseNumber || "",
-            specialization: profile.specialization || "",
-          });
-          setPreview(profile.photoURL || user.photoURL || null);
-        } else {
-            form.reset({
-                fullName: user.displayName || "",
-                email: user.email || "",
-                phone: "",
-                licenseNumber: "",
-                specialization: "",
-            });
-            setPreview(user.photoURL || null);
-        }
+        const initialValues = {
+          fullName: profile?.fullName || user.displayName || "",
+          email: profile?.email || user.email || "",
+          phone: profile?.phone || "",
+          licenseNumber: profile?.licenseNumber || "",
+          specialization: profile?.specialization || "",
+          photoURL: profile?.photoURL || user.photoURL || "",
+        };
+        form.reset(initialValues);
       } catch (error) {
         console.error("Error fetching profile:", error);
         toast({
@@ -90,19 +81,12 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
     loadProfile();
   }, [user, db, form, toast]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setSelectedFile(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
 
   async function onSubmit(data: ProfileFormValues) {
     if (!user || !db) return;
     setIsLoading(true);
     try {
-      await updateUserProfileAndPhoto(user, db, data, selectedFile);
+      await updateUserProfile(user, db, data);
       toast({
         title: "Perfil actualizado",
         description: "Tu información se ha guardado correctamente.",
@@ -123,6 +107,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   }
 
   const getInitials = (name: string) => {
+    if (!name) return "U";
     const names = name.split(' ');
     if (names.length > 1) {
       return names[0][0] + names[names.length - 1][0];
@@ -151,24 +136,25 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
              <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                    <AvatarImage src={preview || undefined} alt="User avatar" />
+                    <AvatarImage src={photoUrlValue || undefined} alt="User avatar" />
                     <AvatarFallback className="text-2xl">
-                    {getInitials(form.getValues("fullName") || user?.displayName || "U")}
+                    {getInitials(form.getValues("fullName") || "U")}
                     </AvatarFallback>
                 </Avatar>
-                <div>
-                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                        <Upload className="mr-2 h-4 w-4"/>
-                        Cambiar Foto
-                    </Button>
-                    <input 
-                        type="file"
-                        ref={fileInputRef}
-                        className="hidden"
-                        accept="image/png, image/jpeg, image/gif"
-                        onChange={handleFileChange}
+                <div className="w-full">
+                     <FormField
+                      control={form.control}
+                      name="photoURL"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL de la Foto de Perfil</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com/photo.jpg" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                    <p className="text-xs text-muted-foreground mt-2">JPG, GIF o PNG. 1MB max.</p>
                 </div>
             </div>
 
