@@ -51,30 +51,15 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-image">
-            <div className="code-window">
-              <div className="window-header">
-                <div className="dots">
-                  <span className="dot red"></span>
-                  <span className="dot yellow"></span>
-                  <span className="dot green"></span>
-                </div>
-                <span className="window-title">Análisis de conversación</span>
-              </div>
-              <div className="window-body">
-                <p>Eres estúpido, ¿cómo pudiste hacer eso? ¡Eres un idiota!</p>
-                <p>Cálmate, fue un error...</p>
-                <p>¡Un error! Siempre arruinas todo. No sirves para nada.</p>
-                <br />
-                <div className="status-box negative">
-                  <span>ESTADO EMOCIONAL</span>
-                  <span className="status-text">⛔ Negativo</span>
-                </div>
-                <div className="status-box abuse">
-                  <span>ALERTA</span>
-                  <span className="status-text">⚠ Abuso / Manipulación</span>
-                </div>
-              </div>
-            </div>
+             <Image 
+                src="https://i.postimg.cc/6QghnGQg/Psicologo.png" 
+                alt="Psicólogo usando Alumbra en una tablet" 
+                width={600}
+                height={600}
+                className="rounded-lg shadow-2xl max-w-md w-full h-auto"
+                data-ai-hint="psychologist tablet"
+                priority
+              />
           </div>
         </section>
 
