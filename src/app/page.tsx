@@ -22,8 +22,8 @@ export default function Home() {
                 Cómo funciona
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
-                Cómo funciona
+              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
+                Funcionalidades
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
               <a className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 bg-white hover:bg-gray-100 text-alumbra-purple font-semibold px-6 py-2 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-base" href="/login">
@@ -95,7 +95,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="features-section">
+        <section className="features-section" id="features">
           <h2>Funcionalidades que te protegen</h2>
           <p className="subtitle">Herramientas poderosas diseñadas para tu bienestar emocional y privacidad</p>
           <div className="features-container">
