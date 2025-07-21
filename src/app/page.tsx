@@ -63,32 +63,25 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-image">
-            <div className="flex items-center justify-center gap-8 bg-hero rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
-                <div className="flex-shrink-0 hidden md:block">
-                    <Image 
-                        src="https://i.postimg.cc/90JczQjX/replicate-prediction-rrhfmdd58drg80cr5w9t956axw.png"
-                        alt="Psicólogo usando Zenda en una tablet" 
-                        width={280}
-                        height={420}
-                        className="rounded-lg object-cover"
-                        data-ai-hint="psychologist"
-                        priority
-                    />
+             <div
+              className="relative flex items-center justify-center gap-8 bg-hero rounded-2xl p-8 shadow-lg max-w-4xl mx-auto bg-cover bg-center"
+              style={{ backgroundImage: "url('https://i.postimg.cc/90JczQjX/replicate-prediction-rrhfmdd58drg80cr5w9t956axw.png')" }}
+            >
+              <div className="absolute inset-0 bg-black/30 rounded-2xl"></div>
+              <div className="relative z-10 flex flex-col gap-4 w-full max-w-md">
+                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
+                  <FileText className="h-6 w-6 text-[#1a3b2c]" />
+                  <span className="text-[#1a3b2c] font-medium">Notas automáticas con resúmenes e insights clave</span>
                 </div>
-                <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3 bg-[#f0f6f2] p-4 rounded-xl shadow-sm">
-                        <FileText className="h-6 w-6 text-[#1a3b2c]" />
-                        <span className="text-[#1a3b2c] font-medium">Notas automáticas con resúmenes e insights clave</span>
-                    </div>
-                     <div className="flex items-center gap-3 bg-[#f0f6f2] p-4 rounded-xl shadow-sm">
-                        <BarChart className="h-6 w-6 text-[#1a3b2c]" />
-                        <span className="text-[#1a3b2c] font-medium">Visualización de evolución y objetivos terapéuticos</span>
-                    </div>
-                     <div className="flex items-center gap-3 bg-[#f0f6f2] p-4 rounded-xl shadow-sm">
-                        <Folder className="h-6 w-6 text-[#1a3b2c]" />
-                        <span className="text-[#1a3b2c] font-medium">Historial organizado y fácil de consultar</span>
-                    </div>
+                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
+                  <BarChart className="h-6 w-6 text-[#1a3b2c]" />
+                  <span className="text-[#1a3b2c] font-medium">Visualización de evolución y objetivos terapéuticos</span>
                 </div>
+                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
+                  <Folder className="h-6 w-6 text-[#1a3b2c]" />
+                  <span className="text-[#1a3b2c] font-medium">Historial organizado y fácil de consultar</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
