@@ -213,7 +213,7 @@ export default function Home() {
         <div className="footer-container">
           <div className="footer-column">
             <h3>Zenda</h3>
-            <p>Ilumina tu bienestar emocional con inteligencia artificial. Detecta abuso psicológico en conversaciones digitales de forma gratuita y privada.</p>
+            <p>Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
             <div className="footer-badges">
               <span>💜 100% Gratuito</span>
               <span>🛡️ Privado</span>
