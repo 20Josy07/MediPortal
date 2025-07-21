@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Alumbra",
+  title: "Zenda",
   description: "Organiza tus citas, notas y evolución clínica desde un solo lugar.",
 };
 

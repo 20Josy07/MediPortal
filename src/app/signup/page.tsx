@@ -9,13 +9,13 @@ export default function SignUpPage() {
         <div className="mb-8">
           <Image
             src="https://i.postimg.cc/59L8Lbsj/og-image.png"
-            alt="Logo Alumbra"
+            alt="Logo Zenda"
             width={100}
             height={100}
             className="mx-auto mb-2.5 h-auto w-auto max-w-[100px]"
           />
           <h1 className="mb-2.5 text-4xl font-bold text-white">
-            Bienvenidos a Alumbra
+            Bienvenidos a Zenda
           </h1>
           <p className="text-lg text-white/80">
             Regístrate para poder organizar tus citas, notas y evolución clínica desde un solo lugar.
@@ -32,5 +32,3 @@ export default function SignUpPage() {
     </div>
   );
 }
-
-    

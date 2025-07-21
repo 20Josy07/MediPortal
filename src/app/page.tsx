@@ -10,7 +10,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link className="flex items-center" href="/">
-              <Image alt="Alumbra Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/59L8Lbsj/og-image.png" style={{color: 'transparent'}} />
+              <Image alt="Zenda Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/59L8Lbsj/og-image.png" style={{color: 'transparent'}} />
               <span className="ml-2 text-xs font-semibold text-white border border-white/50 px-2 py-0.5 rounded-full">BETA</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-8 text-white">
@@ -43,8 +43,8 @@ export default function Home() {
             <div className="tag">
                 <span>✨ Fácil • Privado • Impulsado por IA</span>
             </div>
-            <h1><span className="alumbra-highlight">Alumbra</span><span className="text-primary">: Organiza tus citas, notas y evolución clínica desde un solo lugar.</span></h1>
-            <p className="text-black">Alumbra te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
+            <h1><span className="alumbra-highlight">Zenda</span><span className="text-primary">: Organiza tus citas, notas y evolución clínica desde un solo lugar.</span></h1>
+            <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
                 <Button asChild className="primary-button"><Link href="/login">Inicia sesión ahora</Link></Button>
                 <Button asChild className="secondary-button !text-gray-800 border-gray-800 hover:bg-gray-800 hover:text-white" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
@@ -53,7 +53,7 @@ export default function Home() {
           <div className="hero-image">
              <Image 
                 src="https://i.postimg.cc/6QghnGQg/Psicologo.png" 
-                alt="Psicólogo usando Alumbra en una tablet" 
+                alt="Psicólogo usando Zenda en una tablet" 
                 width={600}
                 height={600}
                 className="rounded-lg max-w-md w-full h-auto"
@@ -65,7 +65,7 @@ export default function Home() {
         </section>
 
         <section className="how-it-works-section" id="how-it-works">
-          <h2>¿Cómo funciona Alumbra?</h2>
+          <h2>¿Cómo funciona Zenda?</h2>
           <p className="subtitle">En solo 3 pasos simples, obtén claridad sobre tus relaciones digitales</p>
           <div className="steps-container">
             <div className="step-card">
@@ -146,10 +146,10 @@ export default function Home() {
 
         <section className="testimonials-section" id="testimonials">
           <h2>Lo que dicen nuestros usuarios</h2>
-          <p className="subtitle">Psicólogos como tú ya están transformando su práctica con Alumbra.</p>
+          <p className="subtitle">Psicólogos como tú ya están transformando su práctica con Zenda.</p>
           <div className="testimonials-container">
             <div className="testimonial-card">
-              <p>"Alumbra ha sido un antes y un después. La función de notas con IA me ahorra horas a la semana, permitiéndome enfocarme más en la terapia y menos en el papeleo."</p>
+              <p>"Zenda ha sido un antes y un después. La función de notas con IA me ahorra horas a la semana, permitiéndome enfocarme más en la terapia y menos en el papeleo."</p>
               <div className="author-info">
                 <div className="author-avatar"></div>
                 <div>
@@ -183,7 +183,7 @@ export default function Home() {
         
         <section className="mission-vision-section" id="mission">
           <h2>Nuestra Misión y Visión</h2>
-          <p className="subtitle">El porqué detrás de Alumbra.</p>
+          <p className="subtitle">El porqué detrás de Zenda.</p>
           <div className="mission-vision-container">
             <div className="mission-card">
               <div className="icon-title">
@@ -199,7 +199,7 @@ export default function Home() {
                 <h3>Visión</h3>
               </div>
               <p>Ser la solución digital líder en Latinoamérica para psicólogos, redefiniendo la práctica clínica con IA accesible, intuitiva y profundamente humana.
-              Queremos que cada profesional de la salud mental cuente con herramientas que lo liberen, no que lo limiten, y que Alumbra sea sinónimo de cuidado, confianza e innovación en el acompañamiento terapéutico.</p>
+              Queremos que cada profesional de la salud mental cuente con herramientas que lo liberen, no que lo limiten, y que Zenda sea sinónimo de cuidado, confianza e innovación en el acompañamiento terapéutico.</p>
             </div>
           </div>
         </section>
@@ -207,7 +207,7 @@ export default function Home() {
       <footer>
         <div className="footer-container">
           <div className="footer-column">
-            <h3>Alumbra</h3>
+            <h3>Zenda</h3>
             <p>Ilumina tu bienestar emocional con inteligencia artificial. Detecta abuso psicológico en conversaciones digitales de forma gratuita y privada.</p>
             <div className="footer-badges">
               <span>💜 100% Gratuito</span>
@@ -226,14 +226,14 @@ export default function Home() {
           <div className="footer-column">
             <h3>Contacto</h3>
             <ul>
-              <li><a href="mailto:hola@alumbra.ai">✉️ hola@alumbra.ai</a></li>
+              <li><a href="mailto:hola@alumbra.ai">✉️ hola@zenda.ai</a></li>
               <li><a href="#">🐙 GitHub</a></li>
               <li><a href="#">🐦 Twitter</a></li>
             </ul>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Alumbra. Hecho con 💜 para proteger tu bienestar emocional.</p>
+          <p>© {new Date().getFullYear()} Zenda. Hecho con 💜 para proteger tu bienestar emocional.</p>
         </div>
       </footer>
     </div>

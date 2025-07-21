@@ -9,7 +9,7 @@ export default function LoginPage() {
         <div className="mb-8">
           <Image
             src="https://i.postimg.cc/59L8Lbsj/og-image.png"
-            alt="Logo Alumbra"
+            alt="Logo Zenda"
             width={100}
             height={100}
             className="mx-auto mb-2.5 h-auto w-auto max-w-[100px]"
