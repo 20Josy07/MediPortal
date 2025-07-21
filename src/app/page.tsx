@@ -10,7 +10,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link className="flex items-center" href="/">
-              <Image alt="Zenda Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/59L8Lbsj/og-image.png" style={{color: 'transparent'}} />
+              <Image alt="Zenda Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/KjB5byGc/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" style={{color: 'transparent'}} />
               <span className="ml-2 text-xs font-semibold text-white border border-white/50 px-2 py-0.5 rounded-full">BETA</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
