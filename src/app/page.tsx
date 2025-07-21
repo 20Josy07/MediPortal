@@ -43,7 +43,10 @@ export default function Home() {
             <div className="tag">
                 <span>Análisis Clínico • Notas Instantáneas • Seguimiento Visual</span>
             </div>
-            <h1><span className="text-primary"> Mejora la calidad de tus sesiones con Zenda</span></h1>
+            <h1>
+              <span className="text-black">Mejora la calidad de tus sesiones con </span>
+              <span className="text-primary">Zenda</span>
+            </h1>
             <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
                 <Button asChild className="primary-button"><Link href="/login">Inicia sesión ahora</Link></Button>
