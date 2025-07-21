@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder } from "lucide-react";
 
 export default function Home() {
   return (
@@ -63,16 +63,33 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-image">
-             <Image 
-                src="https://i.postimg.cc/MKY0qw2H/replicate-prediction-4tz64rrrj9rgc0cr5vntt6j1aw.png" 
-                alt="Psicólogo usando Zenda en una tablet" 
-                width={600}
-                height={600}
-                className="rounded-lg max-w-md w-full h-auto"
-                style={{ filter: 'drop-shadow(0 20px 25px rgba(0, 0, 0, 0.4))' }}
-                data-ai-hint="psychologist patient"
-                priority
-              />
+            <div className="flex items-center justify-center gap-8 bg-white rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
+                <div className="flex-shrink-0 hidden md:block">
+                    <Image 
+                        src="https://i.postimg.cc/MKY0qw2H/replicate-prediction-4tz64rrrj9rgc0cr5vntt6j1aw.png"
+                        alt="Psicólogo usando Zenda en una tablet" 
+                        width={280}
+                        height={420}
+                        className="rounded-lg object-cover"
+                        data-ai-hint="psychologist"
+                        priority
+                    />
+                </div>
+                <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3 bg-[#f0f6f2] p-4 rounded-xl shadow-sm">
+                        <FileText className="h-6 w-6 text-[#1a3b2c]" />
+                        <span className="text-[#1a3b2c] font-medium">Notas automáticas con resúmenes e insights clave</span>
+                    </div>
+                     <div className="flex items-center gap-3 bg-[#f0f6f2] p-4 rounded-xl shadow-sm">
+                        <BarChart className="h-6 w-6 text-[#1a3b2c]" />
+                        <span className="text-[#1a3b2c] font-medium">Visualización de evolución y objetivos terapéuticos</span>
+                    </div>
+                     <div className="flex items-center gap-3 bg-[#f0f6f2] p-4 rounded-xl shadow-sm">
+                        <Folder className="h-6 w-6 text-[#1a3b2c]" />
+                        <span className="text-[#1a3b2c] font-medium">Historial organizado y fácil de consultar</span>
+                    </div>
+                </div>
+            </div>
           </div>
         </section>
 
@@ -251,5 +268,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
