@@ -231,6 +231,48 @@
       color: hsl(var(--status-text));
     }
 
+    .comparison-section {
+        background-color: #f7f9f9;
+        @apply py-16 px-[5%] text-center;
+    }
+
+    .comparison-title {
+        @apply text-5xl font-extrabold mb-12 text-[#063C0F];
+    }
+    
+    .comparison-container {
+        @apply flex justify-center gap-8 flex-wrap max-w-5xl mx-auto;
+    }
+
+    .before-card, .after-card {
+        @apply bg-white p-8 rounded-2xl flex-1 min-w-[300px] text-left;
+    }
+
+    .before-card {
+        @apply border-2 border-dashed border-gray-300;
+    }
+
+    .after-card {
+        @apply border border-gray-200 shadow-xl;
+    }
+    
+    .before-card h3, .after-card h3 {
+        @apply text-2xl font-bold mb-6 text-[#063C0F];
+    }
+
+    .before-card ul, .after-card ul {
+        @apply list-none p-0 m-0 space-y-4;
+    }
+    
+    .before-card ul li, .after-card ul li {
+        @apply flex items-center gap-3 text-base text-gray-700;
+    }
+    
+    .before-card ul li svg, .after-card ul li svg {
+        @apply w-5 h-5 flex-shrink-0;
+    }
+
+
     .how-it-works-section {
         background-color: #87AF8D;
         @apply py-16 px-[5%] text-center mt-0;
@@ -497,6 +539,7 @@
       .mission-vision-container { @apply gap-8; }
       .mission-card, .vision-card { @apply p-6; }
       .icon-title h3 { @apply text-2xl; }
+      .comparison-title { @apply text-4xl; }
     }
     @media (max-width: 768px) {
       .navbar { @apply flex-col gap-2 py-4 px-[3%]; }
@@ -528,6 +571,8 @@
       .footer-container { @apply flex-col items-center text-center gap-8; }
       .footer-column { @apply min-w-0 w-full max-w-xs; }
       .footer-badges { @apply justify-center; }
+      .comparison-title { @apply text-3xl; }
+      .comparison-container { @apply flex-col; }
     }
     @media (max-width: 480px) {
       .navbar-right ul { @apply flex-col gap-1; }
@@ -561,10 +606,12 @@
       footer { @apply py-12 px-[3%]; }
       .footer-column h3 { @apply text-lg; }
       .footer-column p, .footer-column ul li a, .footer-badges span, .footer-bottom p { @apply text-xs; }
+      .comparison-title { @apply text-2xl; }
     }
 }
 
     
+
 
 
 

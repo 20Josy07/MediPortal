@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, BarChart, Folder } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder, X, Check } from "lucide-react";
 
 export default function Home() {
   return (
@@ -86,35 +86,26 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="how-it-works-section" id="how-it-works">
-          <h2>¿Cómo funciona Zenda?</h2>
-          <p className="subtitle">En solo 3 pasos simples, obtén claridad sobre tus relaciones digitales</p>
-          <div className="steps-container">
-            <div className="step-card">
-              <div className="step-number">1</div>
-              <div className="icon-circle">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/document.png" alt="Document Icon" width={40} height={40}/>
-              </div>
-              <h3>Regístrate</h3>
-              <p>Crea tu cuenta en minutos y configura tu perfil profesional. Es rápido, fácil y seguro.</p>
+        <section className="comparison-section" id="how-it-works">
+            <h2 className="comparison-title">Un antes y un después en tu consulta</h2>
+            <div className="comparison-container">
+                <div className="before-card">
+                    <h3>Antes</h3>
+                    <ul>
+                        <li><X className="text-red-500" /> Notas manuales que llevan horas tras cada sesión</li>
+                        <li><X className="text-red-500" /> Dificultad para identificar patrones clínicos</li>
+                        <li><X className="text-red-500" /> Fragmentos de información dispersa</li>
+                    </ul>
+                </div>
+                <div className="after-card">
+                    <h3>Después</h3>
+                    <ul>
+                        <li><Check className="text-green-500" /> Notas automáticas con resúmenes e insights clave</li>
+                        <li><Check className="text-green-500" /> Visualización de evolución y objetivos terapéuticos</li>
+                        <li><Check className="text-green-500" /> Historial organizado y fácil de consultar</li>
+                    </ul>
+                </div>
             </div>
-            <div className="step-card">
-              <div className="step-number">2</div>
-              <div className="icon-circle">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/user.png" alt="User Icon" width={40} height={40}/>
-              </div>
-              <h3>Organiza tu agenda</h3>
-              <p>Importa tus pacientes y empieza a agendar citas. Nuestro calendario inteligente te lo pone facil</p>
-            </div>
-            <div className="step-card">
-              <div className="step-number">3</div>
-              <div className="icon-circle">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/bar-chart.png" alt="Bar Chart Icon" width={40} height={40}/>
-              </div>
-              <h3>Potencia tu práctica</h3>
-              <p>Usa nuestras herramientas de IA para generar notas, resúmenes y seguir la evolución de tus pacientes.</p>
-            </div>
-          </div>
         </section>
 
         <section className="features-section" id="features">
