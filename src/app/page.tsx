@@ -215,7 +215,7 @@ export default function Home() {
             <h3>Zenda</h3>
             <p>Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
             <div className="footer-badges">
-              <span>💜 100% Gratuito</span>
+              <span>Herramientas clínicas</span>
               <span>🛡️ Privado</span>
             </div>
           </div>
