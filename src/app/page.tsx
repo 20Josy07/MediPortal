@@ -19,7 +19,7 @@ export default function Home() {
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
               <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
-                Cómo funciona
+                Ventajas
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
               <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
@@ -45,11 +45,7 @@ export default function Home() {
             </div>
             <h1 className="leading-tighter">
               <span className="text-[#063C0F]">
-                Mejora la
-                <br />
-                calidad de tus
-                <br />
-                sesiones con
+                Mejora la<br />calidad de tus<br />sesiones con
               </span>
               <br />
               <span className="bg-gradient-to-r from-[#2A7F34] to-[#81D486] bg-clip-text text-transparent">Zenda</span>
