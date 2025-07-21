@@ -232,7 +232,8 @@
     }
 
     .how-it-works-section {
-        @apply bg-[#D2F4D3] py-16 px-[5%] text-center mt-0;
+        background-color: #87AF8D;
+        @apply py-16 px-[5%] text-center mt-0;
     }
 
     .how-it-works-section h2 {
@@ -564,6 +565,7 @@
 }
 
     
+
 
 
 
