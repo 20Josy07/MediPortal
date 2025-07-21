@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -63,6 +63,7 @@ export default function SmartNotesPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const audioFileInputRef = useRef<HTMLInputElement | null>(null);
   const chatScrollAreaRef = useRef<HTMLDivElement>(null);
 
 
@@ -129,7 +130,31 @@ export default function SmartNotesPage() {
         });
     }
   }, [chatHistory]);
-
+  
+  const transcribeAndSaveAudio = async (base64Audio: string) => {
+    if (!user || !db || !selectedPatientId) return;
+    setIsTranscribing(true);
+    try {
+      const { transcription } = await transcribeAudio({ audioDataUri: base64Audio });
+      if (transcription) {
+        const newNote: Omit<Note, 'id'> = {
+          title: `Nota de audio - ${new Date().toLocaleString()}`,
+          type: 'Voz',
+          content: transcription,
+          patientId: selectedPatientId,
+          createdAt: new Date(),
+        };
+        const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
+        setNotes(prevNotes => [addedNote, ...prevNotes]);
+        toast({ title: "Nota de audio guardada y transcrita." });
+      }
+    } catch (err) {
+      console.error("Transcription error:", err);
+      toast({ variant: "destructive", title: "Error al transcribir el audio." });
+    } finally {
+       setIsTranscribing(false);
+    }
+  };
 
   const startRecording = async () => {
     if (!selectedPatientId) {
@@ -146,34 +171,13 @@ export default function SmartNotesPage() {
       };
 
       mediaRecorderRef.current.onstop = async () => {
-        setIsTranscribing(true);
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const reader = new FileReader();
         reader.readAsDataURL(audioBlob);
         reader.onloadend = async () => {
           const base64Audio = reader.result as string;
-          try {
-            const { transcription } = await transcribeAudio({ audioDataUri: base64Audio });
-            
-            if (transcription && user && db && selectedPatientId) {
-              const newNote: Omit<Note, 'id'> = {
-                title: `Nota de voz - ${new Date().toLocaleString()}`,
-                type: 'Voz',
-                content: transcription,
-                patientId: selectedPatientId,
-                createdAt: new Date(),
-              };
-              const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
-              setNotes(prevNotes => [addedNote, ...prevNotes]);
-              toast({ title: "Nota de voz guardada y transcrita." });
-            }
-          } catch (err) {
-            console.error("Transcription error:", err);
-            toast({ variant: "destructive", title: "Error al transcribir la nota." });
-          } finally {
-             setIsTranscribing(false);
-             stream.getTracks().forEach(track => track.stop());
-          }
+          await transcribeAndSaveAudio(base64Audio);
+          stream.getTracks().forEach(track => track.stop());
         };
       };
 
@@ -324,6 +328,52 @@ export default function SmartNotesPage() {
     }
   };
   
+  const handleAudioFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!selectedPatientId) {
+      toast({ variant: "destructive", title: "Selecciona un paciente primero." });
+      return;
+    }
+
+    const allowedTypes = ['audio/mpeg', 'audio/wav'];
+    const maxSize = 10 * 1024 * 1024; // 10 MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        variant: "destructive",
+        title: "Formato de archivo no válido",
+        description: "Por favor, sube un archivo MP3 o WAV.",
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast({
+        variant: "destructive",
+        title: "Archivo demasiado grande",
+        description: "El tamaño del archivo no puede exceder los 10 MB.",
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = async () => {
+      const base64Audio = reader.result as string;
+      await transcribeAndSaveAudio(base64Audio);
+    };
+    reader.onerror = () => {
+        toast({ variant: "destructive", title: "Error al leer el archivo." });
+    }
+    
+    if (audioFileInputRef.current) {
+        audioFileInputRef.current.value = "";
+    }
+  };
+
+
   const handleAiChatSubmit = async () => {
     if (!chatInput.trim()) return;
     if (!selectedPatientId || notes.length === 0) {
@@ -401,26 +451,44 @@ export default function SmartNotesPage() {
                       <CardHeader>
                           <CardTitle>Transcripción Automática</CardTitle>
                           <CardDescription>
-                          Graba el audio de tu sesión y la IA lo transcribirá por ti.
+                          Graba o sube el audio de tu sesión y la IA lo transcribirá por ti.
                           </CardDescription>
                       </CardHeader>
                       <CardContent className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
-                          <Button
-                              size="icon"
-                              className={`h-24 w-24 rounded-full transition-all duration-300 ${isRecording ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-primary hover:bg-primary/90"}`}
-                              onClick={handleMicClick}
-                              disabled={isTranscribing || !selectedPatientId}
-                              >
-                              {isTranscribing ? (
-                                  <Loader2 className="h-10 w-10 animate-spin" />
-                              ) : isRecording ? (
-                                  <StopCircle className="h-10 w-10" />
-                              ) : (
-                                  <Mic className="h-10 w-10" />
-                              )}
-                          </Button>
+                          <div className="flex gap-4 items-center">
+                            <Button
+                                size="icon"
+                                className={`h-24 w-24 rounded-full transition-all duration-300 ${isRecording ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-primary hover:bg-primary/90"}`}
+                                onClick={handleMicClick}
+                                disabled={isTranscribing || !selectedPatientId}
+                                >
+                                {isTranscribing && !isRecording ? (
+                                    <Loader2 className="h-10 w-10 animate-spin" />
+                                ) : isRecording ? (
+                                    <StopCircle className="h-10 w-10" />
+                                ) : (
+                                    <Mic className="h-10 w-10" />
+                                )}
+                            </Button>
+                            <Button 
+                                variant="outline" 
+                                className="h-24 w-24 rounded-full flex flex-col gap-1"
+                                onClick={() => audioFileInputRef.current?.click()}
+                                disabled={isTranscribing || !selectedPatientId}
+                            >
+                                {isTranscribing ? <Loader2 className="h-8 w-8 animate-spin" /> : <Upload className="h-8 w-8" />}
+                                <span className="text-xs">Subir</span>
+                            </Button>
+                            <input 
+                                type="file"
+                                ref={audioFileInputRef}
+                                onChange={handleAudioFileChange}
+                                className="hidden"
+                                accept="audio/mpeg,audio/wav"
+                              />
+                          </div>
                           <p className="text-muted-foreground">
-                              {isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : !selectedPatientId ? "Selecciona un paciente para grabar" : "Iniciar Grabación"}
+                              {isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : !selectedPatientId ? "Selecciona un paciente para empezar" : "Iniciar Grabación o Subir Archivo"}
                           </p>
                       </CardContent>
                       </Card>
