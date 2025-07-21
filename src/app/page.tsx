@@ -41,7 +41,7 @@ export default function Home() {
         <section className="hero-section bg-hero">
           <div className="hero-content text-gray-800">
             <div className="tag">
-                <span>✨ Fácil • Privado • Impulsado por IA</span>
+                <span>Análisis Clínico • Notas Instantáneas • Seguimiento Visual</span>
             </div>
             <h1><span className="alumbra-highlight">Zenda</span><span className="text-primary">: Organiza tus citas, notas y evolución clínica desde un solo lugar.</span></h1>
             <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
