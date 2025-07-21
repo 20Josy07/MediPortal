@@ -45,7 +45,7 @@ export default function Home() {
             </div>
             <h1>
               <span className="text-[#063C0F]">Mejora la calidad de tus sesiones con </span>
-              <span className="text-primary">Zenda</span>
+              <span className="bg-gradient-to-r from-[#2A7F34] to-[#81D486] bg-clip-text text-transparent">Zenda</span>
             </h1>
             <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
