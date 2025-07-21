@@ -232,15 +232,15 @@
     }
 
     .how-it-works-section {
-        @apply bg-background py-16 px-[5%] text-center mt-0;
+        @apply bg-[#D2F4D3] py-16 px-[5%] text-center mt-0;
     }
 
     .how-it-works-section h2 {
-        @apply text-5xl font-extrabold mb-4 text-foreground;
+        @apply text-5xl font-extrabold mb-4 text-[#063C0F];
     }
 
     .how-it-works-section .subtitle {
-        @apply text-lg text-white/70 mb-12;
+        @apply text-lg text-gray-700 mb-12;
     }
 
     .steps-container {
@@ -248,7 +248,7 @@
     }
 
     .step-card {
-        @apply bg-secondary rounded-xl p-8 w-[280px] shadow-lg text-center relative overflow-hidden transition-transform duration-300 ease-in-out;
+        @apply bg-white rounded-xl p-8 w-[280px] shadow-lg text-center relative overflow-hidden transition-transform duration-300 ease-in-out;
     }
     
     .step-card:hover {
@@ -256,11 +256,11 @@
     }
     
     .step-number {
-        @apply absolute top-4 left-4 text-5xl font-extrabold text-white/10 z-[1];
+        @apply absolute top-4 left-4 text-5xl font-extrabold text-black/10 z-[1];
     }
     
     .icon-circle {
-        @apply bg-gradient-to-r from-[#FF007F] to-[#A020F0] rounded-full w-20 h-20 flex justify-center items-center mx-auto mb-6 shadow-lg relative z-[2];
+        @apply bg-gradient-to-r from-[#2A7F34] to-[#81D486] rounded-full w-20 h-20 flex justify-center items-center mx-auto mb-6 shadow-lg relative z-[2];
     }
 
     .icon-circle img {
@@ -268,11 +268,11 @@
     }
     
     .step-card h3 {
-        @apply text-2xl font-bold mb-3 text-foreground;
+        @apply text-2xl font-bold mb-3 text-[#063C0F];
     }
 
     .step-card p {
-        @apply text-base text-white/70 leading-normal;
+        @apply text-base text-gray-600 leading-normal;
     }
 
     .features-section {
@@ -564,6 +564,7 @@
 }
 
     
+
 
 
 
