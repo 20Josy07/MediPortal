@@ -232,7 +232,7 @@
     }
 
     .how-it-works-section {
-        @apply bg-secondary py-16 px-[5%] text-center mt-0;
+        @apply bg-background py-16 px-[5%] text-center mt-0;
     }
 
     .how-it-works-section h2 {
@@ -248,7 +248,7 @@
     }
 
     .step-card {
-        @apply bg-background rounded-xl p-8 w-[280px] shadow-lg text-center relative overflow-hidden transition-transform duration-300 ease-in-out;
+        @apply bg-secondary rounded-xl p-8 w-[280px] shadow-lg text-center relative overflow-hidden transition-transform duration-300 ease-in-out;
     }
     
     .step-card:hover {
@@ -564,6 +564,7 @@
 }
 
     
+
 
 
 
