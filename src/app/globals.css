@@ -232,7 +232,7 @@
     }
 
     .comparison-section {
-        background-color: #F0F0F0;
+        background-color: #DAEFDD;
         @apply py-16 px-[5%] text-center;
     }
 
@@ -611,6 +611,7 @@
 }
 
     
+
 
 
 
