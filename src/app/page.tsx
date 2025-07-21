@@ -149,7 +149,7 @@ export default function Home() {
                     <h3>Antes</h3>
                     <ul>
                         <li><X className="text-red-500" /> Terminabas cada sesión con horas de escritura manual</li>
-                        <li><X className="text-red-500" /> Dificultad para identificar patrones clínicos</li>
+                        <li><X className="text-red-500" /> Costaba conectar los puntos entre sesiones y pacientes</li>
                         <li><X className="text-red-500" /> Fragmentos de información dispersa</li>
                     </ul>
                 </div>
