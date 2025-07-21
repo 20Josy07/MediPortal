@@ -208,29 +208,6 @@ export default function Home() {
                 ))}
             </div>
         </section>
-        
-        <section className="mission-vision-section" id="mission">
-          <h2>Nuestra Misión y Visión</h2>
-          <p className="subtitle">El porqué detrás de Zenda.</p>
-          <div className="mission-vision-container">
-            <div className="mission-card">
-              <div className="icon-title">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/rocket.png" alt="Rocket Icon" width={30} height={30}/>
-                <h3>Misión</h3>
-              </div>
-              <p>Facilitar el trabajo de los psicólogos mediante una plataforma inteligente que centraliza herramientas clínicas y administrativas, permitiéndoles dedicar más tiempo y atención plena a sus pacientes.
-              Construimos tecnología que transforma la carga operativa en claridad, eficiencia y bienestar profesional, para que cada sesión cuente realmente.</p>
-            </div>
-            <div className="vision-card">
-              <div className="icon-title">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/visible.png" alt="Eye Icon" width={30} height={30}/>
-                <h3>Visión</h3>
-              </div>
-              <p>Ser la solución digital líder en Latinoamérica para psicólogos, redefiniendo la práctica clínica con IA accesible, intuitiva y profundamente humana.
-              Queremos que cada profesional de la salud mental cuente con herramientas que lo liberen, no que lo limiten, y que Zenda sea sinónimo de cuidado, confianza e innovación en el acompañamiento terapéutico.</p>
-            </div>
-          </div>
-        </section>
       </main>
       <footer>
         <div className="footer-container">

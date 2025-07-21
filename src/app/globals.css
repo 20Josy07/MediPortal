@@ -422,42 +422,6 @@
         @apply text-sm text-white/60 block;
     }
 
-    .mission-vision-section {
-        @apply bg-background py-16 px-[5%] text-center;
-    }
-
-    .mission-vision-section h2 {
-        @apply text-5xl font-extrabold mb-4 text-foreground;
-    }
-
-    .mission-vision-section .subtitle {
-        @apply text-lg text-white/70 mb-12;
-    }
-
-    .mission-vision-container {
-        @apply flex justify-center gap-16 flex-wrap max-w-6xl mx-auto;
-    }
-
-    .mission-card, .vision-card {
-        @apply flex-1 min-w-[300px] max-w-lg text-left p-8 rounded-xl bg-secondary shadow-lg;
-    }
-    
-    .icon-title {
-        @apply flex items-center gap-4 mb-6;
-    }
-    
-    .icon-title img {
-      filter: brightness(0) invert(1);
-    }
-
-    .icon-title h3 {
-        @apply text-3xl font-bold text-foreground m-0;
-    }
-
-    .mission-card p, .vision-card p {
-        @apply text-base text-white/80 leading-relaxed;
-    }
-    
     footer {
         @apply bg-secondary py-16 px-[5%] text-foreground text-sm;
     }
@@ -631,6 +595,7 @@
 }
 
     
+
 
 
 
