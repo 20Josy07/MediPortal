@@ -134,11 +134,10 @@ export function SignUpForm() {
             name="fullname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-white">Nombre Completo</FormLabel>
+                <FormLabel className="font-bold text-foreground">Nombre Completo</FormLabel>
                 <FormControl>
                   <Input 
                     placeholder="Tu nombre completo"
-                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
                     {...field} />
                 </FormControl>
                 <FormMessage />
@@ -150,11 +149,10 @@ export function SignUpForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-white">Correo Electrónico</FormLabel>
+                <FormLabel className="font-bold text-foreground">Correo Electrónico</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="nombre@ejemplo.com"
-                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
                     {...field} />
                 </FormControl>
                 <FormMessage />
@@ -166,11 +164,10 @@ export function SignUpForm() {
             name="username"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-white">Nombre de Usuario</FormLabel>
+                <FormLabel className="font-bold text-foreground">Nombre de Usuario</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Tu nombre de usuario"
-                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
                     {...field} />
                 </FormControl>
                 <FormMessage />
@@ -182,12 +179,11 @@ export function SignUpForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-white">Contraseña</FormLabel>
+                <FormLabel className="font-bold text-foreground">Contraseña</FormLabel>
                 <FormControl>
                   <Input 
                     type="password" 
-                    placeholder="••••••••" 
-                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
+                    placeholder="••••••••"
                     {...field} />
                 </FormControl>
                 <FormMessage />
@@ -199,11 +195,10 @@ export function SignUpForm() {
             name="dob"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-white">Fecha de Nacimiento</FormLabel>
+                <FormLabel className="font-bold text-foreground">Fecha de Nacimiento</FormLabel>
                 <FormControl>
                   <Input 
                     type="date"
-                    className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none"
                     {...field} />
                 </FormControl>
                 <FormMessage />
@@ -215,10 +210,10 @@ export function SignUpForm() {
             name="gender"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-white">Género</FormLabel>
+                <FormLabel className="font-bold text-foreground">Género</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger className="mt-1 w-full rounded-lg border-none bg-white/10 p-4 text-white h-auto placeholder:text-white/60 focus:border-inline focus:border-2 focus:border-primary focus:outline-none">
+                    <SelectTrigger>
                       <SelectValue placeholder="Selecciona tu género" />
                     </SelectTrigger>
                   </FormControl>
@@ -235,29 +230,30 @@ export function SignUpForm() {
         </div>
         
         <div className="flex-center mt-6">
-          <p className="social-login-text mb-4 text-sm text-white/70">O regístrate con</p>
+          <p className="social-login-text mb-4 text-sm text-muted-foreground">O regístrate con</p>
           <div className="flex items-center justify-center gap-5">
              <Button
                 onClick={handleGoogleSignIn}
                 disabled={isGoogleLoading}
                 variant="outline"
-                className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#d62976] p-0 border-0"
+                size="icon"
+                className="group h-12 w-12 rounded-full flex items-center justify-center"
              >
-                {isGoogleLoading ? <Loader2 className="h-7 w-7 animate-spin" /> : <GoogleIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />}
+                {isGoogleLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <GoogleIcon className="h-6 w-6 text-foreground" />}
              </Button>
-             <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#00acee]">
-                <FacebookIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
-             </a>
-             <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#0072b1]">
-                <LinkedinIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
-             </a>
-              <a href="#" className="group h-14 w-14 rounded-full bg-primary flex items-center justify-center overflow-hidden transition-colors duration-300 hover:bg-[#128C7E]">
-                <MicrosoftIcon className="h-7 w-7 text-white transition-transform duration-300 group-hover:animate-[slide-in-top_0.3s_both]" />
-             </a>
+             <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+                <FacebookIcon className="h-6 w-6 text-foreground" />
+             </Button>
+             <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+                <LinkedinIcon className="h-6 w-6 text-foreground" />
+             </Button>
+              <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+                <MicrosoftIcon className="h-6 w-6 text-foreground" />
+             </Button>
           </div>
         </div>
         
-        <Button type="submit" className="login-shimmer-button w-full mt-8 h-auto" disabled={isLoading}>
+        <Button type="submit" className="w-full mt-8 text-base font-bold" size="lg" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Registrarse
         </Button>

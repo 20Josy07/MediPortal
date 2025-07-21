@@ -5,91 +5,81 @@
 
 @layer base {
   :root {
-    --primary-bg: 264 70% 12%; /* #1d0535 */
-    --secondary-bg: 265 100% 18%; /* #30005A */
-    --text-color: 240 100% 97%; /* #F0F0F0 */
-    --highlight-yellow: 54 100% 61%; /* #FFEB3B */
-    --highlight-purple: 284 100% 64%; /* #D147FF */
-    --button-secondary-border: 276 85% 56%; /* #A020F0 */
-    --code-window-bg: 270 100% 10%; /* #1A0033 */
-    --code-window-border: 266 70% 28%; /* #4A0080 */
-    --dot-red: #FF605C;
-    --dot-yellow: #FFBD44;
-    --dot-green: #00CA4E;
-    --status-negative-bg: 266 70% 28%; /* #4A0080 */
-    --status-text: #FF4D4D;
+    --background: 220 20% 98%;
+    --foreground: 220 10% 20%;
 
-    --background: 264 70% 12%; /* Updated from --primary-bg */
-    --foreground: 240 100% 97%; /* #F0F0F0 */
+    --card: 0 0% 100%;
+    --card-foreground: 220 10% 20%;
 
-    --card: 265 100% 18%; /* #30005A */
-    --card-foreground: 240 100% 97%; /* #F0F0F0 */
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 10% 20%;
+    
+    --primary: 130 50% 45%; /* #38b284 */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 220 10% 90%;
+    --secondary-foreground: 220 10% 20%;
 
-    --popover: 265 100% 18%; /* #30005A */
-    --popover-foreground: 240 100% 97%; /* #F0F0F0 */
+    --muted: 220 10% 90%;
+    --muted-foreground: 220 10% 45%;
     
-    --primary: 274 71% 52%; /* #8e2de2 */
-    --primary-foreground: 240 100% 97%; /* #F0F0F0 */
+    --accent: 220 10% 90%;
+    --accent-foreground: 220 10% 20%;
     
-    --secondary: 265 100% 18%; /* #30005A */
-    --secondary-foreground: 240 100% 97%;
-
-    --muted: 266 70% 28%; /* #4A0080 */
-    --muted-foreground: 240 4.8% 95.9%;
-    
-    --accent: 284 100% 64%; /* #D147FF */
-    --accent-foreground: 240 100% 97%;
-    
-    --destructive: 0 84.2% 60.2%; /* ShadCN Destructive */
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 266 70% 28%; /* #4A0080 */
-    --input: 257 88% 13%; /* rgba(255, 255, 255, 0.1) on #1d0535 -> #2a0e4a */
-    --ring: 284 100% 64%; /* #D147FF */
+    --border: 220 10% 85%;
+    --input: 220 10% 90%;
+    --ring: 130 50% 45%;
 
     --radius: 0.5rem;
 
-    --chart-1: 274 71% 52%;
+    --chart-1: 130 50% 45%;
     --chart-2: 142.1 76.2% 36.3%;
     --chart-3: 35.8 91.7% 53.1%;
     --chart-4: 217.2 91.2% 59.8%;
     --chart-5: 0 84.2% 60.2%;
+    
+    --sidebar-background: 130 20% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 130 50% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 130 20% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 130 20% 20%;
+    --sidebar-ring: 130 50% 45%;
+
   }
 
   .dark {
-    --background: 264 70% 12%; /* #1d0535 */
-    --foreground: 240 100% 97%; /* #F0F0F0 */
+    --background: 130 20% 10%;
+    --foreground: 0 0% 98%;
 
-    --card: 265 100% 18%; /* #30005A */
-    --card-foreground: 240 100% 97%; /* #F0F0F0 */
+    --card: 130 20% 15%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 265 100% 18%; /* #30005A */
-    --popover-foreground: 240 100% 97%; /* #F0F0F0 */
+    --popover: 130 20% 15%;
+    --popover-foreground: 0 0% 98%;
     
-    --primary: 274 71% 52%; /* #8e2de2 */
-    --primary-foreground: 240 100% 97%; /* #F0F0F0 */
+    --primary: 130 50% 55%;
+    --primary-foreground: 0 0% 100%;
     
-    --secondary: 265 100% 18%; /* #30005A */
-    --secondary-foreground: 240 100% 97%;
+    --secondary: 130 20% 20%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 266 70% 28%; /* #4A0080 */
-    --muted-foreground: 240 4.8% 95.9%;
+    --muted: 130 20% 20%;
+    --muted-foreground: 130 10% 65%;
     
-    --accent: 284 100% 64%; /* #D147FF */
-    --accent-foreground: 240 100% 97%;
+    --accent: 130 20% 20%;
+    --accent-foreground: 0 0% 98%;
     
-    --destructive: 0 84.2% 60.2%; /* ShadCN Destructive */
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 266 70% 28%; /* #4A0080 */
-    --input: 257 88% 13%; /* rgba(255, 255, 255, 0.1) on #1d0535 -> #2a0e4a */
-    --ring: 284 100% 64%; /* #D147FF */
-
-    --chart-1: 274 71% 52%;
-    --chart-2: 142.1 76.2% 36.3%;
-    --chart-3: 35.8 91.7% 53.1%;
-    --chart-4: 217.2 91.2% 59.8%;
-    --chart-5: 0 84.2% 60.2%;
+    --border: 130 20% 25%;
+    --input: 130 20% 20%;
+    --ring: 130 50% 55%;
   }
 }
 
@@ -273,7 +263,8 @@
     }
 
     .how-it-works-section {
-      @apply py-16 px-4 bg-white;
+      background-color: #DAEFDD;
+      @apply py-16 px-4;
     }
 
     .how-it-works-title {
@@ -595,6 +586,7 @@
 }
 
     
+
 
 
 

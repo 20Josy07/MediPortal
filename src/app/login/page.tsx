@@ -5,25 +5,25 @@ import { LoginForm } from "@/components/auth/login-form";
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-5">
-      <div className="w-full max-w-md rounded-2xl bg-background p-10 text-center shadow-[0_10px_30px_rgba(255,255,255,0.5)] backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl bg-card border border-border p-10 text-center shadow-lg">
         <div className="mb-8">
           <Image
-            src="https://i.postimg.cc/59L8Lbsj/og-image.png"
+            src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"
             alt="Logo Zenda"
-            width={100}
-            height={100}
-            className="mx-auto mb-2.5 h-auto w-auto max-w-[100px]"
+            width={80}
+            height={80}
+            className="mx-auto mb-4 h-auto w-auto max-w-[80px]"
           />
-          <h1 className="mb-2.5 text-4xl font-bold text-white">
+          <h1 className="mb-2 text-3xl font-bold text-foreground">
             Bienvenido de nuevo
           </h1>
-          <p className="text-lg text-white/80">
+          <p className="text-base text-muted-foreground">
             Inicia sesión para acceder a tu cuenta.
           </p>
         </div>
         <LoginForm />
-        <div className="mt-4 text-center">
-          <span className="text-sm">
+        <div className="mt-6 text-center">
+          <span className="text-sm text-muted-foreground">
             ¿No tienes cuenta?{" "}
             <Link href="/signup" className="font-bold text-primary hover:underline">
               Regístrate

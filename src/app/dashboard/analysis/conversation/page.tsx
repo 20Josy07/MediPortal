@@ -26,7 +26,7 @@ export default function ConversationAnalysisPage() {
     <div className="flex-1 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">Análisis de Conversación</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Análisis de Conversación</h1>
           <p className="text-muted-foreground mt-2">
             Ingresa el texto de tu conversación abajo para obtener percepciones impulsadas por IA.
           </p>
