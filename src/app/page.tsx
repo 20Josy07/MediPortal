@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
@@ -52,7 +53,12 @@ export default function Home() {
             </h1>
             <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
-                <Button asChild className="primary-button"><Link href="/login">Inicia sesión ahora</Link></Button>
+                <Button asChild size="lg" className="group font-body font-bold w-full sm:w-auto shadow-lg shadow-primary/30 transition-all duration-300 bg-primary text-primary-foreground hover:bg-gradient-to-br hover:from-primary hover:to-green-800">
+                    <Link href="/login">
+                        Quiero potenciar mis sesiones
+                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                </Button>
                 <Button asChild variant="outline" className="py-4 px-8 rounded-lg text-base font-bold text-[#063C0F] border-[#063C0F] border-2 bg-white" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
             </div>
           </div>
@@ -245,3 +251,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
