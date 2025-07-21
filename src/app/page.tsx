@@ -53,7 +53,7 @@ export default function Home() {
             <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
                 <Button asChild className="primary-button"><Link href="/login">Inicia sesión ahora</Link></Button>
-                <Button asChild variant="outline" className="py-4 px-8 rounded-full text-base font-bold text-[#063C0F] border-[#063C0F] border-2 bg-white hover:bg-gray-100" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
+                <Button asChild variant="outline" className="py-4 px-8 rounded-lg text-base font-bold text-[#063C0F] border-[#063C0F] border-2 bg-white" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
             </div>
           </div>
           <div className="hero-image">
