@@ -6,31 +6,31 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="fixed top-0 w-full bg-[#E2FAE2] shadow-md z-50 border-b border-gray-300">
+      <header className="fixed top-0 w-full bg-[#18441E] shadow-md z-50 border-b border-[#18441E]">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link className="flex items-center" href="/">
               <Image alt="Zenda Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/59L8Lbsj/og-image.png" style={{color: 'transparent'}} />
-              <span className="ml-2 text-xs font-semibold text-zinc-800 border border-zinc-800/50 px-2 py-0.5 rounded-full">BETA</span>
+              <span className="ml-2 text-xs font-semibold text-white border border-white/50 px-2 py-0.5 rounded-full">BETA</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
-              <Link className="text-zinc-800 hover:text-zinc-600 transition-all duration-300 ease-in-out relative group text-base font-medium" href="/">
+              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="/">
                 Inicio
-                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-zinc-800 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-zinc-800 hover:text-zinc-600 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
+              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
                 Cómo funciona
-                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-zinc-800 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-zinc-800 hover:text-zinc-600 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
+              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
                 Funcionalidades
-                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-zinc-800 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <a className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 bg-[#063C0F] hover:bg-[#063C0F]/90 text-white font-semibold px-6 py-2 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-base" href="/login">
+              <a className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 bg-white hover:bg-white/90 text-[#063C0F] font-semibold px-6 py-2 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-base" href="/login">
                 Iniciar sesión
               </a>
             </nav>
-            <button className="md:hidden text-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-800 rounded-md" aria-label="Toggle menu">
+            <button className="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-white rounded-md" aria-label="Toggle menu">
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
             </button>
           </div>
