@@ -58,7 +58,7 @@ export default function Home() {
           </div>
           <div className="hero-image">
              <Image 
-                src="https://i.postimg.cc/6QghnGQg/Psicologo.png" 
+                src="https://i.postimg.cc/G2Qyxhmy/Psicologo-Zenda.png" 
                 alt="Psicólogo usando Zenda en una tablet" 
                 width={600}
                 height={600}
