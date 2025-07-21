@@ -66,7 +66,7 @@ export default function Home() {
             <div className="flex items-center justify-center gap-8 bg-hero rounded-2xl p-8 shadow-lg max-w-4xl mx-auto">
                 <div className="flex-shrink-0 hidden md:block">
                     <Image 
-                        src="https://i.postimg.cc/MKY0qw2H/replicate-prediction-4tz64rrrj9rgc0cr5vntt6j1aw.png"
+                        src="https://i.postimg.cc/90JczQjX/replicate-prediction-rrhfmdd58drg80cr5w9t956axw.png"
                         alt="Psicólogo usando Zenda en una tablet" 
                         width={280}
                         height={420}
@@ -268,4 +268,3 @@ export default function Home() {
     </div>
   );
 }
-
