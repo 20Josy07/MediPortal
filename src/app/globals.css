@@ -144,7 +144,7 @@
     }
 
     .hero-content .tag {
-        @apply bg-[#B9EFBA] py-2 px-4 rounded-full inline-block mb-4 text-sm font-bold text-gray-800;
+        @apply bg-[#E1E1E1] py-2 px-4 rounded-full inline-block mb-4 text-sm font-bold text-gray-800;
     }
 
     .hero-content h1 {
@@ -564,6 +564,7 @@
 }
 
     
+
 
 
 

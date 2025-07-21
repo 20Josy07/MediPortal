@@ -18,7 +18,7 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         'alumbra-purple': '#301744',
-        'hero': '#f3eefc',
+        hero: '#f3eefc',
         card: {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
