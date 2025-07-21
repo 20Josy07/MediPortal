@@ -2,7 +2,34 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, BarChart, Folder, X, Check } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder, X, Check, Scissors, Library, PenSquare } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+
+const advantages = [
+  {
+    icon: <Scissors className="h-8 w-8 text-[#063C0F]" />,
+    title: "Plantillas personalizables",
+    description: "Ajusta formatos según tu estilo clínico en segundos.",
+    image: "https://i.postimg.cc/tJ72VzD1/replicate-prediction-q6ywnaddbtfey0cr5wxghd1nhe.png",
+    hint: "note template",
+  },
+  {
+    icon: <Library className="h-8 w-8 text-[#063C0F]" />,
+    title: "Historial centralizado",
+    description: "Todo el proceso terapéutico en un solo lugar, con filtros por fecha, tema o cliente.",
+    image: "https://i.postimg.cc/9Q6tXgNT/replicate-prediction-8i9j3rdx7krh80cr5x9s64jys0.png",
+    hint: "patient chart",
+  },
+  {
+    icon: <PenSquare className="h-8 w-8 text-[#063C0F]" />,
+    title: "Notas y resúmenes automáticos",
+    description: "Tu plataforma redacta la nota SOAP o DAP y extrae insights clave.",
+    image: "https://i.postimg.cc/tJ72VzD1/replicate-prediction-q6ywnaddbtfey0cr5wxghd1nhe.png",
+    hint: "automatic notes",
+  },
+];
+
 
 export default function Home() {
   return (
@@ -108,53 +135,32 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="features-section" id="features">
-          <h2>Funcionalidades que te protegen</h2>
-          <p className="subtitle">Herramientas poderosas diseñadas para tu bienestar emocional y privacidad</p>
-          <div className="features-container">
-            <div className="feature-card">
-              <div className="icon-circle-small">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/lightning-bolt.png" alt="Lightning Bolt Icon" width={30} height={30}/>
-              </div>
-              <h3>Agenda Inteligente</h3>
-              <p>Gestiona tus citas, recordatorios automáticos y disponibilidad en un solo lugar.</p>
-            </div>
-            <div className="feature-card">
-              <div className="icon-circle-small">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/brain.png" alt="Brain Icon" width={30} height={30}/>
-              </div>
-              <h3>Notas de Sesión con IA</h3>
-              <p>Genera notas SOAP y resúmenes clínicos estructurados automáticamente.</p>
-            </div>
-            <div className="feature-card">
-              <div className="icon-circle-small">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/heart-outline.png" alt="Heart Icon" width={30} height={30}/>
-              </div>
-              <h3>Seguimiento de Evolución</h3>
-              <p>Visualiza el progreso de tus pacientes con gráficos y métricas claras.</p>
-            </div>
-            <div className="feature-card">
-              <div className="icon-circle-small">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/shield.png" alt="Shield Icon" width={30} height={30}/>
-              </div>
-              <h3>Máxima Privacidad</h3>
-              <p>Cumplimiento HIPAA y encriptación de extremo a extremo para proteger tus datos.</p>
-            </div>
-            <div className="feature-card">
-              <div className="icon-circle-small">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/smartphone.png" alt="Smartphone Icon" width={30} height={30}/>
-              </div>
-              <h3>Portal del Paciente</h3>
-              <p>Un espacio seguro para que tus pacientes accedan a su información y citas.</p>
-            </div>
-            <div className="feature-card">
-              <div className="icon-circle-small">
-                <Image src="https://img.icons8.com/ios-filled/50/ffffff/community.png" alt="Community Icon" width={30} height={30}/>
-              </div>
-              <h3>Facturación Simplificada</h3>
-              <p>Crea y envía facturas a tus pacientes de forma sencilla e integrada.</p>
-            </div>
-          </div>
+        <section className="advantages-section" id="features">
+          <h2 className="advantages-title">Ventajas que notarás desde el primer día</h2>
+          <Carousel className="w-full max-w-5xl mx-auto" opts={{ loop: true }}>
+            <CarouselContent>
+              {advantages.map((advantage, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1">
+                    <Card className="advantage-card">
+                      <CardContent className="flex flex-col items-center text-center p-6">
+                        <div className="advantage-image-container">
+                           <Image src={advantage.image} alt={advantage.title} layout="fill" objectFit="cover" className="rounded-t-lg" data-ai-hint={advantage.hint} />
+                        </div>
+                        <div className="advantage-icon-wrapper">
+                          {advantage.icon}
+                        </div>
+                        <h3 className="text-xl font-bold mt-4 text-[#063C0F]">{advantage.title}</h3>
+                        <p className="text-gray-600 mt-2">{advantage.description}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </section>
 
         <section className="testimonials-section" id="testimonials">

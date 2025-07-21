@@ -318,6 +318,31 @@
         @apply text-base text-gray-600 leading-normal;
     }
 
+    .advantages-section {
+        background-color: #f7faf9;
+        @apply py-16 px-[5%] text-center;
+    }
+
+    .advantages-title {
+        @apply text-4xl font-extrabold mb-12 text-[#063C0F];
+    }
+
+    .advantage-card {
+        @apply bg-white rounded-xl shadow-lg transition-transform duration-300 ease-in-out h-full;
+    }
+
+    .advantage-card:hover {
+        @apply -translate-y-2 shadow-2xl;
+    }
+
+    .advantage-image-container {
+        @apply relative w-full h-48 mb-[-40px];
+    }
+    
+    .advantage-icon-wrapper {
+        @apply bg-gray-200/80 backdrop-blur-sm rounded-lg w-16 h-16 flex justify-center items-center mx-auto shadow-md relative z-10 border border-white/50;
+    }
+
     .features-section {
         @apply bg-background py-16 px-[5%] text-center;
     }
@@ -611,6 +636,7 @@
 }
 
     
+
 
 
 
