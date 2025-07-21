@@ -18,8 +18,8 @@ export default function Home() {
                 Inicio
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#testimonials">
-                Testimonios
+              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
+                Cómo funciona
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
               <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#mission">
