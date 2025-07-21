@@ -1,4 +1,6 @@
 
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -146,7 +148,7 @@ export default function Home() {
                 <div className="before-card">
                     <h3>Antes</h3>
                     <ul>
-                        <li><X className="text-red-500" /> Notas manuales que llevan horas tras cada sesión</li>
+                        <li><X className="text-red-500" /> Terminabas cada sesión con horas de escritura manual</li>
                         <li><X className="text-red-500" /> Dificultad para identificar patrones clínicos</li>
                         <li><X className="text-red-500" /> Fragmentos de información dispersa</li>
                     </ul>
