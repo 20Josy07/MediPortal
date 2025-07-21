@@ -47,9 +47,9 @@ export default function Home() {
               <span className="text-[#063C0F]">
                 Mejora la
                 <br />
-                calidad de
+                calidad de tus
                 <br />
-                tus sesiones con
+                sesiones con
               </span>
               <br />
               <span className="bg-gradient-to-r from-[#2A7F34] to-[#81D486] bg-clip-text text-transparent">Zenda</span>
