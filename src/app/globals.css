@@ -168,11 +168,11 @@
     }
 
     .primary-button {
-        @apply bg-gradient-to-r from-[#FF007F] to-[#A020F0] text-foreground border-none shadow-[0_8px_25px_rgba(255,0,127,0.6)];
+        @apply bg-gradient-to-r from-[#2A7F34] to-[#81D486] text-white border-none shadow-[0_8px_25px_rgba(42,127,52,0.6)];
     }
 
     .primary-button:hover {
-        @apply -translate-y-1 shadow-[0_12px_30px_rgba(255,0,127,0.8)];
+        @apply -translate-y-1 shadow-[0_12px_30px_rgba(42,127,52,0.8)];
     }
 
     .secondary-button {
@@ -564,6 +564,7 @@
 }
 
     
+
 
 
 
