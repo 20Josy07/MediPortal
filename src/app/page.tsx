@@ -58,13 +58,13 @@ export default function Home() {
           </div>
           <div className="hero-image">
              <Image 
-                src="https://i.postimg.cc/G2Qyxhmy/Psicologo-Zenda.png" 
+                src="https://i.postimg.cc/MKY0qw2H/replicate-prediction-4tz64rrrj9rgc0cr5vntt6j1aw.png" 
                 alt="Psicólogo usando Zenda en una tablet" 
                 width={600}
                 height={600}
                 className="rounded-lg max-w-md w-full h-auto"
                 style={{ filter: 'drop-shadow(0 20px 25px rgba(0, 0, 0, 0.4))' }}
-                data-ai-hint="psychologist tablet"
+                data-ai-hint="psychologist patient"
                 priority
               />
           </div>
