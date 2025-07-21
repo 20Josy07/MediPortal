@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, BarChart, Folder, X, Check, Scissors, Library, PenSquare } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder, X, Check, Scissors, Library, PenSquare, UserPlus, Calendar, Sparkles } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
@@ -29,6 +29,33 @@ const advantages = [
     hint: "automatic notes",
   },
 ];
+
+const howItWorksSteps = [
+    {
+        number: 1,
+        icon: <UserPlus className="h-8 w-8 text-[#063C0F]" />,
+        title: "Regístrate en 2 minutos",
+        description: "Crea tu cuenta de forma rápida y segura.",
+    },
+    {
+        number: 2,
+        icon: <FileText className="h-8 w-8 text-[#063C0F]" />,
+        title: "Configura tus plantillas",
+        description: "Elige SOAP, DAP u otro formato que se ajuste a tu estilo.",
+    },
+    {
+        number: 3,
+        icon: <Calendar className="h-8 w-8 text-[#063C0F]" />,
+        title: "Conecta tu calendario",
+        description: "Sincroniza tus pacientes y citas existentes.",
+    },
+    {
+        number: 4,
+        icon: <Sparkles className="h-8 w-8 text-[#063C0F]" />,
+        title: "Inicia tus sesiones",
+        description: "Deja que Zenda genere notas e insights automáticamente.",
+    }
+]
 
 
 export default function Home() {
@@ -163,41 +190,23 @@ export default function Home() {
           </Carousel>
         </section>
 
-        <section className="testimonials-section" id="testimonials">
-          <h2>Lo que dicen nuestros usuarios</h2>
-          <p className="subtitle">Psicólogos como tú ya están transformando su práctica con Zenda.</p>
-          <div className="testimonials-container">
-            <div className="testimonial-card">
-              <p>"Zenda ha sido un antes y un después. La función de notas con IA me ahorra horas a la semana, permitiéndome enfocarme más en la terapia y menos en el papeleo."</p>
-              <div className="author-info">
-                <div className="author-avatar"></div>
-                <div>
-                  <span className="author-name">Dr. Ana Torres</span>
-                  <span className="author-title">Psicóloga Clínica</span>
-                </div>
-              </div>
+        <section className="how-it-works-section" id="how-it-works-steps">
+            <h2 className="how-it-works-title">¿Cómo funciona?</h2>
+            <p className="how-it-works-subtitle">Empieza a potenciar tus sesiones en cuatro simples pasos.</p>
+            <div className="steps-container">
+                {howItWorksSteps.map((step) => (
+                    <div key={step.number} className="step-card">
+                        <div className="step-icon-container">
+                            <div className="step-icon-background">
+                                {step.icon}
+                            </div>
+                            <div className="step-number">{step.number}</div>
+                        </div>
+                        <h3 className="step-title">{step.title}</h3>
+                        <p className="step-description">{step.description}</p>
+                    </div>
+                ))}
             </div>
-            <div className="testimonial-card">
-              <p>"La interfaz es increíblemente intuitiva y minimalista. Mis pacientes adoran la facilidad para agendar y gestionar sus citas a través del portal. ¡Totalmente recomendado!"</p>
-              <div className="author-info">
-                <div className="author-avatar"></div>
-                <div>
-                  <span className="author-name">Lic. Carlos Vega</span>
-                  <span className="author-title">Terapeuta Cognitivo-Conductual</span>
-                </div>
-              </div>
-            </div>
-            <div className="testimonial-card">
-              <p>"Finalmente una plataforma que entiende las necesidades de los psicólogos. La seguridad y la privacidad son robustas, lo que me da total tranquilidad para manejar la información sensible de mis pacientes."</p>
-              <div className="author-info">
-                <div className="author-avatar"></div>
-                <div>
-                  <span className="author-name">Dra. Sofía Ramos</span>
-                  <span className="author-title">Psicoanalista</span>
-                </div>
-              </div>
-            </div>
-          </div>
         </section>
         
         <section className="mission-vision-section" id="mission">
