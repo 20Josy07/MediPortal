@@ -53,7 +53,7 @@ export default function Home() {
             </h1>
             <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
-                <Button asChild size="lg" className="group font-body font-bold w-full sm:w-auto shadow-lg shadow-primary/30 transition-all duration-300 bg-primary text-primary-foreground hover:bg-gradient-to-br hover:from-primary hover:to-green-800">
+                <Button asChild size="lg" className="group font-body font-bold w-full sm:w-auto shadow-lg shadow-primary/30 transition-all duration-300 bg-[#357D3D] text-primary-foreground hover:bg-[#357D3D]/90">
                     <Link href="/login">
                         Quiero potenciar mis sesiones
                         <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
