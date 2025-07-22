@@ -41,7 +41,7 @@ const prompt = ai.definePrompt({
   Por favor, reformatea el contenido de la nota para que siga la estructura de la plantilla {{{template}}}.
 
   Si la plantilla es "SOAP", la estructura debe ser:
-  S (Subjetivo): Información que el paciente reporta.
+  S (Subjetivo): En esta sección, debes resumir la información que el paciente reporta. No transcribas el texto literalmente; en su lugar, interpreta y sintetiza las ideas, sentimientos y eventos clave que el paciente comunica, redactándolo como lo haría un profesional.
   O (Objetivo): **IMPORTANTE: Deja esta sección en blanco.** El psicólogo la rellenará manualmente con sus observaciones.
   A (Análisis/Evaluación): Tu análisis profesional de la situación.
   P (Plan): El plan de tratamiento a seguir.
