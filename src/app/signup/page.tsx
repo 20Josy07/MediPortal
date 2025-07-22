@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { SignUpForm } from "@/components/auth/signup-form";
@@ -8,7 +9,7 @@ export default function SignUpPage() {
       <div className="w-full max-w-2xl rounded-2xl bg-card border border-border p-10 text-center shadow-lg">
         <div className="mb-8">
           <Image
-            src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"
+            src="https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png"
             alt="Logo Zenda"
             width={80}
             height={80}

@@ -15,7 +15,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Logo } from "@/components/icons";
 import {
   Users,
   Calendar,
@@ -27,6 +26,7 @@ import {
   Video,
 } from "lucide-react";
 import * as React from 'react';
+import Image from "next/image";
 
 
 export function DashboardSidebar() {
@@ -37,8 +37,8 @@ export function DashboardSidebar() {
     <Sidebar className="border-r">
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2">
-          <Logo className="w-7 h-7 text-primary" />
-          <span className="font-bold text-lg">Psicólogo</span>
+          <Image src="https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png" alt="Zenda Logo" width={28} height={28} className="text-primary" />
+          <span className="font-bold text-lg">Zenda</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">
