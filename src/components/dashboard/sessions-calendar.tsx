@@ -415,8 +415,7 @@ export function SessionsCalendar() {
                     style={{ top: `${top}px`, height: `${height}px` }}
                   >
                     <span className="font-bold truncate">{session.patientName}</span>
-                    <span className="truncate">{session.type}</span>
-                    <span className={cn(session.duration <= 45 && "ml-auto")}>{format(session.date, 'p', { locale: es })}</span>
+                    <span className="truncate">{session.type} ({format(session.date, 'p', { locale: es })} - {format(session.endDate, 'p', { locale: es })})</span>
                   </div>
               )
             })}
