@@ -32,8 +32,8 @@ export default function PrivacyPage() {
                 <li>Comunicarnos contigo sobre productos, servicios, ofertas, promociones, recompensas y eventos ofrecidos por Zenda y otros, y proporcionar noticias e información que creemos que será de tu interés.</li>
             </ul>
              <div className="text-center mt-8">
-                <Link href="/signup" className="font-bold text-primary hover:underline">
-                    Volver al registro
+                <Link href="/" className="font-bold text-primary hover:underline">
+                    Volver al home
                 </Link>
             </div>
         </CardContent>
