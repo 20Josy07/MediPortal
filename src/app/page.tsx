@@ -78,33 +78,28 @@ function HeroImage() {
     setMounted(true);
   }, []);
 
+  const logoLight = "https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png";
+  const logoDark = "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
+  
   if (!mounted) {
     return (
-      <div className="relative w-full aspect-square max-w-lg mx-auto flex items-center justify-center">
-        <div className="w-full h-full bg-muted rounded-2xl" />
+      <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8">
+        <div style={{width: '128px', height: '128px'}}></div>
       </div>
     );
   }
 
+  const currentLogo = resolvedTheme === "dark" ? logoDark : logoLight;
+
   return (
       <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8">
-          <svg
-              width="128"
-              height="128"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-primary"
-          >
-              <path d="M15.51 4.39a1 1 0 0 1 1.49-.09 10.16 10.16 0 0 1 3.5 7.7c0 5.52-4.48 10-10 10S4 17.52 4 12a10 10 0 0 1 7-9.54" />
-              <path d="M12 12a4 4 0 0 0-4-4m0 0a4 4 0 1 0 0 8" />
-              <path d="M12 12a4 4 0 0 1 4-4m0 0a4 4 0 1 1 0 8" />
-              <path d="M12 14v8" />
-              <path d="M12 4V2" />
-          </svg>
+          <Image
+            src={currentLogo}
+            alt="Zenda Logo"
+            width={128}
+            height={128}
+            priority
+          />
           <ul className="space-y-4 w-full max-w-sm">
               <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
                   <FileText className="h-5 w-5 text-primary" />
