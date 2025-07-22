@@ -17,8 +17,13 @@ const ReformatNoteInputSchema = z.object({
 export type ReformatNoteInput = z.infer<typeof ReformatNoteInputSchema>;
 
 const ReformatNoteOutputSchema = z.object({
-  reformattedContent: z.string().describe('The note content reformatted according to the selected template.'),
+  subjective: z.string().optional().describe('Subjective information reported by the patient. Only for SOAP notes.'),
+  objective: z.string().optional().describe('Objective observations. Explicitly leave blank for SOAP notes.'),
+  assessment: z.string().describe('Professional assessment of the situation.'),
+  plan: z.string().describe('The treatment plan.'),
+  data: z.string().optional().describe('Combined subjective and objective data. Only for DAP notes.'),
 });
+
 export type ReformatNoteOutput = z.infer<typeof ReformatNoteOutputSchema>;
 
 export async function reformatNote(input: ReformatNoteInput): Promise<ReformatNoteOutput> {
@@ -29,7 +34,7 @@ const prompt = ai.definePrompt({
   name: 'reformatNotePrompt',
   input: { schema: ReformatNoteInputSchema },
   output: { schema: ReformatNoteOutputSchema },
-  prompt: `Eres un asistente de IA para psicólogos. Tu tarea es reformatear una nota clínica según una plantilla estándar.
+  prompt: `Eres un asistente de IA para psicólogos. Tu tarea es reformatear una nota clínica según una plantilla estándar, devolviendo los datos en el formato JSON especificado.
 
   Aquí está la plantilla seleccionada: {{{template}}}
   
@@ -38,20 +43,20 @@ const prompt = ai.definePrompt({
   {{{content}}}
   ---
 
-  Por favor, reformatea el contenido de la nota para que siga la estructura de la plantilla {{{template}}}.
+  Por favor, procesa el contenido y rellena los campos del JSON de salida.
 
   Si la plantilla es "SOAP", la estructura debe ser:
-  S (Subjetivo): En esta sección, debes resumir la información que el paciente reporta. No transcribas el texto literalmente; en su lugar, interpreta y sintetiza las ideas, sentimientos y eventos clave que el paciente comunica, redactándolo como lo haría un profesional.
-  O (Objetivo): **IMPORTANTE: Deja esta sección explícitamente en blanco.** El psicólogo la rellenará manualmente con sus observaciones. No incluyas ningún texto en esta sección.
-  A (Análisis/Evaluación): Tu análisis profesional de la situación.
-  P (Plan): El plan de tratamiento a seguir.
+  - subjective: En esta sección, debes resumir la información que el paciente reporta. No transcribas el texto literalmente; en su lugar, interpreta y sintetiza las ideas, sentimientos y eventos clave que el paciente comunica, redactándolo como lo haría un profesional.
+  - objective: **IMPORTANTE: Deja este campo como una cadena vacía "".** El psicólogo la rellenará manualmente con sus observaciones.
+  - assessment: Tu análisis profesional de la situación.
+  - plan: El plan de tratamiento a seguir.
   
   Si la plantilla es "DAP", la estructura debe ser:
-  D (Datos): Datos subjetivos y objetivos combinados.
-  A (Análisis/Evaluación): Tu análisis profesional de la situación.
-  P (Plan): El plan de tratamiento a seguir.
+  - data: Combina los datos subjetivos y objetivos de la nota original.
+  - assessment: Tu análisis profesional de la situación.
+  - plan: El plan de tratamiento a seguir.
 
-  Asegúrate de que el resultado final solo contenga el texto formateado, sin comentarios adicionales.
+  Asegúrate de que el resultado final sea un objeto JSON válido que se ajuste al esquema de salida.
   `,
 });
 

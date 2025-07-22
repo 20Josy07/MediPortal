@@ -19,7 +19,7 @@ import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2,
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
-import { reformatNote } from "@/ai/flows/reformat-note-flow";
+import { reformatNote, ReformatNoteOutput } from "@/ai/flows/reformat-note-flow";
 import { addNote, updateNote, deleteNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -39,6 +39,7 @@ type ChatMessage = {
 };
 
 type NoteTemplate = "SOAP" | "DAP";
+type GeneratedBlocks = ReformatNoteOutput;
 
 export default function SmartNotesPage() {
   const { user, db, loading: authLoading } = useAuth();
@@ -57,7 +58,7 @@ export default function SmartNotesPage() {
   const [textNoteContent, setTextNoteContent] = useState("");
   const [editableNoteContent, setEditableNoteContent] = useState("");
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
-  const [isEditingTranscription, setIsEditingTranscription] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [isFileProcessing, setIsFileProcessing] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -68,6 +69,7 @@ export default function SmartNotesPage() {
   
   const [selectedAudioFile, setSelectedAudioFile] = useState<File | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>("SOAP");
+  const [generatedBlocks, setGeneratedBlocks] = useState<GeneratedBlocks | null>(null);
 
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -261,25 +263,36 @@ export default function SmartNotesPage() {
     setSelectedNote(note);
     setEditableNoteTitle(note.title);
     setEditableNoteContent(note.content || "");
-    setIsEditingTranscription(false);
+    setIsEditing(false);
     setSelectedTemplate("SOAP");
+    setGeneratedBlocks(null); // Reset generated blocks
     setIsDetailViewOpen(true);
   };
   
   const handleUpdateNote = async () => {
     if (!selectedNote || !user || !db || !selectedPatientId) return;
 
+    let finalContent = editableNoteContent;
+    if (generatedBlocks) {
+      if (selectedTemplate === 'SOAP') {
+        finalContent = `S (Subjetivo):\n${generatedBlocks.subjective}\n\nO (Objetivo):\n${generatedBlocks.objective}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment}\n\nP (Plan):\n${generatedBlocks.plan}`;
+      } else { // DAP
+        finalContent = `D (Datos):\n${generatedBlocks.data}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment}\n\nP (Plan):\n${generatedBlocks.plan}`;
+      }
+    }
+
     const updatedData = {
       title: editableNoteTitle,
-      content: editableNoteContent,
+      content: finalContent,
     };
 
     try {
       await updateNote(db, user.uid, selectedPatientId, selectedNote.id, updatedData);
-      setNotes(notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData } : n));
+      setNotes(notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData, content: finalContent } : n));
       toast({ title: "Nota actualizada correctamente." });
       setIsDetailViewOpen(false);
       setSelectedNote(null);
+      setGeneratedBlocks(null);
     } catch (error) {
       console.error("Error updating note:", error);
       toast({ variant: "destructive", title: "Error al actualizar la nota." });
@@ -467,21 +480,31 @@ export default function SmartNotesPage() {
       return;
     }
     setIsGenerating(true);
+    setGeneratedBlocks(null);
     try {
       const result = await reformatNote({
         content: editableNoteContent,
         template: selectedTemplate,
       });
-      if (result.reformattedContent) {
-        setEditableNoteContent(result.reformattedContent);
-        setIsEditingTranscription(true);
-        toast({ title: 'Nota formateada con éxito.', description: 'Revisa los cambios y guarda la nota.' });
+      if (result) {
+        setGeneratedBlocks(result);
+        setIsEditing(true); // Allow editing of generated blocks
+        toast({ title: 'Nota formateada con éxito.', description: 'Revisa y edita los bloques generados.' });
       }
     } catch (error) {
       console.error('Error generating template:', error);
       toast({ variant: 'destructive', title: 'Error al generar la plantilla.' });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleBlockChange = (blockName: keyof GeneratedBlocks, value: string) => {
+    if (generatedBlocks) {
+      setGeneratedBlocks({
+        ...generatedBlocks,
+        [blockName]: value,
+      });
     }
   };
 
@@ -750,7 +773,7 @@ export default function SmartNotesPage() {
         </div>
       </div>
       
-      <Dialog open={isDetailViewOpen} onOpenChange={setIsDetailViewOpen}>
+      <Dialog open={isDetailViewOpen} onOpenChange={(isOpen) => { if (!isOpen) setGeneratedBlocks(null); setIsDetailViewOpen(isOpen); }}>
         <DialogContent className="max-w-2xl">
           {selectedNote && (
             <>
@@ -762,7 +785,7 @@ export default function SmartNotesPage() {
                             value={editableNoteTitle}
                             onChange={(e) => setEditableNoteTitle(e.target.value)}
                             className="text-lg font-semibold p-0 border-0 shadow-none focus-visible:ring-0"
-                            disabled={!isEditingTranscription}
+                            disabled={!isEditing}
                         />
                         </DialogTitle>
                         <DialogDescription>
@@ -784,7 +807,7 @@ export default function SmartNotesPage() {
                             size="sm"
                             className="h-9"
                             onClick={handleGenerateTemplate}
-                            disabled={isGenerating || isEditingTranscription}
+                            disabled={isGenerating || !isEditing}
                         >
                             {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                             {isGenerating ? 'Generando...' : 'Generar'}
@@ -792,13 +815,53 @@ export default function SmartNotesPage() {
                     </div>
                  </div>
               </DialogHeader>
-              <ScrollArea className="max-h-[50vh] rounded-md border my-4">
+              <ScrollArea className="max-h-[50vh] rounded-md border my-4 p-4">
+                {generatedBlocks ? (
+                  <div className="space-y-4">
+                    {selectedTemplate === 'SOAP' ? (
+                      <>
+                        <div>
+                          <label className="font-semibold">S (Subjetivo)</label>
+                          <Textarea value={generatedBlocks.subjective} onChange={(e) => handleBlockChange('subjective', e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <label className="font-semibold">O (Objetivo)</label>
+                          <Textarea value={generatedBlocks.objective} onChange={(e) => handleBlockChange('objective', e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <label className="font-semibold">A (Análisis/Evaluación)</label>
+                          <Textarea value={generatedBlocks.assessment} onChange={(e) => handleBlockChange('assessment', e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <label className="font-semibold">P (Plan)</label>
+                          <Textarea value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                         <div>
+                          <label className="font-semibold">D (Datos)</label>
+                          <Textarea value={generatedBlocks.data} onChange={(e) => handleBlockChange('data', e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <label className="font-semibold">A (Análisis/Evaluación)</label>
+                          <Textarea value={generatedBlocks.assessment} onChange={(e) => handleBlockChange('assessment', e.target.value)} className="mt-1" />
+                        </div>
+                        <div>
+                          <label className="font-semibold">P (Plan)</label>
+                          <Textarea value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
                  <Textarea 
                     value={editableNoteContent}
                     onChange={(e) => setEditableNoteContent(e.target.value)}
-                    className="text-sm whitespace-pre-wrap min-h-[30vh] border-0 shadow-none focus-visible:ring-0"
-                    disabled={!isEditingTranscription}
+                    className="text-sm whitespace-pre-wrap min-h-[30vh] border-0 shadow-none focus-visible:ring-0 p-0"
+                    disabled={!isEditing}
                   />
+                )}
               </ScrollArea>
               <DialogFooter className="justify-between">
                 <AlertDialog>
@@ -820,8 +883,8 @@ export default function SmartNotesPage() {
                 </AlertDialog>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cancelar</Button>
-                  {!isEditingTranscription ? (
-                    <Button onClick={() => setIsEditingTranscription(true)}><Edit className="mr-2 h-4 w-4" /> Editar</Button>
+                  {!isEditing ? (
+                    <Button onClick={() => setIsEditing(true)}><Edit className="mr-2 h-4 w-4" /> Editar</Button>
                   ) : (
                     <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
                   )}
