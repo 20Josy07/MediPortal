@@ -576,7 +576,7 @@
       .icon-title img { @apply w-6 h-6; }
       .icon-title h3 { @apply text-xl; }
       .mission-card p, .vision-card p { @apply text-sm; }
-      footer { @apply py-12 px-[3%]; }
+      footer { @apply py-4 px-[3%]; }
       .footer-column h3 { @apply text-lg; }
       .footer-column p, .footer-column ul li a, .footer-badges span, .footer-bottom p { @apply text-xs; }
       .comparison-title { @apply text-2xl; }
@@ -584,6 +584,7 @@
 }
 
     
+
 
 
 
