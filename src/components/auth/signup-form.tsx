@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -51,7 +51,11 @@ const formSchema = z.object({
   gender: z.string().min(1, { message: "Por favor, selecciona un género." }),
 });
 
-export function SignUpForm() {
+interface SignUpFormProps {
+    termsAccepted: boolean;
+}
+
+export function SignUpForm({ termsAccepted }: SignUpFormProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { auth, db } = useAuth();
@@ -287,26 +291,26 @@ export function SignUpForm() {
              <Button
                 type="button"
                 onClick={handleGoogleSignIn}
-                disabled={isGoogleLoading}
+                disabled={isGoogleLoading || !termsAccepted}
                 variant="outline"
                 size="icon"
                 className="group h-12 w-12 rounded-full flex items-center justify-center"
              >
                 {isGoogleLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <GoogleIcon className="h-6 w-6 text-foreground" />}
              </Button>
-             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center" disabled={!termsAccepted}>
                 <FacebookIcon className="h-6 w-6 text-foreground" />
              </Button>
-             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center" disabled={!termsAccepted}>
                 <LinkedinIcon className="h-6 w-6 text-foreground" />
              </Button>
-              <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+              <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center" disabled={!termsAccepted}>
                 <MicrosoftIcon className="h-6 w-6 text-foreground" />
              </Button>
           </div>
         </div>
         
-        <Button type="submit" className="w-full mt-8 text-base font-bold" size="lg" disabled={isLoading}>
+        <Button type="submit" className="w-full mt-8 text-base font-bold" size="lg" disabled={isLoading || !termsAccepted}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Registrarse
         </Button>
