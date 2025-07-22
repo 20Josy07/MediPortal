@@ -140,13 +140,13 @@ export default function DashboardPage() {
                 ) : sessions.length > 0 ? (
                   sessions.map((session) => (
                     <TableRow key={session.id}>
-                      <TableCell>{session.patientName}</TableCell>
-                      <TableCell>{format(session.date, 'yyyy-MM-dd')}</TableCell>
-                      <TableCell>{format(session.date, 'p')}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">{session.patientName}</TableCell>
+                      <TableCell className="text-center">{format(session.date, 'yyyy-MM-dd')}</TableCell>
+                      <TableCell className="text-center">{format(session.date, 'p')}</TableCell>
+                      <TableCell className="text-center">
                         <Badge variant="outline">{session.type}</Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         <Badge className={
                           session.status === 'Confirmada' ? 'bg-green-600/90' : 
                           session.status === 'Pendiente' ? 'bg-yellow-500 text-white' : 
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                           {session.status}
                         </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">
                         {session.status === 'Confirmada' ? (
                           <Button variant="outline" size="sm">
                             <Video className="mr-2 h-4 w-4" />
