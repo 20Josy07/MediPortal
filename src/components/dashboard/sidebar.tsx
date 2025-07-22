@@ -19,10 +19,6 @@ import { Logo } from "@/components/icons";
 import {
   Users,
   Calendar,
-  BarChart2,
-  LineChart,
-  FileText,
-  CreditCard,
   LifeBuoy,
   Home,
   NotebookText,
@@ -88,50 +84,6 @@ export function DashboardSidebar() {
               <Link href="/dashboard/notes">
                 <NotebookText />
                 Notas
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname.startsWith("/dashboard/analysis")}
-            >
-              <Link href="/dashboard/analysis">
-                <BarChart2 />
-                Análisis
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === "/dashboard/metrics"}
-            >
-              <Link href="/dashboard/metrics">
-                <LineChart />
-                Métricas
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === "/dashboard/documents"}
-            >
-              <Link href="/dashboard/documents">
-                <FileText />
-                Documentos
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === "/dashboard/billing"}
-            >
-              <Link href="/dashboard/billing">
-                <CreditCard />
-                Facturación
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
