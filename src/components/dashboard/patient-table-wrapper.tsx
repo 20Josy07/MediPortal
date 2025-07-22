@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import {
   collection,
   getDocs,
@@ -9,10 +10,8 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  query,
-  orderBy,
 } from "firebase/firestore";
-import type { Patient, Note } from "@/lib/types";
+import type { Patient } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,21 +30,11 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Edit, Trash2, Eye, Search, Loader2, FileText } from "lucide-react";
+import { PlusCircle, Edit, Trash2, Eye, Search, Loader2 } from "lucide-react";
 import { PatientForm } from "./patient-form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
-import { format, formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
-import { ScrollArea } from "../ui/scroll-area";
 
 export function PatientTableWrapper() {
   const { user, db, loading: authLoading } = useAuth();
@@ -56,9 +45,6 @@ export function PatientTableWrapper() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [isDetailViewOpen, setIsDetailViewOpen] = useState(false);
-  const [patientNotes, setPatientNotes] = useState<Note[]>([]);
-  const [isNotesLoading, setIsNotesLoading] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -154,32 +140,6 @@ export function PatientTableWrapper() {
     setIsFormOpen(true);
   };
 
-  const handleViewDetails = async (patient: Patient) => {
-    if (!user || !db) return;
-    setSelectedPatient(patient);
-    setIsDetailViewOpen(true);
-    setIsNotesLoading(true);
-    try {
-        const notesCollection = collection(db, `users/${user.uid}/patients/${patient.id}/notes`);
-        const q = query(notesCollection, orderBy("createdAt", "desc"));
-        const noteSnapshot = await getDocs(q);
-        const noteList = noteSnapshot.docs.map((doc) => {
-           const data = doc.data();
-           return {
-            id: doc.id,
-            ...data,
-            createdAt: (data.createdAt as any).toDate(),
-           } as Note;
-        });
-        setPatientNotes(noteList);
-    } catch (error) {
-        console.error("Error fetching notes:", error);
-        toast({ variant: "destructive", title: "Error al cargar las notas." });
-    } finally {
-        setIsNotesLoading(false);
-    }
-  };
-
 
   return (
     <>
@@ -230,8 +190,10 @@ export function PatientTableWrapper() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleViewDetails(patient)}>
-                        <Eye className="h-4 w-4" />
+                       <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+                        <Link href={`/dashboard/patients/${patient.id}`}>
+                          <Eye className="h-4 w-4" />
+                        </Link>
                       </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditForm(patient)}>
                         <Edit className="h-4 w-4" />
@@ -280,68 +242,6 @@ export function PatientTableWrapper() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsDeleteConfirmOpen(false)}>Cancelar</Button>
             <Button variant="destructive" onClick={handleDeletePatient}>Eliminar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Patient Detail View Dialog */}
-      <Dialog open={isDetailViewOpen} onOpenChange={setIsDetailViewOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Ficha del Paciente</DialogTitle>
-            <DialogDescription>
-              Información detallada y notas de {selectedPatient?.name}.
-            </DialogDescription>
-          </DialogHeader>
-          {selectedPatient && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-              <div>
-                <h4 className="font-semibold mb-2">Información Personal</h4>
-                <div className="space-y-1 text-sm">
-                   <p><span className="font-medium text-muted-foreground">Nombre:</span> {selectedPatient.name}</p>
-                   <p><span className="font-medium text-muted-foreground">Email:</span> {selectedPatient.email}</p>
-                   <p><span className="font-medium text-muted-foreground">Teléfono:</span> {selectedPatient.phone}</p>
-                   <div className="flex items-center gap-1.5"><span className="font-medium text-muted-foreground">Estado:</span> <Badge variant={selectedPatient.status === 'Activo' ? 'default' : 'destructive'} className={selectedPatient.status === 'Activo' ? 'bg-green-600/90' : 'bg-red-600/90'}>{selectedPatient.status}</Badge></div>
-                </div>
-              </div>
-              <div>
-                 <Card>
-                  <CardHeader className="p-4">
-                    <CardTitle className="text-base">Historial de Notas</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-2">
-                    <ScrollArea className="h-48">
-                      {isNotesLoading ? (
-                        <div className="flex justify-center items-center h-full">
-                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                        </div>
-                      ) : patientNotes.length > 0 ? (
-                        <div className="space-y-2 p-2">
-                          {patientNotes.map((note) => (
-                            <div key={note.id} className="flex items-start p-2 rounded-md hover:bg-muted/50">
-                              <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
-                              <div className="flex-1 ml-3 overflow-hidden">
-                                <p className="font-semibold truncate text-sm">{note.title}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  {note.type}
-                                  {' | '}
-                                  {formatDistanceToNow(note.createdAt, { addSuffix: true, locale: es })}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                         <p className="text-center text-sm text-muted-foreground p-4">No hay notas para este paciente.</p>
-                      )}
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cerrar</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
