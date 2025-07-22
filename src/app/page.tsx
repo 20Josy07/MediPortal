@@ -4,12 +4,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, BarChart, Folder, X, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder, X, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays, BarChart2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const advantages = [
   {
@@ -79,25 +80,45 @@ function HeroImage() {
 
   if (!mounted) {
     return (
-      <div className="relative w-full aspect-[4/3] max-w-2xl mx-auto">
+      <div className="relative w-full aspect-square max-w-lg mx-auto flex items-center justify-center">
         <div className="w-full h-full bg-muted rounded-2xl" />
       </div>
     );
   }
 
-  const src = resolvedTheme === 'dark'
-    ? "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"
-    : "https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png";
-  
   return (
-      <div className="relative w-full aspect-square max-w-md mx-auto">
-          <Image
-              src={src}
-              alt="Zenda Hero Image"
-              fill
-              className="object-contain"
-              priority
-          />
+      <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8">
+          <svg
+              width="128"
+              height="128"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-primary"
+          >
+              <path d="M15.51 4.39a1 1 0 0 1 1.49-.09 10.16 10.16 0 0 1 3.5 7.7c0 5.52-4.48 10-10 10S4 17.52 4 12a10 10 0 0 1 7-9.54" />
+              <path d="M12 12a4 4 0 0 0-4-4m0 0a4 4 0 1 0 0 8" />
+              <path d="M12 12a4 4 0 0 1 4-4m0 0a4 4 0 1 1 0 8" />
+              <path d="M12 14v8" />
+              <path d="M12 4V2" />
+          </svg>
+          <ul className="space-y-4 w-full max-w-sm">
+              <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Notas automáticas con resúmenes e insights clave</span>
+              </li>
+              <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                  <BarChart2 className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Visualización de evolución y objetivos terapéuticos</span>
+              </li>
+              <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                  <Folder className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Historial organizado y fácil de consultar</span>
+              </li>
+          </ul>
       </div>
   );
 }
@@ -277,3 +298,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
