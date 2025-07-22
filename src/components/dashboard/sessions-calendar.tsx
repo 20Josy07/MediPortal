@@ -349,14 +349,16 @@ export function SessionsCalendar() {
                       const startMinute = getMinutes(session.date);
                       const top = ((startHour - 7) * 64) + (startMinute / 60 * 64);
                       const height = (session.duration / 60) * 64; // Duration in hours * height per hour
+                      const isShortSession = session.duration <= 45;
 
                       return (
                           <div
                             key={session.id}
                             onClick={() => handleSessionClick(session)}
                             className={cn(
-                                "absolute w-[calc(100%-4px)] left-[2px] rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex flex-col overflow-hidden",
-                                getStatusColor(session.status)
+                                "absolute w-[calc(100%-4px)] left-[2px] rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex overflow-hidden",
+                                getStatusColor(session.status),
+                                isShortSession ? "flex-row items-center gap-2" : "flex-col"
                             )}
                             style={{ top: `${top}px`, height: `${height}px` }}
                           >
