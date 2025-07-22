@@ -67,7 +67,6 @@ export default function DashboardPage() {
     const q = query(
       sessionsCollection,
       where("date", ">=", new Date()),
-      where("status", "in", ["Pendiente", "Confirmada"]),
       orderBy("date")
     );
 
@@ -79,7 +78,7 @@ export default function DashboardPage() {
                 ...data,
                 date: (data.date as any).toDate(),
             } as Session;
-        });
+        }).filter(session => session.status === 'Pendiente' || session.status === 'Confirmada');
         setSessions(sessionList);
         setIsLoading(false);
     }, (error) => {
@@ -87,6 +86,7 @@ export default function DashboardPage() {
         toast({
           variant: "destructive",
           title: "Error al cargar las sesiones.",
+          description: "Puede que necesites crear un índice en Firestore. Revisa la consola de errores para más detalles."
         });
         setIsLoading(false);
     });
