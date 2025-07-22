@@ -42,7 +42,7 @@ const prompt = ai.definePrompt({
 
   Si la plantilla es "SOAP", la estructura debe ser:
   S (Subjetivo): Información que el paciente reporta.
-  O (Objetivo): Observaciones objetivas del terapeuta.
+  O (Objetivo): **IMPORTANTE: Deja esta sección en blanco.** El psicólogo la rellenará manualmente con sus observaciones.
   A (Análisis/Evaluación): Tu análisis profesional de la situación.
   P (Plan): El plan de tratamiento a seguir.
   
