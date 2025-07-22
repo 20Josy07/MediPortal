@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -127,11 +126,31 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-image">
-             <div
-              className="relative flex items-center justify-center gap-8 bg-hero dark:bg-card rounded-2xl p-8 shadow-lg max-w-4xl mx-auto bg-cover bg-center"
-              style={{ backgroundImage: "url('https://i.postimg.cc/90JczQjX/replicate-prediction-rrhfmdd58drg80cr5w9t956axw.png')" }}
+            <div
+              className="relative flex flex-col items-center justify-center gap-8 bg-hero dark:bg-card rounded-2xl p-8 shadow-lg max-w-4xl mx-auto"
             >
-              <div className="absolute inset-0 bg-black/30 rounded-2xl"></div>
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="120"
+                    height="120"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-primary/70"
+                >
+                    <path d="M12 2a5.5 5.5 0 0 0-5.5 5.5c0 1.63.71 3.1 1.88 4.13l-1.88 2.82A6.5 6.5 0 0 1 12 21a6.5 6.5 0 0 1 6.5-6.5c0-1.22-.34-2.37-.94-3.37" />
+                    <path d="M12.5 8.5A2.5 2.5 0 1 0 10 11a2.5 2.5 0 0 0 2.5-2.5Z" />
+                    <path d="M12.5 14a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                    <path d="M16 22a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2" />
+                    <path d="M18 19a2 2 0 0 0-2-2" />
+                    <path d="M6 19a2 2 0 0 1 2-2" />
+                    <path d="M12 11V8h2.5" />
+                    <path d="M10 8h2.5" />
+                </svg>
+
               <div className="relative z-10 flex flex-col gap-4 w-full max-w-md">
                 <div className="flex items-center gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
                   <FileText className="h-6 w-6 text-[#1a3b2c] dark:text-primary" />
