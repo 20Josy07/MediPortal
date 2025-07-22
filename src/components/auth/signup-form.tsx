@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -26,10 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { GoogleIcon, FacebookIcon, LinkedinIcon, MicrosoftIcon } from "../icons";
 import { signInWithGoogle } from "@/lib/firebase";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   fullname: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
@@ -69,7 +71,35 @@ export function SignUpForm() {
       dob: "",
       gender: "",
     },
+    mode: "onChange"
   });
+  
+  const passwordValue = form.watch("password");
+
+  const calculatePasswordStrength = (password: string) => {
+    let score = 0;
+    if (!password) return { score: 0, color: "bg-transparent", label: "" };
+
+    if (password.length >= 8) score++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[@$!%*?&]/.test(password)) score++;
+
+    let color = "bg-red-500";
+    let label = "Débil";
+    if (score >= 4) {
+      color = "bg-green-500";
+      label = "Fuerte";
+    } else if (score >= 2) {
+      color = "bg-yellow-500";
+      label = "Media";
+    }
+    
+    return { score, color, label };
+  };
+  
+  const passwordStrength = useMemo(() => calculatePasswordStrength(passwordValue), [passwordValue]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!auth) {
@@ -196,13 +226,21 @@ export function SignUpForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="font-bold text-foreground">Contraseña</FormLabel>
+                <div className="flex justify-between items-center">
+                   <FormLabel className="font-bold text-foreground">Contraseña</FormLabel>
+                   {passwordStrength.label && (
+                    <span className="text-xs font-medium" style={{ color: passwordStrength.color.replace('bg-', '') }}>
+                      {passwordStrength.label}
+                    </span>
+                   )}
+                </div>
                 <FormControl>
                   <Input 
                     type="password" 
                     placeholder="••••••••"
                     {...field} />
                 </FormControl>
+                <Progress value={passwordStrength.score * 25} className={cn("h-2", passwordStrength.color)} />
                 <FormMessage />
               </FormItem>
             )}
@@ -250,6 +288,7 @@ export function SignUpForm() {
           <p className="social-login-text mb-4 text-sm text-muted-foreground">O regístrate con</p>
           <div className="flex items-center justify-center gap-5">
              <Button
+                type="button"
                 onClick={handleGoogleSignIn}
                 disabled={isGoogleLoading}
                 variant="outline"
@@ -258,13 +297,13 @@ export function SignUpForm() {
              >
                 {isGoogleLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <GoogleIcon className="h-6 w-6 text-foreground" />}
              </Button>
-             <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
                 <FacebookIcon className="h-6 w-6 text-foreground" />
              </Button>
-             <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
                 <LinkedinIcon className="h-6 w-6 text-foreground" />
              </Button>
-              <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
+              <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
                 <MicrosoftIcon className="h-6 w-6 text-foreground" />
              </Button>
           </div>
