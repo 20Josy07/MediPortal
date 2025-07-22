@@ -15,10 +15,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
+import { reformatNote } from "@/ai/flows/reformat-note-flow";
 import { addNote, updateNote, deleteNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -36,6 +37,8 @@ type ChatMessage = {
   from: "user" | "ai";
   text: string;
 };
+
+type NoteTemplate = "SOAP" | "DAP";
 
 export default function SmartNotesPage() {
   const { user, db, loading: authLoading } = useAuth();
@@ -57,12 +60,14 @@ export default function SmartNotesPage() {
   const [isEditingTranscription, setIsEditingTranscription] = useState(false);
   const [isFileProcessing, setIsFileProcessing] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   
   const [selectedAudioFile, setSelectedAudioFile] = useState<File | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>("SOAP");
 
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -257,6 +262,7 @@ export default function SmartNotesPage() {
     setEditableNoteTitle(note.title);
     setEditableNoteContent(note.content || "");
     setIsEditingTranscription(false);
+    setSelectedTemplate("SOAP");
     setIsDetailViewOpen(true);
   };
   
@@ -452,6 +458,30 @@ export default function SmartNotesPage() {
       setChatHistory(prev => [...prev, errorAiMessage]);
     } finally {
       setIsAiLoading(false);
+    }
+  };
+
+  const handleGenerateTemplate = async () => {
+    if (!editableNoteContent) {
+      toast({ variant: 'destructive', title: 'El contenido de la nota no puede estar vacío.' });
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const result = await reformatNote({
+        content: editableNoteContent,
+        template: selectedTemplate,
+      });
+      if (result.reformattedContent) {
+        setEditableNoteContent(result.reformattedContent);
+        setIsEditingTranscription(true);
+        toast({ title: 'Nota formateada con éxito.', description: 'Revisa los cambios y guarda la nota.' });
+      }
+    } catch (error) {
+      console.error('Error generating template:', error);
+      toast({ variant: 'destructive', title: 'Error al generar la plantilla.' });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -725,30 +755,42 @@ export default function SmartNotesPage() {
           {selectedNote && (
             <>
               <DialogHeader>
-                <DialogTitle>
-                  <Input 
-                    value={editableNoteTitle}
-                    onChange={(e) => setEditableNoteTitle(e.target.value)}
-                    className="text-lg font-semibold p-0 border-0 shadow-none focus-visible:ring-0"
-                    disabled={!isEditingTranscription}
-                  />
-                </DialogTitle>
-                <div className="flex justify-between items-center">
-                  <DialogDescription>
-                    {selectedNote.type} - {format(selectedNote.createdAt, "PPPp", { locale: es })}
-                  </DialogDescription>
-                  <div className="w-32">
-                     <Select>
-                      <SelectTrigger className="h-8">
-                        <SelectValue placeholder="Plantilla" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="soap">SOAP</SelectItem>
-                        <SelectItem value="dap">DAP</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                 <div className="flex justify-between items-start">
+                    <div className="flex-grow">
+                       <DialogTitle>
+                        <Input 
+                            value={editableNoteTitle}
+                            onChange={(e) => setEditableNoteTitle(e.target.value)}
+                            className="text-lg font-semibold p-0 border-0 shadow-none focus-visible:ring-0"
+                            disabled={!isEditingTranscription}
+                        />
+                        </DialogTitle>
+                        <DialogDescription>
+                            {selectedNote.type} - {format(selectedNote.createdAt, "PPPp", { locale: es })}
+                        </DialogDescription>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                        <Select value={selectedTemplate} onValueChange={(value) => setSelectedTemplate(value as NoteTemplate)}>
+                            <SelectTrigger className="h-9 w-[120px]">
+                                <SelectValue placeholder="Plantilla" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="SOAP">SOAP</SelectItem>
+                                <SelectItem value="DAP">DAP</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9"
+                            onClick={handleGenerateTemplate}
+                            disabled={isGenerating || isEditingTranscription}
+                        >
+                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                            Generar
+                        </Button>
+                    </div>
+                 </div>
               </DialogHeader>
               <ScrollArea className="max-h-[50vh] rounded-md border my-4">
                  <Textarea 
