@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { FileText, Sparkles, Loader2 } from "lucide-react";
 
-export default function ConversationAnalysisPage({ params }: { params: { slug: string } }) {
+export default function ConversationAnalysisPage() {
   const [conversation, setConversation] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
