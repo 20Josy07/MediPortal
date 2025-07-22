@@ -164,7 +164,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                 <aside className="md:col-span-1 flex flex-col gap-4">
                     <Button variant="outline" className="justify-between">Filtrar <ListFilter className="h-4 w-4" /></Button>
                     <Button variant="outline" className="justify-between">Tipo de nota <FileType className="h-4 w-4" /></Button>
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => handleOpenForm()}>
+                    <Button className="w-full bg-[#39ac4d] hover:bg-[#39ac4d]/90 text-white" onClick={() => handleOpenForm()}>
                        <Plus className="mr-2 h-4 w-4" /> Nueva entrada
                     </Button>
                 </aside>
