@@ -80,6 +80,10 @@ export default function SmartNotesPage() {
   const audioFileInputRef = useRef<HTMLInputElement | null>(null);
   const chatScrollAreaRef = useRef<HTMLDivElement>(null);
 
+  const subjectiveRef = useRef<HTMLTextAreaElement>(null);
+  const dataRef = useRef<HTMLTextAreaElement>(null);
+  const planRef = useRef<HTMLTextAreaElement>(null);
+
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -144,6 +148,20 @@ export default function SmartNotesPage() {
         });
     }
   }, [chatHistory]);
+
+  useEffect(() => {
+    if (generatedBlocks) {
+      setTimeout(() => {
+        if (generatedBlocks.plan === "No se indica plan en el audio. Completa manually" && planRef.current) {
+          planRef.current.focus();
+        } else if (selectedTemplate === 'SOAP' && subjectiveRef.current) {
+          subjectiveRef.current.focus();
+        } else if (selectedTemplate === 'DAP' && dataRef.current) {
+          dataRef.current.focus();
+        }
+      }, 100);
+    }
+  }, [generatedBlocks, selectedTemplate]);
   
   const transcribeAndSaveAudio = async (base64Audio: string) => {
     if (!user || !db || !selectedPatientId) return;
@@ -829,7 +847,7 @@ export default function SmartNotesPage() {
                       <>
                         <div>
                           <label className="font-semibold">S (Subjetivo)</label>
-                          <Textarea value={generatedBlocks.subjective} onChange={(e) => handleBlockChange('subjective', e.target.value)} className="mt-1" />
+                          <Textarea ref={subjectiveRef} value={generatedBlocks.subjective} onChange={(e) => handleBlockChange('subjective', e.target.value)} className="mt-1" />
                         </div>
                         <div>
                           <label className="font-semibold">O (Objetivo)</label>
@@ -841,14 +859,14 @@ export default function SmartNotesPage() {
                         </div>
                         <div>
                           <label className="font-semibold">P (Plan)</label>
-                          <Textarea value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
+                          <Textarea ref={planRef} value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
                         </div>
                       </>
                     ) : (
                       <>
                          <div>
                           <label className="font-semibold">D (Datos)</label>
-                          <Textarea value={generatedBlocks.data} onChange={(e) => handleBlockChange('data', e.target.value)} className="mt-1" />
+                          <Textarea ref={dataRef} value={generatedBlocks.data} onChange={(e) => handleBlockChange('data', e.target.value)} className="mt-1" />
                         </div>
                         <div>
                           <label className="font-semibold">A (Análisis/Evaluación)</label>
@@ -856,7 +874,7 @@ export default function SmartNotesPage() {
                         </div>
                         <div>
                           <label className="font-semibold">P (Plan)</label>
-                          <Textarea value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
+                          <Textarea ref={planRef} value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
                         </div>
                       </>
                     )}
