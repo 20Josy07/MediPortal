@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth";
 import { useAuth } from "@/context/auth-context";
 
 import { Button } from "@/components/ui/button";
@@ -76,24 +76,29 @@ export function SignUpForm() {
         values.password
       );
 
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, {
+      const user = userCredential.user;
+      if (user) {
+        await updateProfile(user, {
           displayName: values.fullname,
         });
+        await sendEmailVerification(user);
       }
 
       toast({
-        title: "Cuenta Creada",
-        description: "Te has registrado exitosamente.",
+        title: "¡Registro exitoso!",
+        description: "Revisa tu email para confirmar tu cuenta.",
       });
 
-      router.push("/dashboard");
+      // Reset form and potentially redirect to login or a "please-verify" page
+      form.reset();
+      router.push("/login");
+
     } catch (error: any) {
       console.error("Sign Up Error:", error);
       toast({
         variant: "destructive",
         title: "Error al registrarse",
-        description: error.message || "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
+        description: error.code === 'auth/email-already-in-use' ? 'El correo electrónico ya está en uso.' : 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.',
       });
     } finally {
       setIsLoading(false);
