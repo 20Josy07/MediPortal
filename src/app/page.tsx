@@ -42,25 +42,25 @@ const advantages = [
 const howItWorksSteps = [
     {
         number: 1,
-        icon: <UserPlus className="h-8 w-8 text-[#063C0F]" />,
+        icon: <UserPlus className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
         title: "Crea tu cuenta en minutos",
         description: "Regístrate de forma rápida y segura. Sin complicaciones.",
     },
     {
         number: 2,
-        icon: <UserPlus className="h-8 w-8 text-[#063C0F]" />,
+        icon: <UserPlus className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
         title: "Añade tus pacientes",
         description: "Crea perfiles con su historial, evolución y notas clínicas centralizadas.",
     },
     {
         number: 3,
-        icon: <FilePenLine className="h-8 w-8 text-[#063C0F]" />,
+        icon: <FilePenLine className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
         title: "Configura tus plantillas",
         description: "Elige entre formatos como SOAP o DAP y personalízalos según tu estilo clínico.",
     },
     {
         number: 4,
-        icon: <Sparkles className="h-8 w-8 text-[#063C0F]" />,
+        icon: <Sparkles className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
         title: "Inicia tus sesiones",
         description: "Deja que Zenda genere notas e insights automáticamente.",
     }
@@ -70,31 +70,31 @@ const howItWorksSteps = [
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="fixed top-0 w-full bg-[#18441E] z-50">
+      <header className="fixed top-0 w-full bg-[#18441E] dark:bg-background dark:border-b dark:border-border z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link className="flex items-center" href="/">
               <Image alt="Zenda Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" style={{color: 'transparent'}} />
-              <span className="ml-2 text-xs font-semibold text-white border border-white/50 px-2 py-0.5 rounded-full">BETA</span>
+              <span className="ml-2 text-xs font-semibold text-white dark:text-foreground border border-white/50 dark:border-border px-2 py-0.5 rounded-full">BETA</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
-              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="/">
+              <Link className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary transition-all duration-300 ease-in-out relative group text-base font-medium" href="/">
                 Inicio
-                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white dark:bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
+              <Link className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
                 Ventajas
-                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white dark:bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-white hover:text-white/80 transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
+              <Link className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
                 Funcionalidades
-                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
+                <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white dark:bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <a className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 bg-white hover:bg-white/90 text-[#063C0F] font-semibold px-6 py-2 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-base" href="/login">
+              <a className="inline-flex items-center justify-center whitespace-nowrap ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 bg-white hover:bg-white/90 text-[#063C0F] dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 font-semibold px-6 py-2 rounded-lg shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 text-base" href="/login">
                 Iniciar sesión
               </a>
             </nav>
-            <button className="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-white rounded-md" aria-label="Toggle menu">
+            <button className="md:hidden text-white dark:text-foreground focus:outline-none focus:ring-2 focus:ring-white rounded-md" aria-label="Toggle menu">
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
             </button>
           </div>
@@ -102,13 +102,13 @@ export default function Home() {
       </header>
 
       <main className="flex-grow pt-20">
-        <section className="hero-section bg-hero">
+        <section className="hero-section bg-hero dark:bg-background">
           <div className="hero-content text-gray-800">
             <div className="tag">
                 <span>Análisis Clínico • Notas Instantáneas • Seguimiento Visual</span>
             </div>
             <h1 className="leading-tighter">
-              <span className="text-[#063C0F]">
+              <span className="text-[#063C0F] dark:text-primary">
                 Mejora la<br />calidad de tus<br />sesiones con
               </span>
               <br />
@@ -122,27 +122,27 @@ export default function Home() {
                         <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </Button>
-                <Button asChild variant="outline" className="py-4 px-8 rounded-lg text-base font-bold text-[#063C0F] border-[#063C0F] border-2 bg-white" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
+                <Button asChild variant="outline" className="py-4 px-8 rounded-lg text-base font-bold text-[#063C0F] border-[#063C0F] bg-white dark:text-primary dark:border-primary dark:bg-transparent" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
             </div>
           </div>
           <div className="hero-image">
              <div
-              className="relative flex items-center justify-center gap-8 bg-hero rounded-2xl p-8 shadow-lg max-w-4xl mx-auto bg-cover bg-center"
+              className="relative flex items-center justify-center gap-8 bg-hero dark:bg-card rounded-2xl p-8 shadow-lg max-w-4xl mx-auto bg-cover bg-center"
               style={{ backgroundImage: "url('https://i.postimg.cc/90JczQjX/replicate-prediction-rrhfmdd58drg80cr5w9t956axw.png')" }}
             >
               <div className="absolute inset-0 bg-black/30 rounded-2xl"></div>
               <div className="relative z-10 flex flex-col gap-4 w-full max-w-md">
-                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
-                  <FileText className="h-6 w-6 text-[#1a3b2c]" />
-                  <span className="text-[#1a3b2c] font-medium">Notas automáticas con resúmenes e insights clave</span>
+                <div className="flex items-center gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
+                  <FileText className="h-6 w-6 text-[#1a3b2c] dark:text-primary" />
+                  <span className="text-[#1a3b2c] dark:text-foreground font-medium">Notas automáticas con resúmenes e insights clave</span>
                 </div>
-                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
-                  <BarChart className="h-6 w-6 text-[#1a3b2c]" />
-                  <span className="text-[#1a3b2c] font-medium">Visualización de evolución y objetivos terapéuticos</span>
+                <div className="flex items-center gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
+                  <BarChart className="h-6 w-6 text-[#1a3b2c] dark:text-primary" />
+                  <span className="text-[#1a3b2c] dark:text-foreground font-medium">Visualización de evolución y objetivos terapéuticos</span>
                 </div>
-                <div className="flex items-center gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
-                  <Folder className="h-6 w-6 text-[#1a3b2c]" />
-                  <span className="text-[#1a3b2c] font-medium">Historial organizado y fácil de consultar</span>
+                <div className="flex items-center gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
+                  <Folder className="h-6 w-6 text-[#1a3b2c] dark:text-primary" />
+                  <span className="text-[#1a3b2c] dark:text-foreground font-medium">Historial organizado y fácil de consultar</span>
                 </div>
               </div>
             </div>

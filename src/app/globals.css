@@ -148,6 +148,10 @@
     .hero-content p {
         @apply text-xl leading-relaxed mb-8 text-black;
     }
+    
+    .dark .hero-content p {
+        @apply text-white;
+    }
 
     .buttons {
         @apply flex gap-4;
@@ -225,9 +229,16 @@
         background-color: #DAEFDD;
         @apply py-16 px-[5%] text-center;
     }
+    .dark .comparison-section {
+      background-color: hsl(var(--background));
+    }
+
 
     .comparison-title {
         @apply text-5xl font-extrabold mb-12 text-[#063C0F];
+    }
+    .dark .comparison-title {
+      @apply text-primary;
     }
     
     .comparison-container {
@@ -237,17 +248,31 @@
     .before-card, .after-card {
         @apply bg-white p-8 rounded-2xl flex-1 min-w-[300px] text-left;
     }
+    .dark .before-card, .dark .after-card {
+      @apply bg-card;
+    }
+
 
     .before-card {
         @apply border-2 border-dashed border-gray-300;
     }
+     .dark .before-card {
+        @apply border-border;
+    }
+
 
     .after-card {
         @apply border border-gray-200 shadow-xl;
     }
+     .dark .after-card {
+        @apply border-border;
+    }
     
     .before-card h3, .after-card h3 {
         @apply text-2xl font-bold mb-6 text-[#063C0F];
+    }
+    .dark .before-card h3, .dark .after-card h3 {
+       @apply text-primary;
     }
 
     .before-card ul, .after-card ul {
@@ -257,6 +282,11 @@
     .before-card ul li, .after-card ul li {
         @apply flex items-center gap-3 text-base text-gray-700;
     }
+
+    .dark .before-card ul li, .dark .after-card ul li {
+      @apply text-card-foreground;
+    }
+    
     
     .before-card ul li svg, .after-card ul li svg {
         @apply w-5 h-5 flex-shrink-0;
@@ -267,12 +297,22 @@
       @apply py-16 px-4;
     }
 
+    .dark .how-it-works-section {
+      background-color: hsl(var(--background));
+    }
+
     .how-it-works-title {
         @apply text-center text-4xl font-extrabold text-[#063C0F] mb-4;
+    }
+    .dark .how-it-works-title {
+        @apply text-primary;
     }
 
     .how-it-works-subtitle {
         @apply text-center text-lg text-gray-600 mb-12;
+    }
+    .dark .how-it-works-subtitle {
+        @apply text-muted-foreground;
     }
     
     .steps-container {
@@ -282,6 +322,9 @@
     .step-card {
         @apply bg-white rounded-xl p-6 shadow-md border border-gray-200 flex flex-col items-center text-center;
     }
+     .dark .step-card {
+        @apply bg-card border-border;
+    }
     
     .step-icon-container {
         @apply relative mb-4;
@@ -290,17 +333,29 @@
     .step-icon-background {
         @apply w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center;
     }
+     .dark .step-icon-background {
+        @apply bg-accent;
+    }
     
     .step-number {
         @apply absolute -top-1 -right-1 bg-[#063C0F] text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white;
+    }
+     .dark .step-number {
+        @apply bg-primary text-primary-foreground border-card;
     }
     
     .step-title {
         @apply text-xl font-bold text-[#063C0F] mb-2;
     }
+    .dark .step-title {
+      @apply text-primary;
+    }
     
     .step-description {
         @apply text-gray-600 text-sm;
+    }
+     .dark .step-description {
+        @apply text-muted-foreground;
     }
 
 
@@ -417,6 +472,10 @@
         @apply bg-[#18441E] py-4 px-[5%] text-white text-sm;
     }
 
+    .dark footer {
+        @apply bg-background;
+    }
+
     .footer-container {
         @apply flex justify-between gap-12 max-w-6xl mx-auto mb-4 flex-wrap;
     }
@@ -428,6 +487,10 @@
     .footer-column h3 {
         @apply text-xl font-bold mb-6 text-white;
     }
+     .dark .footer-column h3 {
+        @apply text-primary;
+    }
+
 
     .footer-column p {
         @apply text-white/70 leading-relaxed mb-6;
@@ -448,6 +511,11 @@
     .footer-column ul li a:hover {
       @apply text-white;
     }
+
+     .dark .footer-column ul li a:hover {
+        @apply text-primary;
+    }
+
     
     .footer-badges {
         @apply flex gap-4 mt-4;
