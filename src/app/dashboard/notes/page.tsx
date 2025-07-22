@@ -54,6 +54,7 @@ export default function SmartNotesPage() {
   const [textNoteContent, setTextNoteContent] = useState("");
   const [editableNoteContent, setEditableNoteContent] = useState("");
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
+  const [isEditingTranscription, setIsEditingTranscription] = useState(false);
   const [isFileProcessing, setIsFileProcessing] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   
@@ -250,6 +251,7 @@ export default function SmartNotesPage() {
     setSelectedNote(note);
     setEditableNoteTitle(note.title);
     setEditableNoteContent(note.content || "");
+    setIsEditingTranscription(false);
     setIsDetailViewOpen(true);
   };
   
@@ -340,10 +342,10 @@ export default function SmartNotesPage() {
       return;
     }
 
-    const allowedTypes = ['audio/mpeg', 'audio/wav'];
+    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3'];
     const maxSize = 10 * 1024 * 1024; // 10 MB
 
-    if (!allowedTypes.includes(file.type)) {
+    if (!allowedTypes.includes(file.type) && !file.name.endsWith('.mp3')) {
       toast({
         variant: "destructive",
         title: "Formato de archivo no válido",
@@ -550,7 +552,7 @@ export default function SmartNotesPage() {
                                           ref={audioFileInputRef}
                                           onChange={handleAudioFileChange}
                                           className="hidden"
-                                          accept="audio/mpeg,audio/wav"
+                                          accept="audio/mpeg,audio/wav,audio/mp3"
                                       />
                                   </div>
                                   <p className="text-muted-foreground text-center">
@@ -723,6 +725,7 @@ export default function SmartNotesPage() {
                     value={editableNoteTitle}
                     onChange={(e) => setEditableNoteTitle(e.target.value)}
                     className="text-lg font-semibold p-0 border-0 shadow-none focus-visible:ring-0"
+                    disabled={!isEditingTranscription}
                   />
                 </DialogTitle>
                 <DialogDescription>
@@ -734,6 +737,7 @@ export default function SmartNotesPage() {
                     value={editableNoteContent}
                     onChange={(e) => setEditableNoteContent(e.target.value)}
                     className="text-sm whitespace-pre-wrap min-h-[30vh] border-0 shadow-none focus-visible:ring-0"
+                    disabled={!isEditingTranscription}
                   />
               </ScrollArea>
               <DialogFooter className="justify-between">
@@ -756,7 +760,11 @@ export default function SmartNotesPage() {
                 </AlertDialog>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cancelar</Button>
-                  <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
+                  {!isEditingTranscription ? (
+                    <Button onClick={() => setIsEditingTranscription(true)}><Edit className="mr-2 h-4 w-4" /> Editar</Button>
+                  ) : (
+                    <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
+                  )}
                 </div>
               </DialogFooter>
             </>
