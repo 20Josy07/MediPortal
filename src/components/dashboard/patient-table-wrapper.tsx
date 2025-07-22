@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -300,7 +301,7 @@ export function PatientTableWrapper() {
                    <p><span className="font-medium text-muted-foreground">Nombre:</span> {selectedPatient.name}</p>
                    <p><span className="font-medium text-muted-foreground">Email:</span> {selectedPatient.email}</p>
                    <p><span className="font-medium text-muted-foreground">Teléfono:</span> {selectedPatient.phone}</p>
-                   <p><span className="font-medium text-muted-foreground">Estado:</span> <Badge variant={selectedPatient.status === 'Activo' ? 'default' : 'destructive'} className={selectedPatient.status === 'Activo' ? 'bg-green-600/90' : 'bg-red-600/90'}>{selectedPatient.status}</Badge></p>
+                   <div className="flex items-center gap-1.5"><span className="font-medium text-muted-foreground">Estado:</span> <Badge variant={selectedPatient.status === 'Activo' ? 'default' : 'destructive'} className={selectedPatient.status === 'Activo' ? 'bg-green-600/90' : 'bg-red-600/90'}>{selectedPatient.status}</Badge></div>
                 </div>
               </div>
               <div>
