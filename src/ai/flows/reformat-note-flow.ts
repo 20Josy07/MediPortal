@@ -34,7 +34,7 @@ const prompt = ai.definePrompt({
   name: 'reformatNotePrompt',
   input: { schema: ReformatNoteInputSchema },
   output: { schema: ReformatNoteOutputSchema },
-  prompt: `Eres un asistente de IA para psicólogos. Tu tarea es reformatear una nota clínica según una plantilla estándar, devolviendo los datos en el formato JSON especificado.
+  prompt: `Eres un asistente de IA experto para psicólogos. Tu tarea es reformatear una nota clínica según una plantilla estándar, devolviendo los datos en el formato JSON especificado. Debes generar un contenido detallado y completo para cada sección.
 
   Aquí está la plantilla seleccionada: {{{template}}}
   
@@ -43,20 +43,20 @@ const prompt = ai.definePrompt({
   {{{content}}}
   ---
 
-  Por favor, procesa el contenido y rellena los campos del JSON de salida.
+  Por favor, procesa el contenido y rellena los campos del JSON de salida con un análisis exhaustivo.
 
   Si la plantilla es "SOAP", la estructura debe ser:
-  - subjective: En esta sección, debes resumir la información que el paciente reporta. No transcribas el texto literalmente; en su lugar, interpreta y sintetiza las ideas, sentimientos y eventos clave que el paciente comunica, redactándolo como lo haría un profesional.
-  - objective: **IMPORTANTE: Deja este campo como una cadena vacía "".** El psicólogo la rellenará manualmente con sus observaciones.
-  - assessment: Tu análisis profesional de la situación.
-  - plan: El plan de tratamiento a seguir.
+  - subjective: En esta sección, debes resumir de manera DETALLADA y COMPRENSIVA la información que el paciente reporta. No transcribas el texto literalmente; en su lugar, interpreta y sintetiza las ideas, sentimientos, eventos clave y preocupaciones que el paciente comunica, redactándolo como lo haría un profesional de la salud mental. Elabora sobre los puntos clave.
+  - objective: **IMPORTANTE: Deja este campo como una cadena vacía "".** El psicólogo la rellenará manualmente con sus observaciones directas del comportamiento, apariencia y afecto del paciente durante la sesión.
+  - assessment: Tu análisis profesional DETALLADO de la situación. Debe ser una evaluación completa que integre la información subjetiva con el conocimiento clínico. Incluye hipótesis diagnósticas (si aplica), una evaluación del riesgo y una descripción de los patrones de pensamiento y comportamiento del paciente.
+  - plan: El plan de tratamiento a seguir, que debe ser COMPLETO y bien definido. Describe los objetivos a corto y largo plazo, las intervenciones terapéuticas específicas que se utilizarán (ej. técnicas de TCC, psicoeducación) y las tareas asignadas al paciente.
   
   Si la plantilla es "DAP", la estructura debe ser:
-  - data: Combina los datos subjetivos y objetivos de la nota original.
-  - assessment: Tu análisis profesional de la situación.
-  - plan: El plan de tratamiento a seguir.
+  - data: Combina los datos subjetivos y objetivos de la nota original de forma DETALLADA. Sintetiza toda la información relevante presentada por el paciente y cualquier observación disponible.
+  - assessment: Tu análisis profesional DETALLADO de la situación. Al igual que en SOAP, debe ser una evaluación completa que integre la información subjetiva con el conocimiento clínico. Incluye hipótesis diagnósticas (si aplica), una evaluación del riesgo y una descripción de los patrones de pensamiento y comportamiento del paciente.
+  - plan: El plan de tratamiento a seguir, que debe ser COMPLETO y bien definido. Describe los objetivos a corto y largo plazo, las intervenciones terapéuticas específicas que se utilizarán y las tareas asignadas al paciente.
 
-  Asegúrate de que el resultado final sea un objeto JSON válido que se ajuste al esquema de salida.
+  Asegúrate de que el resultado final sea un objeto JSON válido que se ajuste al esquema de salida. El contenido de cada campo debe ser extenso y profesional.
   `,
 });
 
