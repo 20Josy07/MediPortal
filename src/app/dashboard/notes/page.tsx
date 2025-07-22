@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -43,7 +44,7 @@ type NoteTemplate = "SOAP" | "DAP";
 type GeneratedBlocks = ReformatNoteOutput;
 
 export default function SmartNotesPage() {
-  const { user, db, loading: authLoading } = useAuth();
+  const { user, db, userProfile, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -543,35 +544,70 @@ export default function SmartNotesPage() {
 
   const handleDownloadPdf = () => {
     if (!selectedNote) return;
-    
+
     const doc = new jsPDF();
-    
+    const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+
+    // --- Content ---
     let content = editableNoteContent;
     if (generatedBlocks) {
-      if (selectedTemplate === 'SOAP') {
-        content = `S (Subjetivo):\n${generatedBlocks.subjective}\n\nO (Objetivo):\n${generatedBlocks.objective}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment}\n\nP (Plan):\n${generatedBlocks.plan}`;
-      } else { // DAP
-        content = `D (Datos):\n${generatedBlocks.data}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment}\n\nP (Plan):\n${generatedBlocks.plan}`;
-      }
+        if (selectedTemplate === 'SOAP') {
+            content = `S (Subjetivo):\n${generatedBlocks.subjective || ''}\n\nO (Objetivo):\n${generatedBlocks.objective || ''}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment || ''}\n\nP (Plan):\n${generatedBlocks.plan || ''}`;
+        } else { // DAP
+            content = `D (Datos):\n${generatedBlocks.data || ''}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment || ''}\n\nP (Plan):\n${generatedBlocks.plan || ''}`;
+        }
     }
 
-    doc.setFontSize(18);
-    doc.text(editableNoteTitle, 15, 20);
+    // --- Header ---
+    const primaryColor = '#38b284'; // Extracted from CSS var --primary: 130 50% 45%
+    doc.setFillColor(primaryColor);
+    doc.rect(0, 0, pageWidth, 20, 'F');
     
-    doc.setFontSize(12);
+    // Zenda logo (base64)
+    const logoBase64 = 'data:image/png;base64,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';
+
+    doc.addImage(logoBase64, 'PNG', margin, 4, 12, 12);
+    doc.setFontSize(16);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Nota de Sesión', margin + 15, 12);
+    
+    doc.setTextColor(0,0,0); // reset color
+
+    // --- Footer ---
+    doc.setFillColor(primaryColor);
+    doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 6);
+    
+    // --- Document Title and Meta ---
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text(editableNoteTitle, margin, 35);
+    
+    doc.setFontSize(10);
     doc.setTextColor(100);
     const dateStr = format(selectedNote.createdAt, "PPPp", { locale: es });
     const patientName = patients.find(p => p.id === selectedPatientId)?.name;
-    doc.text(`Paciente: ${patientName || 'N/A'}`, 15, 30);
-    doc.text(`Fecha: ${dateStr}`, 15, 36);
+    const psychologistName = userProfile?.fullName || user?.displayName || 'N/A';
 
-    doc.setLineWidth(0.5);
-    doc.line(15, 42, 195, 42);
+    doc.text(`Psicólogo/a: ${psychologistName}`, margin, 45);
+    doc.text(`Paciente: ${patientName || 'N/A'}`, margin, 50);
+    doc.text(`Fecha: ${dateStr}`, margin, 55);
+    
+    doc.setLineWidth(0.2);
+    doc.line(margin, 60, pageWidth - margin, 60);
 
+    // --- Note Content ---
     doc.setFontSize(11);
-    doc.setTextColor(0);
-    const splitContent = doc.splitTextToSize(content, 180);
-    doc.text(splitContent, 15, 52);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0,0,0);
+    
+    const splitContent = doc.splitTextToSize(content, pageWidth - margin * 2);
+    doc.text(splitContent, margin, 70);
     
     doc.save(`${editableNoteTitle}.pdf`);
   };
@@ -965,3 +1001,5 @@ export default function SmartNotesPage() {
     </>
   );
 }
+
+    
