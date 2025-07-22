@@ -46,9 +46,6 @@ const formSchema = z.object({
     })
     .refine((password) => /\d/.test(password), {
       message: "La contraseña debe contener al menos un número.",
-    })
-    .refine((password) => /[@$!%*?&]/.test(password), {
-      message: "La contraseña debe contener al menos un carácter especial (@$!%*?&).",
     }),
   dob: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Por favor, introduce una fecha válida." }),
   gender: z.string().min(1, { message: "Por favor, selecciona un género." }),
@@ -90,7 +87,7 @@ export function SignUpForm() {
     if (score >= 4) {
       color = "bg-green-500";
       label = "Fuerte";
-    } else if (score >= 2) {
+    } else if (score >= 3) {
       color = "bg-yellow-500";
       label = "Media";
     }
@@ -240,7 +237,7 @@ export function SignUpForm() {
                     placeholder="••••••••"
                     {...field} />
                 </FormControl>
-                <Progress value={passwordStrength.score * 25} className={cn("h-2", passwordStrength.color)} />
+                <Progress value={passwordStrength.score * 25} className={cn("h-2")} indicatorClassName={passwordStrength.color} />
                 <FormMessage />
               </FormItem>
             )}
