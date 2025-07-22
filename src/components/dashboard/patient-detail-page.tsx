@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, doc } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Note, Patient } from "@/lib/types";
@@ -13,7 +13,7 @@ import jsPDF from "jspdf";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Edit, Download, MessageSquare, ListFilter, FileType, Plus, Smile, NotebookPen } from "lucide-react";
+import { Loader2, ArrowLeft, Edit, Download, MessageSquare, ListFilter, FileType, Plus, Smile, NotebookPen, FileText } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { addNote, updateNote, deleteNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -250,5 +250,3 @@ const NoteEntryForm = ({ note, onSubmit, onCancel }: { note: Note | null, onSubm
         </form>
     );
 };
-
-    
