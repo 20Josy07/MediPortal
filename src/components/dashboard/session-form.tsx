@@ -83,7 +83,7 @@ export function SessionForm({
       date: session?.date || initialDate || new Date(),
       time: session ? format(session.date, "HH:mm") : "09:00",
       duration: session?.duration ? String(session.duration) : "45",
-      customDuration: (session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : 0) || 0,
+      customDuration: (session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : undefined) || 0,
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
       remindPsychologist: session?.remindPsychologist ?? true,
@@ -392,9 +392,9 @@ export function SessionForm({
                 name="remindPatient"
                 render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                        <div className="space-y-0.5 flex-grow">
+                        <div className="space-y-0.5">
                             <FormLabel>Recordar a paciente</FormLabel>
-                             <FormDescription>
+                            <FormDescription>
                                 Si se activa, se enviará un email y SMS 24hs antes al paciente.
                             </FormDescription>
                         </div>
