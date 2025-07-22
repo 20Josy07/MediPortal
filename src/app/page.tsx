@@ -4,32 +4,39 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, BarChart, Folder, X, Check, Scissors, Library, PenSquare, UserPlus, Calendar, Sparkles } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder, X, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const advantages = [
   {
-    icon: <Scissors className="h-8 w-8 text-[#063C0F]" />,
-    title: "Plantillas personalizables",
-    description: "Ajusta formatos según tu estilo clínico en segundos.",
-    image: "https://i.postimg.cc/tJ72VzD1/replicate-prediction-q6ywnaddbtfey0cr5wxghd1nhe.png",
-    hint: "note template",
+    icon: <FilePenLine className="w-7 h-7 text-primary" />,
+    title: "Automatización total de notas",
+    description: "Genera tu documentación clínica mientras tú descansas.",
+    image: "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/Automatizacion.png?alt=media&token=b6cc67d2-70a1-4df4-a6f8-b10d44c11758",
+    hint: "automated documents"
   },
   {
-    icon: <Library className="h-8 w-8 text-[#063C0F]" />,
-    title: "Historial centralizado",
-    description: "Todo el proceso terapéutico en un solo lugar, con filtros por fecha, tema o cliente.",
-    image: "https://i.postimg.cc/9Q6tXgNT/replicate-prediction-8i9j3rdx7krh80cr5x9s64jys0.png",
-    hint: "patient chart",
+    icon: <Bell className="w-7 h-7 text-primary" />,
+    title: "Alertas y recordatorios automáticos",
+    description: "Nunca pierdas una próxima sesión ni una tarea pendiente.",
+    image: "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/Recordatorios%20(1).png?alt=media&token=8c286b40-2581-4d94-bcf7-993e7feeabb2",
+    hint: "automatic alerts"
   },
   {
-    icon: <PenSquare className="h-8 w-8 text-[#063C0F]" />,
-    title: "Notas y resúmenes automáticos",
-    description: "Tu plataforma redacta la nota SOAP o DAP y extrae insights clave.",
-    image: "https://i.postimg.cc/tJ72VzD1/replicate-prediction-q6ywnaddbtfey0cr5wxghd1nhe.png",
-    hint: "automatic notes",
+    icon: <LayoutGrid className="w-7 h-7 text-primary" />,
+    title: "Dashboard de pacientes",
+    description: "Visualiza estado, próximas citas y puntos clave de un vistazo.",
+    image: "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/Dashboard%20(2).png?alt=media&token=7233384d-f95b-40e3-89fc-d9be22a0b482",
+    hint: "patient dashboard"
   },
+  {
+    icon: <CalendarDays className="w-7 h-7 text-primary" />,
+    title: "Integración con calendario",
+    description: "Sincroniza Google Calendar, Outlook u otras herramientas en un clic.",
+    image: "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/integracion%20calendario%20(1).png?alt=media&token=4e401a92-e2bc-483b-b861-25a2ef993087",
+    hint: "calendar integration"
+  }
 ];
 
 const howItWorksSteps = [
@@ -164,32 +171,42 @@ export default function Home() {
             </div>
         </section>
 
-        <section className="advantages-section" id="features">
-          <h2 className="advantages-title">Ventajas que notarás desde el primer día</h2>
-          <Carousel className="w-full max-w-5xl mx-auto" opts={{ loop: true }}>
-            <CarouselContent>
-              {advantages.map((advantage, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card className="advantage-card">
-                      <CardContent className="flex flex-col items-center text-center p-6">
-                        <div className="advantage-image-container">
-                           <Image src={advantage.image} alt={advantage.title} layout="fill" objectFit="cover" className="rounded-t-lg" data-ai-hint={advantage.hint} />
-                        </div>
-                        <div className="advantage-icon-wrapper">
-                          {advantage.icon}
-                        </div>
-                        <h3 className="text-xl font-bold mt-4 text-[#063C0F]">{advantage.title}</h3>
-                        <p className="text-gray-600 mt-2">{advantage.description}</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+        <section id="features" className="py-20 md:py-28 bg-transparent">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="font-headline text-4xl md:text-5xl font-bold text-foreground">Ventajas que notarás desde el primer día</h2>
+            </div>
+            <Carousel className="w-full max-w-6xl mx-auto" opts={{ loop: true }}>
+              <CarouselContent>
+                {advantages.map((advantage, index) => (
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1 h-full">
+                      <Card className="h-full flex flex-col group overflow-hidden bg-card border shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                        <CardContent className="flex flex-col items-center text-center p-6 flex-grow">
+                          <div className="relative aspect-[16/10] w-full mb-6">
+                            <Image
+                              src={advantage.image}
+                              alt={advantage.title}
+                              fill
+                              className="relative rounded-lg shadow-inner object-cover"
+                              data-ai-hint={advantage.hint}
+                            />
+                          </div>
+                          <div className="bg-accent/20 text-accent-foreground rounded-lg p-3 inline-block mb-4">
+                            {advantage.icon}
+                          </div>
+                          <h3 className="font-headline text-2xl font-bold text-foreground mb-2">{advantage.title}</h3>
+                          <p className="text-foreground/80 flex-grow">{advantage.description}</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="hidden sm:flex h-12 w-12 -left-16 bg-card hover:bg-card/90 border-2" />
+              <CarouselNext className="hidden sm:flex h-12 w-12 -right-16 bg-card hover:bg-card/90 border-2" />
+            </Carousel>
+          </div>
         </section>
 
         <section className="how-it-works-section" id="how-it-works-steps">
