@@ -787,7 +787,7 @@ export default function SmartNotesPage() {
                             disabled={isGenerating || isEditingTranscription}
                         >
                             {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            Generar
+                            {isGenerating ? 'Generando...' : 'Generar'}
                         </Button>
                     </div>
                  </div>
