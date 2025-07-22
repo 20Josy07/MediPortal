@@ -74,7 +74,7 @@ export function SessionForm({
       date: session?.date || initialDate || new Date(),
       time: session ? format(session.date, "HH:mm") : "09:00",
       duration: session?.duration ? String(session.duration) : "45",
-      customDuration: session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : undefined,
+      customDuration: (session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : 0) || 0,
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
     },
