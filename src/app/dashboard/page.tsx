@@ -77,6 +77,7 @@ export default function DashboardPage() {
                 id: doc.id,
                 ...data,
                 date: (data.date as any).toDate(),
+                endDate: (data.endDate as any).toDate(),
             } as Session;
         }).filter(session => session.status === 'Pendiente' || session.status === 'Confirmada');
         setSessions(sessionList);

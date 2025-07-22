@@ -90,6 +90,7 @@ export function SessionsCalendar() {
             id: doc.id,
             ...data,
             date: (data.date as any).toDate(),
+            endDate: (data.endDate as any).toDate(),
           } as Session;
         });
         setSessions(sessionList);
@@ -108,7 +109,7 @@ export function SessionsCalendar() {
     fetchData();
   }, [user, db, authLoading, toast]);
 
-  const handleFormSubmit = async (data: Omit<Session, "id" | "patientName">) => {
+  const handleFormSubmit = async (data: Omit<Session, "id">) => {
     if (!user || !db) {
       toast({
         variant: "destructive",
@@ -116,16 +117,8 @@ export function SessionsCalendar() {
       });
       return;
     }
-    const selectedPatient = patients.find(p => p.id === data.patientId);
-    if (!selectedPatient) {
-        toast({ variant: "destructive", title: "Paciente no encontrado."});
-        return;
-    }
 
-    const sessionData = {
-        ...data,
-        patientName: selectedPatient.name,
-    };
+    const sessionData = { ...data };
 
     try {
       const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
@@ -353,7 +346,7 @@ export function SessionsCalendar() {
                       const startHour = getHours(session.date);
                       const startMinute = getMinutes(session.date);
                       const top = ((startHour - 7) * 64) + (startMinute / 60 * 64);
-                      const height = 64; // Assuming 1-hour sessions
+                      const height = (session.duration / 60) * 64; // Duration in hours * height per hour
 
                       return (
                           <div
@@ -409,7 +402,7 @@ export function SessionsCalendar() {
               const startHour = getHours(session.date);
               const startMinute = getMinutes(session.date);
               const top = ((startHour - 7) * 64) + (startMinute / 60 * 64);
-              const height = 64;
+              const height = (session.duration / 60) * 64;
               return (
                   <div
                     key={session.id}
@@ -551,7 +544,7 @@ export function SessionsCalendar() {
                 </div>
                 <div className="flex items-center gap-4">
                   <Clock className="w-5 h-5 text-muted-foreground" />
-                  <span>{format(selectedSession.date, "p", { locale: es })}</span>
+                  <span>{format(selectedSession.date, "p", { locale: es })} - {format(selectedSession.endDate, "p", { locale: es })} ({selectedSession.duration} min)</span>
                 </div>
                 <div className="flex items-center gap-4">
                   <Tag className="w-5 h-5 text-muted-foreground" />

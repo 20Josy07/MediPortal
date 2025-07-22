@@ -4,7 +4,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format } from "date-fns";
+import { format, addMinutes } from "date-fns";
 import type { Patient, Session } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +31,7 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   patientId: z.string().min(1, { message: "Debes seleccionar un paciente." }),
@@ -40,6 +41,8 @@ const formSchema = z.object({
   time: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
     message: "Introduce una hora válida en formato HH:mm.",
   }),
+  duration: z.string().min(1, { message: "La duración es obligatoria." }),
+  customDuration: z.number().optional(),
   type: z.enum(["Individual", "Pareja", "Familiar"]),
   status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
 });
@@ -67,15 +70,48 @@ export function SessionForm({
       patientId: session?.patientId || "",
       date: session?.date || initialDate || new Date(),
       time: session ? format(session.date, "HH:mm") : "09:00",
+      duration: session?.duration ? String(session.duration) : "45",
+      customDuration: session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : undefined,
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
     },
   });
 
+  const durationValue = form.watch("duration");
+  const timeValue = form.watch("time");
+  const dateValue = form.watch("date");
+  const customDurationValue = form.watch("customDuration");
+  
+  const getEndTime = () => {
+    const [hours, minutes] = timeValue.split(":").map(Number);
+    if (isNaN(hours) || isNaN(minutes)) return "";
+    
+    const startDate = new Date(dateValue);
+    startDate.setHours(hours, minutes);
+
+    const durationInMinutes = durationValue === "custom" 
+        ? (customDurationValue || 0) 
+        : parseInt(durationValue, 10);
+    
+    if (isNaN(durationInMinutes)) return "";
+        
+    const endDate = addMinutes(startDate, durationInMinutes);
+    return format(endDate, "HH:mm");
+  };
+  
+  useEffect(() => {
+    if(session?.duration && ![30, 45, 60, 90].includes(session.duration)) {
+      form.setValue("duration", "custom");
+    }
+  }, [session, form]);
+
   function handleSubmit(values: SessionFormValues) {
     const [hours, minutes] = values.time.split(":").map(Number);
     const combinedDateTime = new Date(values.date);
-    combinedDateTime.setHours(hours, minutes);
+    combinedDateTime.setHours(hours, minutes, 0, 0);
+
+    const durationInMinutes = values.duration === "custom" ? (values.customDuration || 0) : parseInt(values.duration, 10);
+    const endDate = addMinutes(combinedDateTime, durationInMinutes);
 
     const selectedPatient = patients.find((p) => p.id === values.patientId);
 
@@ -88,6 +124,8 @@ export function SessionForm({
       patientId: values.patientId,
       patientName: selectedPatient.name,
       date: combinedDateTime,
+      endDate: endDate,
+      duration: durationInMinutes,
       type: values.type,
       status: values.status,
     };
@@ -139,7 +177,7 @@ export function SessionForm({
                         )}
                       >
                         {field.value ? (
-                          format(field.value, "PPP")
+                          format(field.value, "PPP", { locale: es })
                         ) : (
                           <span>Elige una fecha</span>
                         )}
@@ -154,6 +192,7 @@ export function SessionForm({
                       onSelect={field.onChange}
                       disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
+                      locale={es}
                     />
                   </PopoverContent>
                 </Popover>
@@ -166,7 +205,7 @@ export function SessionForm({
             name="time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Hora</FormLabel>
+                <FormLabel>Hora de Inicio</FormLabel>
                 <FormControl>
                   <Input type="time" {...field} />
                 </FormControl>
@@ -175,6 +214,58 @@ export function SessionForm({
             )}
           />
         </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+           <FormField
+                control={form.control}
+                name="duration"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Duración</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Selecciona duración" />
+                        </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="30">30 minutos</SelectItem>
+                            <SelectItem value="45">45 minutos</SelectItem>
+                            <SelectItem value="60">60 minutos</SelectItem>
+                            <SelectItem value="90">90 minutos</SelectItem>
+                            <SelectItem value="custom">Personalizado</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <div>
+              <FormLabel>Hora de Fin</FormLabel>
+              <Input type="text" value={getEndTime()} disabled className="bg-muted" />
+            </div>
+        </div>
+         {durationValue === 'custom' && (
+            <FormField
+              control={form.control}
+              name="customDuration"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duración Personalizada (minutos)</FormLabel>
+                  <FormControl>
+                    <Input 
+                        type="number"
+                        placeholder="Ej: 50"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
         <FormField
           control={form.control}
           name="type"

@@ -15,6 +15,8 @@ export interface Session {
   patientId: string;
   patientName: string;
   date: Date;
+  endDate: Date;
+  duration: number; // in minutes
   type: "Individual" | "Pareja" | "Familiar";
   status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
 }
