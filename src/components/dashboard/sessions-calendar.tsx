@@ -520,6 +520,7 @@ export function SessionsCalendar() {
           <SessionForm
             session={selectedSession}
             patients={patients}
+            sessions={sessions}
             onSubmit={handleFormSubmit}
             onCancel={() => { setIsFormOpen(false); setSelectedSession(null); }}
             initialDate={selectedDate}

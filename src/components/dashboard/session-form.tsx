@@ -4,7 +4,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format, addMinutes } from "date-fns";
+import { format, addMinutes, areIntervalsOverlapping } from "date-fns";
 import { es } from "date-fns/locale";
 import type { Patient, Session } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,7 @@ type SessionFormValues = z.infer<typeof formSchema>;
 interface SessionFormProps {
   session?: Session | null;
   patients: Patient[];
+  sessions: Session[];
   onSubmit: (data: Omit<Session, "id">) => void;
   onCancel: () => void;
   initialDate?: Date;
@@ -61,6 +62,7 @@ interface SessionFormProps {
 export function SessionForm({
   session,
   patients,
+  sessions,
   onSubmit,
   onCancel,
   initialDate,
@@ -97,7 +99,7 @@ export function SessionForm({
     if (isNaN(durationInMinutes)) return "";
         
     const endDate = addMinutes(startDate, durationInMinutes);
-    return format(endDate, "HH:mm");
+    return format(endDate, "p", { locale: es });
   };
   
   useEffect(() => {
@@ -113,6 +115,27 @@ export function SessionForm({
 
     const durationInMinutes = values.duration === "custom" ? (values.customDuration || 0) : parseInt(values.duration, 10);
     const endDate = addMinutes(combinedDateTime, durationInMinutes);
+    
+    const newSessionInterval = { start: combinedDateTime, end: endDate };
+
+    // Check for overlaps
+    const hasOverlap = sessions.some(existingSession => {
+      // If we are editing a session, we should not compare it with itself
+      if (session && existingSession.id === session.id) {
+        return false;
+      }
+      const existingSessionInterval = { start: existingSession.date, end: existingSession.endDate };
+      return areIntervalsOverlapping(newSessionInterval, existingSessionInterval, { inclusive: false });
+    });
+
+    if (hasOverlap) {
+      form.setError("time", {
+        type: "manual",
+        message: "Esta cita se solapa con otra. Ajusta duración o cambia la hora."
+      });
+      return;
+    }
+
 
     const selectedPatient = patients.find((p) => p.id === values.patientId);
 
