@@ -27,6 +27,7 @@ const formSchema = z.object({
   email: z.string().email({ message: "Introduce un correo electrónico válido." }),
   phone: z.string().min(10, { message: "El teléfono debe tener al menos 10 caracteres." }),
   status: z.enum(["Activo", "Inactivo"]),
+  dob: z.string().optional(),
 });
 
 type PatientFormValues = z.infer<typeof formSchema>;
@@ -45,6 +46,7 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
       email: patient?.email || "",
       phone: patient?.phone || "",
       status: patient?.status || "Activo",
+      dob: patient?.dob || "",
     },
   });
 
@@ -90,6 +92,19 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="dob"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Fecha de Nacimiento</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
          <FormField
           control={form.control}
           name="status"
@@ -119,3 +134,5 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
     </Form>
   );
 }
+
+    

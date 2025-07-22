@@ -5,7 +5,9 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   collection,
-  getDocs,
+  onSnapshot,
+  query,
+  orderBy,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -47,29 +49,28 @@ export function PatientTableWrapper() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   useEffect(() => {
-    const fetchPatients = async () => {
-      if (authLoading || !user || !db) {
-        setIsLoading(false);
-        return;
-      }
-      
-      setIsLoading(true);
-      try {
-        const patientsCollection = collection(db, `users/${user.uid}/patients`);
-        const patientSnapshot = await getDocs(patientsCollection);
-        const patientList = patientSnapshot.docs.map(
+    if (authLoading || !user || !db) {
+      if(!authLoading) setIsLoading(false);
+      return;
+    }
+    
+    setIsLoading(true);
+    const patientsCollection = collection(db, `users/${user.uid}/patients`);
+    const q = query(patientsCollection, orderBy("name"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const patientList = snapshot.docs.map(
           (doc) => ({ id: doc.id, ...doc.data() } as Patient)
         );
         setPatients(patientList);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
-        toast({ variant: "destructive", title: "Error al cargar los pacientes." });
-      } finally {
         setIsLoading(false);
-      }
-    };
+    }, (error) => {
+      console.error("Error fetching patients:", error);
+      toast({ variant: "destructive", title: "Error al cargar los pacientes." });
+      setIsLoading(false);
+    });
 
-    fetchPatients();
+    return () => unsubscribe();
   }, [user, db, authLoading, toast]);
   
   const filteredPatients = useMemo(() =>
@@ -83,23 +84,19 @@ export function PatientTableWrapper() {
       return;
     };
     
-    const dataToSave = {
-      ...data,
-    };
+    const dataToSave = { ...data };
 
     try {
       if (selectedPatient) {
         // Update
         const patientDoc = doc(db, `users/${user.uid}/patients`, selectedPatient.id);
         await updateDoc(patientDoc, dataToSave);
-        setPatients(patients.map(p => p.id === selectedPatient.id ? { ...p, ...dataToSave } : p));
         toast({ title: "Paciente actualizado exitosamente." });
       } else {
         // Create
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
         const newPatientData = { ...dataToSave, nextSession: null };
-        const docRef = await addDoc(patientsCollection, newPatientData);
-        setPatients([...patients, { id: docRef.id, ...newPatientData }]);
+        await addDoc(patientsCollection, newPatientData);
         toast({ title: "Paciente agregado exitosamente." });
       }
       setIsFormOpen(false);
@@ -115,7 +112,6 @@ export function PatientTableWrapper() {
     try {
       const patientDoc = doc(db, `users/${user.uid}/patients`, selectedPatient.id);
       await deleteDoc(patientDoc);
-      setPatients(patients.filter(p => p.id !== selectedPatient.id));
       toast({ title: "Paciente eliminado exitosamente." });
       setIsDeleteConfirmOpen(false);
       setSelectedPatient(null);
@@ -248,3 +244,5 @@ export function PatientTableWrapper() {
     </>
   );
 }
+
+    

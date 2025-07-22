@@ -7,6 +7,7 @@ export interface Patient {
   phone: string;
   nextSession: string | null;
   status: "Activo" | "Inactivo";
+  dob?: string;
 }
 
 export interface Session {
@@ -51,3 +52,5 @@ export const ChatWithNotesOutputSchema = z.object({
   answer: z.string().describe("The AI's answer to the user's question based on the provided notes."),
 });
 export type ChatWithNotesOutput = z.infer<typeof ChatWithNotesOutputSchema>;
+
+    
