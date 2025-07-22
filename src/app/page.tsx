@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -7,6 +8,8 @@ import { ArrowRight, FileText, BarChart, Folder, X, Check, UserPlus, Calendar, S
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 const advantages = [
   {
@@ -65,6 +68,39 @@ const howItWorksSteps = [
         description: "Deja que Zenda genere notas e insights automáticamente.",
     }
 ]
+
+function HeroImage() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="relative w-full aspect-[4/3] max-w-2xl mx-auto">
+        <div className="w-full h-full bg-muted rounded-2xl" />
+      </div>
+    );
+  }
+
+  const src = resolvedTheme === 'dark'
+    ? "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"
+    : "https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png";
+  
+  return (
+      <div className="relative w-full aspect-square max-w-md mx-auto">
+          <Image
+              src={src}
+              alt="Zenda Hero Image"
+              fill
+              className="object-contain"
+              priority
+          />
+      </div>
+  );
+}
 
 
 export default function Home() {
@@ -126,46 +162,7 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-image">
-            <div
-              className="relative flex flex-col items-center justify-center gap-8 bg-hero dark:bg-card rounded-2xl p-8 shadow-lg max-w-4xl mx-auto"
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="120"
-                    height="120"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-primary/70"
-                >
-                    <path d="M12 2a5.5 5.5 0 0 0-5.5 5.5c0 1.63.71 3.1 1.88 4.13l-1.88 2.82A6.5 6.5 0 0 1 12 21a6.5 6.5 0 0 1 6.5-6.5c0-1.22-.34-2.37-.94-3.37" />
-                    <path d="M12.5 8.5A2.5 2.5 0 1 0 10 11a2.5 2.5 0 0 0 2.5-2.5Z" />
-                    <path d="M12.5 14a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
-                    <path d="M16 22a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2" />
-                    <path d="M18 19a2 2 0 0 0-2-2" />
-                    <path d="M6 19a2 2 0 0 1 2-2" />
-                    <path d="M12 11V8h2.5" />
-                    <path d="M10 8h2.5" />
-                </svg>
-
-              <div className="relative z-10 flex flex-col gap-4 w-full max-w-md">
-                <div className="flex items-center gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
-                  <FileText className="h-6 w-6 text-[#1a3b2c] dark:text-primary" />
-                  <span className="text-[#1a3b2c] dark:text-foreground font-medium">Notas automáticas con resúmenes e insights clave</span>
-                </div>
-                <div className="flex items-center gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
-                  <BarChart className="h-6 w-6 text-[#1a3b2c] dark:text-primary" />
-                  <span className="text-[#1a3b2c] dark:text-foreground font-medium">Visualización de evolución y objetivos terapéuticos</span>
-                </div>
-                <div className="flex items-center gap-3 bg-white/80 dark:bg-background/80 backdrop-blur-sm p-4 rounded-xl shadow-sm">
-                  <Folder className="h-6 w-6 text-[#1a3b2c] dark:text-primary" />
-                  <span className="text-[#1a3b2c] dark:text-foreground font-medium">Historial organizado y fácil de consultar</span>
-                </div>
-              </div>
-            </div>
+             <HeroImage />
           </div>
         </section>
 
