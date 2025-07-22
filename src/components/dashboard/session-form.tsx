@@ -36,6 +36,9 @@ import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 import { Switch } from "../ui/switch";
 import { Separator } from "../ui/separator";
+import { sendReminder } from "@/ai/flows/send-reminders-flow";
+import { useToast } from "@/hooks/use-toast";
+
 
 const formSchema = z.object({
   patientId: z.string().min(1, { message: "Debes seleccionar un paciente." }),
@@ -72,6 +75,7 @@ export function SessionForm({
   onCancel,
   initialDate,
 }: SessionFormProps) {
+  const { toast } = useToast();
   const form = useForm<SessionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -115,7 +119,7 @@ export function SessionForm({
     }
   }, [session, form]);
 
-  function handleSubmit(values: SessionFormValues) {
+  async function handleSubmit(values: SessionFormValues) {
     const [hours, minutes] = values.time.split(":").map(Number);
     const combinedDateTime = new Date(values.date);
     combinedDateTime.setHours(hours, minutes, 0, 0);
@@ -162,6 +166,23 @@ export function SessionForm({
       remindPatient: values.remindPatient,
       remindPsychologist: values.remindPsychologist,
     };
+    
+    if(values.remindPatient || values.remindPsychologist) {
+        try {
+            await sendReminder({
+                patientName: selectedPatient.name,
+                patientEmail: selectedPatient.email,
+                patientPhone: selectedPatient.phone,
+                sessionDate: combinedDateTime,
+                reminderType: values.remindPatient && values.remindPsychologist ? 'both' : values.remindPatient ? 'patient' : 'psychologist',
+            });
+            toast({ title: "Recordatorios programados." });
+        } catch(e) {
+            console.error(e);
+            toast({ variant: "destructive", title: "Error al programar recordatorios."})
+        }
+    }
+
     onSubmit(sessionData);
   }
 
