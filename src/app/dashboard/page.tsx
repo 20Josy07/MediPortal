@@ -65,8 +65,9 @@ export default function DashboardPage() {
     // Listen for real-time updates on sessions
     const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
     const q = query(
-      sessionsCollection, 
-      where("date", ">=", new Date()), 
+      sessionsCollection,
+      where("date", ">=", new Date()),
+      where("status", "in", ["Pendiente", "Confirmada"]),
       orderBy("date")
     );
 
