@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, FileText, BarChart, Folder, X, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const advantages = [
   {
@@ -228,6 +229,7 @@ export default function Home() {
             </div>
         </section>
       </main>
+      <ThemeToggle />
       <footer>
         <div className="footer-container">
           <div className="footer-column">
