@@ -70,6 +70,7 @@ export default function SmartNotesPage() {
   const [selectedAudioFile, setSelectedAudioFile] = useState<File | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>("SOAP");
   const [generatedBlocks, setGeneratedBlocks] = useState<GeneratedBlocks | null>(null);
+  const [isEditingTranscription, setIsEditingTranscription] = useState(false);
 
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -264,6 +265,7 @@ export default function SmartNotesPage() {
     setEditableNoteTitle(note.title);
     setEditableNoteContent(note.content || "");
     setIsEditing(false);
+    setIsEditingTranscription(false);
     setSelectedTemplate("SOAP");
     setGeneratedBlocks(null); // Reset generated blocks
     setIsDetailViewOpen(true);
@@ -493,7 +495,12 @@ export default function SmartNotesPage() {
       }
     } catch (error) {
       console.error('Error generating template:', error);
-      toast({ variant: 'destructive', title: 'Error al generar la plantilla.' });
+      toast({ 
+          variant: 'destructive', 
+          title: 'Error al generar la plantilla.',
+          description: "Hubo un problema. Por favor, intenta de nuevo.",
+          action: <Button variant="secondary" onClick={handleGenerateTemplate}>Reintentar</Button>
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -773,7 +780,7 @@ export default function SmartNotesPage() {
         </div>
       </div>
       
-      <Dialog open={isDetailViewOpen} onOpenChange={(isOpen) => { if (!isOpen) setGeneratedBlocks(null); setIsDetailViewOpen(isOpen); }}>
+      <Dialog open={isDetailViewOpen} onOpenChange={(isOpen) => { if (!isOpen) { setGeneratedBlocks(null); setIsEditing(false); } setIsDetailViewOpen(isOpen); }}>
         <DialogContent className="max-w-2xl">
           {selectedNote && (
             <>
@@ -807,7 +814,7 @@ export default function SmartNotesPage() {
                             size="sm"
                             className="h-9"
                             onClick={handleGenerateTemplate}
-                            disabled={isGenerating || !isEditing}
+                            disabled={isGenerating || (!isEditing && !isEditingTranscription)}
                         >
                             {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                             {isGenerating ? 'Generando...' : 'Generar'}
@@ -859,7 +866,7 @@ export default function SmartNotesPage() {
                     value={editableNoteContent}
                     onChange={(e) => setEditableNoteContent(e.target.value)}
                     className="text-sm whitespace-pre-wrap min-h-[30vh] border-0 shadow-none focus-visible:ring-0 p-0"
-                    disabled={!isEditing}
+                    disabled={!isEditingTranscription && !isEditing}
                   />
                 )}
               </ScrollArea>
@@ -883,10 +890,12 @@ export default function SmartNotesPage() {
                 </AlertDialog>
                 <div className="flex gap-2">
                   <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cancelar</Button>
-                  {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)}><Edit className="mr-2 h-4 w-4" /> Editar</Button>
+                  {isEditing ? (
+                     <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
                   ) : (
-                    <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
+                    <Button onClick={() => { setIsEditing(true); setIsEditingTranscription(true); }}>
+                        <Edit className="mr-2 h-4 w-4" /> Editar
+                    </Button>
                   )}
                 </div>
               </DialogFooter>
