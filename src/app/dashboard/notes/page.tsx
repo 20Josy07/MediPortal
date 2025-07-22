@@ -243,7 +243,12 @@ export default function SmartNotesPage() {
       toast({ title: "Nota de texto guardada." });
     } catch (error) {
        console.error("Error saving text note:", error);
-       toast({ variant: "destructive", title: "Error al guardar la nota de texto." });
+       toast({
+        variant: "destructive",
+        title: "Error al guardar la nota.",
+        description: "Hubo un problema. Por favor, intenta de nuevo.",
+        action: <Button variant="secondary" onClick={handleSaveTextNote}>Reintentar</Button>
+      });
     }
   };
   
