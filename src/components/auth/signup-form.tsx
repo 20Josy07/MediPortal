@@ -35,7 +35,19 @@ const formSchema = z.object({
   fullname: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
   email: z.string().email({ message: "Por favor, introduce un correo válido." }),
   username: z.string().min(2, { message: "El nombre de usuario debe tener al menos 2 caracteres." }),
-  password: z.string().min(8, { message: "La contraseña debe tener al menos 8 caracteres." }),
+  password: z.string().min(8, { message: "La contraseña debe tener al menos 8 caracteres." })
+    .refine((password) => /[a-z]/.test(password), {
+      message: "La contraseña debe contener al menos una letra minúscula.",
+    })
+    .refine((password) => /[A-Z]/.test(password), {
+      message: "La contraseña debe contener al menos una letra mayúscula.",
+    })
+    .refine((password) => /\d/.test(password), {
+      message: "La contraseña debe contener al menos un número.",
+    })
+    .refine((password) => /[@$!%*?&]/.test(password), {
+      message: "La contraseña debe contener al menos un carácter especial (@$!%*?&).",
+    }),
   dob: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Por favor, introduce una fecha válida." }),
   gender: z.string().min(1, { message: "Por favor, selecciona un género." }),
 });
