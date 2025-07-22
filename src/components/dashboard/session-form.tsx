@@ -188,7 +188,7 @@ export function SessionForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
         <FormField
           control={form.control}
           name="patientId"
@@ -213,7 +213,7 @@ export function SessionForm({
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2">
           <FormField
             control={form.control}
             name="date"
@@ -269,7 +269,7 @@ export function SessionForm({
           />
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2">
            <FormField
                 control={form.control}
                 name="duration"
@@ -368,7 +368,7 @@ export function SessionForm({
 
         <Separator className="!my-4"/>
         
-        <div className="space-y-3">
+        <div className="space-y-2">
             <div className="flex items-center gap-2">
                 <Bell className="h-5 w-5 text-muted-foreground" />
                 <h3 className="text-base font-semibold">Recordatorios</h3>
@@ -377,7 +377,7 @@ export function SessionForm({
                 control={form.control}
                 name="remindPsychologist"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2 shadow-sm">
                         <div className="space-y-0.5">
                             <FormLabel>Recordar a psicólogo</FormLabel>
                         </div>
@@ -391,11 +391,11 @@ export function SessionForm({
                 control={form.control}
                 name="remindPatient"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2 shadow-sm">
                         <div className="space-y-0.5">
                             <FormLabel>Recordar a paciente</FormLabel>
                             <FormDescription className="text-xs">
-                                Se enviará un email y SMS 24hs antes.
+                                Email y SMS 24hs antes.
                             </FormDescription>
                         </div>
                         <FormControl>
@@ -416,5 +416,3 @@ export function SessionForm({
     </Form>
   );
 }
-
-  
