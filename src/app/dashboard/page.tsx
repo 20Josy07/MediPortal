@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import {
   Card,
   CardContent,
@@ -24,6 +24,8 @@ import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { getDocs } from "firebase/firestore";
+
 
 export default function DashboardPage() {
   const { user, db, loading: authLoading } = useAuth();
@@ -34,49 +36,62 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (authLoading || !user || !db) {
+    if (authLoading || !user || !db) {
         if (!authLoading) setIsLoading(false);
         return;
-      }
-      setIsLoading(true);
-      try {
-        const patientsCollection = collection(db, `users/${user.uid}/patients`);
-        const patientSnapshot = await getDocs(patientsCollection);
-        const patientList = patientSnapshot.docs.map(
-          (doc) => ({ id: doc.id, ...doc.data() } as Patient)
-        );
-        setPatients(patientList);
-        
-        const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
-        const q = query(
-          sessionsCollection, 
-          where("date", ">=", new Date()), 
-          orderBy("date"), 
-          limit(4)
-        );
-        const sessionSnapshot = await getDocs(q);
-        const sessionList = sessionSnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            date: (data.date as any).toDate(),
-          } as Session;
+    }
+
+    setIsLoading(true);
+
+    // Fetch patients once
+    const fetchPatients = async () => {
+        try {
+            const patientsCollection = collection(db, `users/${user.uid}/patients`);
+            const patientSnapshot = await getDocs(patientsCollection);
+            const patientList = patientSnapshot.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as Patient)
+            );
+            setPatients(patientList);
+        } catch (error) {
+             console.error("Error fetching patients:", error);
+             toast({
+                variant: "destructive",
+                title: "Error al cargar los pacientes.",
+            });
+        }
+    };
+    fetchPatients();
+
+    // Listen for real-time updates on sessions
+    const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
+    const q = query(
+      sessionsCollection, 
+      where("date", ">=", new Date()), 
+      orderBy("date")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+        const sessionList = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                date: (data.date as any).toDate(),
+            } as Session;
         });
         setSessions(sessionList);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+        setIsLoading(false);
+    }, (error) => {
+        console.error("Error fetching sessions:", error);
         toast({
           variant: "destructive",
-          title: "Error al cargar los datos del dashboard.",
+          title: "Error al cargar las sesiones.",
         });
-      } finally {
         setIsLoading(false);
-      }
-    };
+    });
 
-    fetchData();
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [user, db, authLoading, toast]);
 
 
@@ -150,6 +165,7 @@ export default function DashboardPage() {
                         <Badge className={
                           session.status === 'Confirmada' ? 'bg-green-600/90' : 
                           session.status === 'Pendiente' ? 'bg-yellow-500 text-white' : 
+                          session.status === 'No asistió' ? 'bg-purple-600' :
                           'bg-red-600/90'
                         }>
                           {session.status}
