@@ -149,7 +149,7 @@ export default function DashboardPage() {
                       <TableCell>
                         <Badge className={
                           session.status === 'Confirmada' ? 'bg-green-600/90' : 
-                          session.status === 'Pendiente' ? 'border-yellow-500/30 bg-yellow-500/20 text-yellow-400' : 
+                          session.status === 'Pendiente' ? 'bg-yellow-500 text-white' : 
                           'bg-red-600/90'
                         }>
                           {session.status}
@@ -180,4 +180,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

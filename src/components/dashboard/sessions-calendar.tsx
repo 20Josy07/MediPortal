@@ -212,7 +212,7 @@ export function SessionsCalendar() {
       case "Confirmada":
         return "bg-green-500/80 hover:bg-green-500";
       case "Pendiente":
-        return "bg-yellow-400/80 hover:bg-yellow-400";
+        return "bg-yellow-500 text-white hover:bg-yellow-500/90";
       case "Cancelada":
         return "bg-red-500/80 hover:bg-red-500";
       default:
