@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -268,7 +267,7 @@ export default function SmartNotesPage() {
       const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
       setNotes(prevNotes => [addedNote, ...prevNotes]);
       setTextNoteContent("");
-      toast({ title: "Nota de texto guardada." });
+      toast({ title: "Resumen guardado" });
     } catch (error) {
        console.error("Error saving text note:", error);
        toast({

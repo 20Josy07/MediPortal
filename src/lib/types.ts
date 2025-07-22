@@ -28,6 +28,7 @@ export interface Note {
   type: "Voz" | "Texto";
   createdAt: Date;
   content?: string;
+  sessionId?: string;
 }
 
 export interface UserProfile {

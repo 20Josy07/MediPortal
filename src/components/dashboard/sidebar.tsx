@@ -85,7 +85,7 @@ export function DashboardSidebar() {
             >
               <Link href="/dashboard/notes">
                 <NotebookText />
-                Notas
+                Notas Inteligentes
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -51,7 +51,7 @@ export function DashboardNavbar() {
       dashboard: 'Principal',
       patients: 'Pacientes',
       sessions: 'Sesiones',
-      notes: 'Notas',
+      notes: 'Notas Inteligentes',
       analysis: 'Análisis',
       conversation: 'Análisis de Conversación',
       chat: 'Preguntas Frecuentes',
