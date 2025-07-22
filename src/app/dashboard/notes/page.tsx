@@ -24,6 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 
 // Configure PDF.js worker
@@ -54,6 +55,7 @@ export default function SmartNotesPage() {
   const [editableNoteContent, setEditableNoteContent] = useState("");
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
   const [isFileProcessing, setIsFileProcessing] = useState(false);
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
   
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -328,10 +330,7 @@ export default function SmartNotesPage() {
     }
   };
   
-  const handleAudioFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+    const processAudioFile = (file: File) => {
     if (!selectedPatientId) {
       toast({ variant: "destructive", title: "Selecciona un paciente primero." });
       return;
@@ -367,12 +366,47 @@ export default function SmartNotesPage() {
     reader.onerror = () => {
         toast({ variant: "destructive", title: "Error al leer el archivo." });
     }
-    
+  };
+  
+  const handleAudioFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        processAudioFile(file);
+    }
     if (audioFileInputRef.current) {
         audioFileInputRef.current.value = "";
     }
   };
 
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingOver(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processAudioFile(file);
+    } else {
+      toast({ variant: "destructive", title: "No se soltó ningún archivo." });
+    }
+  };
 
   const handleAiChatSubmit = async () => {
     if (!chatInput.trim()) return;
@@ -447,11 +481,17 @@ export default function SmartNotesPage() {
                       <TabsTrigger value="text">Nota de Texto</TabsTrigger>
                   </TabsList>
                   <TabsContent value="voice">
-                      <Card>
+                      <Card 
+                         onDragEnter={handleDragEnter}
+                         onDragLeave={handleDragLeave}
+                         onDragOver={handleDragOver}
+                         onDrop={handleDrop}
+                         className={cn("transition-all", isDraggingOver && "border-primary ring-2 ring-primary bg-primary/10")}
+                      >
                       <CardHeader>
                           <CardTitle>Transcripción Automática</CardTitle>
                           <CardDescription>
-                          Graba o sube el audio de tu sesión y la IA lo transcribirá por ti.
+                          Graba, sube o arrastra el audio de tu sesión y la IA lo transcribirá por ti.
                           </CardDescription>
                       </CardHeader>
                       <CardContent className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
@@ -488,7 +528,7 @@ export default function SmartNotesPage() {
                               />
                           </div>
                           <p className="text-muted-foreground">
-                              {isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : !selectedPatientId ? "Selecciona un paciente para empezar" : "Iniciar Grabación o Subir Archivo"}
+                              {isDraggingOver ? "Suelta el archivo para transcribir" : isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : !selectedPatientId ? "Selecciona un paciente para empezar" : "Iniciar Grabación o Subir Archivo"}
                           </p>
                       </CardContent>
                       </Card>
