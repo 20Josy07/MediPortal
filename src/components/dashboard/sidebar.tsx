@@ -24,6 +24,7 @@ import {
   HelpCircle,
   MessageSquare,
   Video,
+  BookUser,
 } from "lucide-react";
 import * as React from 'react';
 import Image from "next/image";
@@ -127,6 +128,17 @@ export function DashboardSidebar() {
                 </SidebarMenuSubItem>
               </SidebarMenuSub>
             )}
+          </SidebarMenuItem>
+           <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname === "/dashboard/welcome-guide"}
+            >
+              <Link href="#">
+                <BookUser />
+                Guía de Bienvenida
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
