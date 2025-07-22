@@ -572,8 +572,8 @@ export default function SmartNotesPage() {
         }
     }
 
-    const primaryColor = '#38b284';
-    doc.setFillColor(primaryColor);
+    const headerFooterColor = '#141f16';
+    doc.setFillColor(headerFooterColor);
     doc.rect(0, 0, pageWidth, 20, 'F');
     
     try {
@@ -591,7 +591,7 @@ export default function SmartNotesPage() {
     
     doc.setTextColor(0,0,0);
 
-    doc.setFillColor(primaryColor);
+    doc.setFillColor(headerFooterColor);
     doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
