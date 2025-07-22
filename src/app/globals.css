@@ -33,8 +33,6 @@
     --input: 220 10% 90%;
     --ring: 130 50% 45%;
 
-    --radius: 0.5rem;
-
     --chart-1: 130 50% 45%;
     --chart-2: 142.1 76.2% 36.3%;
     --chart-3: 35.8 91.7% 53.1%;
@@ -414,7 +412,7 @@
     }
 
     footer {
-        @apply bg-secondary py-16 px-[5%] text-foreground text-sm;
+        @apply bg-[#18441E] py-16 px-[5%] text-white text-sm;
     }
 
     .footer-container {
@@ -426,7 +424,7 @@
     }
 
     .footer-column h3 {
-        @apply text-xl font-bold mb-6 text-foreground;
+        @apply text-xl font-bold mb-6 text-white;
     }
 
     .footer-column p {
@@ -586,6 +584,7 @@
 }
 
     
+
 
 
 
