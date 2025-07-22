@@ -6,7 +6,7 @@ import { LoginForm } from "@/components/auth/login-form";
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-5">
-      <div className="w-full max-w-md rounded-2xl bg-primary/10 border border-border p-10 text-center shadow-lg">
+      <div className="w-full max-w-md rounded-2xl bg-primary/20 border border-border p-10 text-center shadow-lg">
         <div className="mb-8">
           <Image
             src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"
