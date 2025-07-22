@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export interface Patient {
@@ -27,7 +26,7 @@ export interface Note {
   title: string;
   type: "Voz" | "Texto";
   createdAt: Date;
-  content?: string;
+  content: string;
   sessionId?: string;
 }
 
