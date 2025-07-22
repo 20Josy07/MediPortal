@@ -444,7 +444,7 @@
     }
     
     .footer-column ul li a:hover {
-      color: hsl(var(--highlight-yellow));
+      @apply text-white;
     }
     
     .footer-badges {
@@ -452,7 +452,7 @@
     }
     
     .footer-badges span {
-        @apply bg-background py-2 px-4 rounded-full text-xs font-bold text-white/80;
+        @apply bg-background/90 text-foreground py-2 px-4 rounded-full font-bold;
     }
     
     .footer-bottom {
@@ -584,6 +584,7 @@
 }
 
     
+
 
 
 

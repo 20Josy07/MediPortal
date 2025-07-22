@@ -233,7 +233,7 @@ export default function Home() {
           <div className="footer-column">
             <h3>Zenda</h3>
             <p>Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
-            <div className="footer-badges">
+            <div className="footer-badges text-sm">
               <span>Herramientas clínicas</span>
               <span>🛡️ Privado</span>
             </div>
