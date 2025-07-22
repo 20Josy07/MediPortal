@@ -43,8 +43,8 @@ const howItWorksSteps = [
     {
         number: 1,
         icon: <UserPlus className="h-8 w-8 text-[#063C0F]" />,
-        title: "Regístrate en 2 minutos",
-        description: "Crea tu cuenta de forma rápida y segura.",
+        title: "Crea tu cuenta en minutos",
+        description: "Regístrate de forma rápida y segura. Sin complicaciones.",
     },
     {
         number: 2,
