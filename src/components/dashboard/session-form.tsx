@@ -41,7 +41,7 @@ const formSchema = z.object({
     message: "Introduce una hora válida en formato HH:mm.",
   }),
   type: z.enum(["Individual", "Pareja", "Familiar"]),
-  status: z.enum(["Confirmada", "Pendiente", "Cancelada"]),
+  status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
 });
 
 type SessionFormValues = z.infer<typeof formSchema>;
@@ -213,6 +213,7 @@ export function SessionForm({
                   <SelectItem value="Confirmada">Confirmada</SelectItem>
                   <SelectItem value="Pendiente">Pendiente</SelectItem>
                   <SelectItem value="Cancelada">Cancelada</SelectItem>
+                  <SelectItem value="No asistió">No asistió</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -229,4 +230,3 @@ export function SessionForm({
     </Form>
   );
 }
-

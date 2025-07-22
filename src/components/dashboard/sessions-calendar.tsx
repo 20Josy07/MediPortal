@@ -207,7 +207,7 @@ export function SessionsCalendar() {
     format(new Date(currentDate.getFullYear(), i), "MMMM", { locale: es })
   );
 
-  const getStatusColor = (status: "Confirmada" | "Pendiente" | "Cancelada") => {
+  const getStatusColor = (status: Session['status']) => {
     switch (status) {
       case "Confirmada":
         return "bg-green-500/80 hover:bg-green-500";
@@ -215,6 +215,8 @@ export function SessionsCalendar() {
         return "bg-yellow-500 text-white hover:bg-yellow-500/90";
       case "Cancelada":
         return "bg-red-500/80 hover:bg-red-500";
+      case "No asistió":
+        return "bg-purple-500/80 hover:bg-purple-500";
       default:
         return "bg-gray-400/80 hover:bg-gray-400";
     }
@@ -224,9 +226,10 @@ export function SessionsCalendar() {
     Confirmada: { icon: CheckCircle, color: "text-green-500", text: "Confirmada" },
     Pendiente: { icon: HelpCircle, color: "text-yellow-500", text: "Pendiente" },
     Cancelada: { icon: XCircle, color: "text-red-500", text: "Cancelada" },
+    "No asistió": { icon: XCircle, color: "text-purple-500", text: "No asistió"}
   };
 
-  const IconComponent = selectedSession ? statusDetails[selectedSession.status].icon : HelpCircle;
+  const IconComponent = selectedSession ? statusDetails[selectedSession.status]?.icon || HelpCircle : HelpCircle;
   
   const changeDate = (amount: number) => {
     if (view === "month") {
@@ -248,7 +251,7 @@ export function SessionsCalendar() {
           if (isSameMonth(start, end)) {
               return `${format(start, 'd')} - ${format(end, 'd')} de ${format(end, 'MMMM, yyyy', { locale: es })}`;
           }
-          return `${format(start, 'd \'de\' MMMM', { locale: es })} - ${format(end, 'd \'de\' MMMM, yyyy', { locale: es })}`;
+          return `${format(start, "d 'de' MMMM", { locale: es })} - ${format(end, "d 'de' MMMM, yyyy", { locale: es })}`;
       }
       return format(currentDate, "eeee, d 'de' MMMM, yyyy", { locale: es });
   };
@@ -555,9 +558,9 @@ export function SessionsCalendar() {
                   <Badge variant="outline">{selectedSession.type}</Badge>
                 </div>
                 <div className="flex items-center gap-4">
-                  <IconComponent className={cn("w-5 h-5", statusDetails[selectedSession.status].color)} />
-                  <span className={cn("font-semibold", statusDetails[selectedSession.status].color)}>
-                    {statusDetails[selectedSession.status].text}
+                  <IconComponent className={cn("w-5 h-5", statusDetails[selectedSession.status]?.color)} />
+                  <span className={cn("font-semibold", statusDetails[selectedSession.status]?.color)}>
+                    {statusDetails[selectedSession.status]?.text}
                   </span>
                 </div>
               </div>

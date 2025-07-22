@@ -16,7 +16,7 @@ export interface Session {
   patientName: string;
   date: Date;
   type: "Individual" | "Pareja" | "Familiar";
-  status: "Confirmada" | "Pendiente" | "Cancelada";
+  status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
 }
 
 export interface Note {
