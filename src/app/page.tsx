@@ -257,7 +257,7 @@ export default function Home() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Zenda. Hecho con 💜 para proteger tu bienestar emocional.</p>
+          <p>© {new Date().getFullYear()} Zenda.</p>
         </div>
       </footer>
     </div>
