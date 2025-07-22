@@ -89,8 +89,8 @@ export function SessionsCalendar() {
           return {
             id: doc.id,
             ...data,
-            date: (data.date as any).toDate(),
-            endDate: (data.endDate as any).toDate(),
+            date: data.date ? (data.date as any).toDate() : new Date(),
+            endDate: data.endDate ? (data.endDate as any).toDate() : new Date(),
           } as Session;
         });
         setSessions(sessionList);
