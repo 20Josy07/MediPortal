@@ -733,9 +733,22 @@ export default function SmartNotesPage() {
                     disabled={!isEditingTranscription}
                   />
                 </DialogTitle>
-                <DialogDescription>
-                  {selectedNote.type} - {format(selectedNote.createdAt, "PPPp", { locale: es })}
-                </DialogDescription>
+                <div className="flex justify-between items-center">
+                  <DialogDescription>
+                    {selectedNote.type} - {format(selectedNote.createdAt, "PPPp", { locale: es })}
+                  </DialogDescription>
+                  <div className="w-32">
+                     <Select>
+                      <SelectTrigger className="h-8">
+                        <SelectValue placeholder="Plantilla" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="soap">SOAP</SelectItem>
+                        <SelectItem value="dap">DAP</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </DialogHeader>
               <ScrollArea className="max-h-[50vh] rounded-md border my-4">
                  <Textarea 
