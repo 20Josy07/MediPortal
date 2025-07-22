@@ -24,7 +24,8 @@ import {
   HelpCircle,
   MessageSquare,
   Video,
-  BookUser,
+  Shield,
+  FileText as FileTextIcon,
 } from "lucide-react";
 import * as React from 'react';
 import Image from "next/image";
@@ -130,16 +131,21 @@ export function DashboardSidebar() {
             )}
           </SidebarMenuItem>
            <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname === "/dashboard/welcome-guide"}
-            >
-              <Link href="#">
-                <BookUser />
-                Guía de Bienvenida
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === '/terms'}>
+                    <Link href="/terms">
+                        <FileTextIcon />
+                        Términos y condiciones
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === '/privacy'}>
+                    <Link href="/privacy">
+                        <Shield />
+                        Política de seguridad
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
