@@ -29,10 +29,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Bell } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
+import { Switch } from "../ui/switch";
+import { Separator } from "../ui/separator";
 
 const formSchema = z.object({
   patientId: z.string().min(1, { message: "Debes seleccionar un paciente." }),
@@ -46,6 +48,8 @@ const formSchema = z.object({
   customDuration: z.number().optional(),
   type: z.enum(["Individual", "Pareja", "Familiar"]),
   status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
+  remindPsychologist: z.boolean(),
+  remindPatient: z.boolean(),
 });
 
 type SessionFormValues = z.infer<typeof formSchema>;
@@ -77,6 +81,8 @@ export function SessionForm({
       customDuration: (session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : 0) || 0,
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
+      remindPsychologist: session?.remindPsychologist ?? true,
+      remindPatient: session?.remindPatient ?? true,
     },
   });
 
@@ -152,6 +158,8 @@ export function SessionForm({
       duration: durationInMinutes,
       type: values.type,
       status: values.status,
+      remindPatient: values.remindPatient,
+      remindPsychologist: values.remindPsychologist,
     };
     onSubmit(sessionData);
   }
@@ -335,6 +343,44 @@ export function SessionForm({
             </FormItem>
           )}
         />
+
+        <Separator />
+        
+        <div className="space-y-4">
+            <div className="flex items-center gap-2">
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                <h3 className="text-base font-semibold">Recordatorios</h3>
+            </div>
+            <FormField
+                control={form.control}
+                name="remindPsychologist"
+                render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                            <FormLabel>Recordar a psicólogo</FormLabel>
+                        </div>
+                        <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="remindPatient"
+                render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                            <FormLabel>Recordar a paciente</FormLabel>
+                        </div>
+                        <FormControl>
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
+        </div>
+
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancelar

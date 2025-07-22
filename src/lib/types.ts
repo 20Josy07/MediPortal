@@ -19,6 +19,8 @@ export interface Session {
   duration: number; // in minutes
   type: "Individual" | "Pareja" | "Familiar";
   status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
+  remindPsychologist?: boolean;
+  remindPatient?: boolean;
 }
 
 export interface Note {
