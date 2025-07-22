@@ -48,9 +48,9 @@ const howItWorksSteps = [
     },
     {
         number: 2,
-        icon: <FileText className="h-8 w-8 text-[#063C0F]" />,
-        title: "Configura tus plantillas",
-        description: "Elige SOAP, DAP u otro formato que se ajuste a tu estilo.",
+        icon: <UserPlus className="h-8 w-8 text-[#063C0F]" />,
+        title: "Añade tus pacientes",
+        description: "Crea perfiles con su historial, evolución y notas clínicas centralizadas.",
     },
     {
         number: 3,
