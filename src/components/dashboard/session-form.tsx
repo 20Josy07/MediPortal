@@ -188,7 +188,7 @@ export function SessionForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
         <FormField
           control={form.control}
           name="patientId"
@@ -366,9 +366,9 @@ export function SessionForm({
           )}
         />
 
-        <Separator />
+        <Separator className="!my-4"/>
         
-        <div className="space-y-4">
+        <div className="space-y-3">
             <div className="flex items-center gap-2">
                 <Bell className="h-5 w-5 text-muted-foreground" />
                 <h3 className="text-base font-semibold">Recordatorios</h3>
@@ -394,8 +394,8 @@ export function SessionForm({
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                         <div className="space-y-0.5">
                             <FormLabel>Recordar a paciente</FormLabel>
-                            <FormDescription>
-                                Si se activa, se enviará un email y SMS 24hs antes al paciente.
+                            <FormDescription className="text-xs">
+                                Se enviará un email y SMS 24hs antes.
                             </FormDescription>
                         </div>
                         <FormControl>
@@ -416,3 +416,5 @@ export function SessionForm({
     </Form>
   );
 }
+
+  
