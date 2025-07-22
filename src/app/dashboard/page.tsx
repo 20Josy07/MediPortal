@@ -122,12 +122,12 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Paciente</TableHead>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Hora</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead>Acciones</TableHead>
+                  <TableHead className="text-center font-bold">Paciente</TableHead>
+                  <TableHead className="text-center font-bold">Fecha</TableHead>
+                  <TableHead className="text-center font-bold">Hora</TableHead>
+                  <TableHead className="text-center font-bold">Tipo</TableHead>
+                  <TableHead className="text-center font-bold">Estado</TableHead>
+                  <TableHead className="text-center font-bold">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
