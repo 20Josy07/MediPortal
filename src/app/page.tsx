@@ -54,9 +54,9 @@ const howItWorksSteps = [
     },
     {
         number: 3,
-        icon: <Calendar className="h-8 w-8 text-[#063C0F]" />,
-        title: "Conecta tu calendario",
-        description: "Sincroniza tus pacientes y citas existentes.",
+        icon: <FilePenLine className="h-8 w-8 text-[#063C0F]" />,
+        title: "Configura tus plantillas",
+        description: "Elige entre formatos como SOAP o DAP y personalízalos según tu estilo clínico.",
     },
     {
         number: 4,
