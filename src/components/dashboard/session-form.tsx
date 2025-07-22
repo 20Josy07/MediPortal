@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -372,6 +373,9 @@ export function SessionForm({
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                         <div className="space-y-0.5">
                             <FormLabel>Recordar a paciente</FormLabel>
+                             <FormDescription>
+                                Si se activa, se enviará un email y SMS 24hs antes al paciente.
+                            </FormDescription>
                         </div>
                         <FormControl>
                             <Switch checked={field.value} onCheckedChange={field.onChange} />
