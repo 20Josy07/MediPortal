@@ -10,12 +10,13 @@ import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import * as pdfjs from 'pdfjs-dist/build/pdf';
 import mammoth from 'mammoth';
+import jsPDF from "jspdf";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -540,6 +541,41 @@ export default function SmartNotesPage() {
     return `${minutes}:${seconds}`;
   };
 
+  const handleDownloadPdf = () => {
+    if (!selectedNote) return;
+    
+    const doc = new jsPDF();
+    
+    let content = editableNoteContent;
+    if (generatedBlocks) {
+      if (selectedTemplate === 'SOAP') {
+        content = `S (Subjetivo):\n${generatedBlocks.subjective}\n\nO (Objetivo):\n${generatedBlocks.objective}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment}\n\nP (Plan):\n${generatedBlocks.plan}`;
+      } else { // DAP
+        content = `D (Datos):\n${generatedBlocks.data}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment}\n\nP (Plan):\n${generatedBlocks.plan}`;
+      }
+    }
+
+    doc.setFontSize(18);
+    doc.text(editableNoteTitle, 15, 20);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    const dateStr = format(selectedNote.createdAt, "PPPp", { locale: es });
+    const patientName = patients.find(p => p.id === selectedPatientId)?.name;
+    doc.text(`Paciente: ${patientName || 'N/A'}`, 15, 30);
+    doc.text(`Fecha: ${dateStr}`, 15, 36);
+
+    doc.setLineWidth(0.5);
+    doc.line(15, 42, 195, 42);
+
+    doc.setFontSize(11);
+    doc.setTextColor(0);
+    const splitContent = doc.splitTextToSize(content, 180);
+    doc.text(splitContent, 15, 52);
+    
+    doc.save(`${editableNoteTitle}.pdf`);
+  };
+
 
   return (
     <>
@@ -888,27 +924,32 @@ export default function SmartNotesPage() {
                   />
                 )}
               </ScrollArea>
-              <DialogFooter className="justify-between">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" /> Eliminar</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>¿Estás absolutely seguro?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Esto eliminará permanentemente tu nota.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDeleteNote}>Continuar</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <div className="flex gap-2">
+              <DialogFooter className="sm:justify-between">
+                <div className="flex gap-2 justify-start">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive"><Trash2 className="mr-2 h-4 w-4" /> Eliminar</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>¿Estás absolutely seguro?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Esto eliminará permanentemente tu nota.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleDeleteNote}>Continuar</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                    <Button variant="outline" onClick={handleDownloadPdf}>
+                        <Download className="mr-2 h-4 w-4" /> Descargar
+                    </Button>
+                </div>
+                <div className="flex gap-2 justify-end">
                   <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cancelar</Button>
-                  {isEditing ? (
+                  {isEditing || isEditingTranscription ? (
                      <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
                   ) : (
                     <Button onClick={() => { setIsEditing(true); setIsEditingTranscription(true); }}>
