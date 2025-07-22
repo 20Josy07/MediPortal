@@ -1,10 +1,13 @@
+"use client";
 
 import { AuthLogo } from "@/components/auth/auth-logo";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { privacyPolicyText } from "@/lib/legal-text";
 
 export default function PrivacyPage() {
+  const router = useRouter();
+  
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-5">
       <Card className="w-full max-w-4xl">
@@ -18,9 +21,9 @@ export default function PrivacyPage() {
         <CardContent className="prose prose-sm md:prose-base dark:prose-invert max-w-none mx-auto text-justify">
            <div dangerouslySetInnerHTML={{ __html: privacyPolicyText.replace(/\n/g, '<br />').replace(/<br \/>\s*<br \/>/g, '</p><p>') }} />
              <div className="text-center mt-8">
-                <Link href="/" className="font-bold text-primary hover:underline">
-                    Volver al home
-                </Link>
+                <button onClick={() => router.back()} className="font-bold text-primary hover:underline">
+                    Volver atrás
+                </button>
             </div>
         </CardContent>
       </Card>
