@@ -412,11 +412,11 @@
     }
 
     footer {
-        @apply bg-[#18441E] py-8 px-[5%] text-white text-sm;
+        @apply bg-[#18441E] py-4 px-[5%] text-white text-sm;
     }
 
     .footer-container {
-        @apply flex justify-between gap-12 max-w-6xl mx-auto mb-8 flex-wrap;
+        @apply flex justify-between gap-12 max-w-6xl mx-auto mb-4 flex-wrap;
     }
 
     .footer-column {
@@ -456,7 +456,7 @@
     }
     
     .footer-bottom {
-        @apply text-center pt-8 border-t border-white/10 text-white/50 text-xs;
+        @apply text-center pt-4 border-t border-white/10 text-white/50 text-xs;
     }
     .login-shimmer-button {
       @apply relative p-4 rounded-lg border border-primary text-lg uppercase font-bold tracking-[2px] bg-transparent text-white overflow-hidden shadow-none transition-all duration-200 ease-in;
@@ -584,6 +584,7 @@
 }
 
     
+
 
 
 
