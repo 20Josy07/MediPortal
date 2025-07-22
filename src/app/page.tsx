@@ -271,10 +271,11 @@ export default function Home() {
           <div className="footer-column">
             <h3>Producto</h3>
             <ul>
-              <li><Link href="#">Cómo funciona</Link></li>
-              <li><Link href="#">Funcionalidades</Link></li>
-              <li><Link href="#">FAQ</Link></li>
-              <li><Link href="#">Política de privacidad</Link></li>
+              <li><Link href="#how-it-works">Cómo funciona</Link></li>
+              <li><Link href="#features">Funcionalidades</Link></li>
+              <li><Link href="/dashboard/support/chat">FAQ</Link></li>
+              <li><Link href="/terms">Términos y Condiciones</Link></li>
+              <li><Link href="/privacy">Política de privacidad</Link></li>
             </ul>
           </div>
           <div className="footer-column">
@@ -293,5 +294,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

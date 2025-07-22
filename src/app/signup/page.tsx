@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -18,6 +19,17 @@ export default function SignUpPage() {
           </p>
         </div>
         <SignUpForm />
+        <p className="mt-4 text-center text-xs text-muted-foreground px-4">
+            Al registrarte, aceptas nuestros{" "}
+            <Link href="/terms" className="font-bold text-primary hover:underline">
+              Términos y Condiciones
+            </Link>{" "}
+            y nuestra{" "}
+            <Link href="/privacy" className="font-bold text-primary hover:underline">
+              Política de Privacidad
+            </Link>
+            .
+          </p>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           ¿Ya tienes cuenta?{" "}
           <Link href="/login" className="font-bold text-primary hover:underline">
