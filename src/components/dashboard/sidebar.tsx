@@ -105,7 +105,7 @@ export function DashboardSidebar() {
               <SidebarMenuSub>
                 <SidebarMenuSubItem>
                   <SidebarMenuSubButton asChild isActive={pathname === '/dashboard/support/quick-guide'}>
-                    <Link href="#">
+                    <Link href="/dashboard/support/quick-guide">
                       <HelpCircle />
                       Guía rápida
                     </Link>
