@@ -26,7 +26,7 @@ export default function AnalysisPage() {
           </CardHeader>
           <CardContent>
              <p className="text-muted-foreground">
-                Pronto podrás explorar gráficos interactivos y métricas clave aquí.
+                Pronto podrás analizar conversaciones y detectar señales de abuso psicológico aquí
             </p>
           </CardContent>
         </Card>
