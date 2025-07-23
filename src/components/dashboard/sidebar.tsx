@@ -121,7 +121,7 @@ export function DashboardSidebar() {
                 </SidebarMenuSubItem>
                  <SidebarMenuSubItem>
                    <SidebarMenuSubButton asChild isActive={pathname === '/dashboard/support/tutorials'}>
-                    <Link href="#">
+                    <Link href="/dashboard/support/tutorials">
                       <Video />
                       Tutoriales en video
                     </Link>
