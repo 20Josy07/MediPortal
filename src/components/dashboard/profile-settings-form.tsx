@@ -21,7 +21,6 @@ const profileSchema = z.object({
   fullName: z.string().min(1, "El nombre completo es requerido."),
   email: z.string().email("Correo electrónico inválido."),
   phone: z.string().optional(),
-  licenseNumber: z.string().optional(),
   specialization: z.string().optional(),
   photoURL: z.string().optional(),
 });
@@ -45,7 +44,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
       fullName: "",
       email: "",
       phone: "",
-      licenseNumber: "",
       specialization: "",
       photoURL: "",
     },
@@ -60,7 +58,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
         fullName: userProfile?.fullName || user?.displayName || "",
         email: userProfile?.email || user?.email || "",
         phone: userProfile?.phone || "",
-        licenseNumber: userProfile?.licenseNumber || "",
         specialization: userProfile?.specialization || "",
         photoURL: userProfile?.photoURL || user?.photoURL || "",
       };
@@ -198,19 +195,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Teléfono</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="licenseNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número de Licencia</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
