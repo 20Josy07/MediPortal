@@ -26,6 +26,7 @@ import {
   Video,
   Shield,
   FileText as FileTextIcon,
+  BarChart2,
 } from "lucide-react";
 import * as React from 'react';
 import Image from "next/image";
@@ -86,6 +87,17 @@ export function DashboardSidebar() {
               <Link href="/dashboard/notes">
                 <NotebookText />
                 Notas Inteligentes
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+           <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname.startsWith("/dashboard/analysis")}
+            >
+              <Link href="/dashboard/analysis">
+                <BarChart2 />
+                Análisis
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
