@@ -7,7 +7,7 @@ export default function AnalysisPage() {
   return (
     <div className="flex-1 space-y-8 p-8">
        <div>
-        <h1 className="text-3xl font-bold tracking-tight">Análisis</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Análisis de conversaciones</h1>
         <p className="text-muted-foreground mt-1">
           analiza tu conversación al instante
         </p>
