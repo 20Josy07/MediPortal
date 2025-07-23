@@ -9,7 +9,7 @@ export default function AnalysisPage() {
        <div>
         <h1 className="text-3xl font-bold tracking-tight">Análisis</h1>
         <p className="text-muted-foreground mt-1">
-          Visualiza métricas y obtén insights sobre tu práctica.
+          analiza tu conversación al instante
         </p>
       </div>
 
