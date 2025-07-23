@@ -16,7 +16,7 @@ type ChatMessage = {
 
 export default function FaqChatPage() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
-    { from: 'bot', text: '¡Hola! Soy el asistente de Alumbra. ¿En qué puedo ayudarte hoy? Puedes seleccionar una de las preguntas frecuentes a continuación.' },
+    { from: 'bot', text: '¡Hola! Soy el asistente de Zenda. ¿En qué puedo ayudarte hoy? Puedes seleccionar una de las preguntas frecuentes a continuación.' },
   ]);
 
   const handleQuestionClick = (faq: FAQ) => {
@@ -54,7 +54,7 @@ export default function FaqChatPage() {
                 </div>
                 </ScrollArea>
                 <div className="text-center text-muted-foreground text-sm">
-                    Para más ayuda, contacta a soporte@alumbra.ai
+                    Para más ayuda, contacta a soporte@zenda.ai
                 </div>
             </CardContent>
          </Card>
