@@ -21,7 +21,7 @@ export default function SignUpPage() {
         <div className="mb-8">
           <AuthLogo />
           <h1 className="mb-2 text-3xl font-bold text-foreground">
-            Bienvenidos a Zenda
+            Bienvenidos a Mently
           </h1>
           <p className="text-base text-muted-foreground">
             Regístrate para poder organizar tus citas, notas y evolución clínica desde un solo lugar.

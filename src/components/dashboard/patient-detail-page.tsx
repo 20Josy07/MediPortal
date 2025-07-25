@@ -497,7 +497,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
-    doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 6);
+    doc.text(`© ${new Date().getFullYear()} Mently. Todos los derechos reservados.`, margin, pageHeight - 6);
     
     // Title and patient info
     yPos = 35;

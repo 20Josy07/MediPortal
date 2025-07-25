@@ -66,7 +66,7 @@ const howItWorksSteps = [
         number: 4,
         icon: <Sparkles className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
         title: "Inicia tus sesiones",
-        description: "Deja que Zenda genere notas e insights automáticamente.",
+        description: "Deja que Mently genere notas e insights automáticamente.",
     }
 ]
 
@@ -95,7 +95,7 @@ function HeroImage() {
       <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8">
           <Image
             src={currentLogo}
-            alt="Zenda Logo"
+            alt="Mently Logo"
             width={128}
             height={128}
             priority
@@ -126,7 +126,7 @@ export default function Home() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link className="flex items-center" href="/">
-              <Image alt="Zenda Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" style={{color: 'transparent'}} />
+              <Image alt="Mently Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" style={{color: 'transparent'}} />
               <span className="ml-2 text-xs font-semibold text-white dark:text-foreground border border-white/50 dark:border-border px-2 py-0.5 rounded-full">BETA</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
@@ -164,9 +164,9 @@ export default function Home() {
                 Mejora la<br />calidad de tus<br />sesiones con
               </span>
               <br />
-              <span className="bg-gradient-to-r from-[#2A7F34] to-[#81D486] bg-clip-text text-transparent">Zenda</span>
+              <span className="bg-gradient-to-r from-[#2A7F34] to-[#81D486] bg-clip-text text-transparent">Mently</span>
             </h1>
-            <p className="text-black">Zenda te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
+            <p className="text-black">Mently te ayuda a simplificar tu práctica para que puedas enfocarte en lo que más importa: tus pacientes</p>
             <div className="buttons">
                 <Button asChild size="lg" className="group font-body font-bold w-full sm:w-auto shadow-lg shadow-primary/30 transition-all duration-300 bg-[#357D3D] text-primary-foreground hover:bg-[#357D3D]/90">
                     <Link href="/login">
@@ -265,7 +265,7 @@ export default function Home() {
       <footer>
         <div className="footer-container">
           <div className="footer-column">
-            <h3>Zenda</h3>
+            <h3>Mently</h3>
             <p>Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
           </div>
           <div className="footer-column">
@@ -281,14 +281,14 @@ export default function Home() {
           <div className="footer-column">
             <h3>Contacto</h3>
             <ul>
-              <li><a href="mailto:hola@zenda.ai">✉️ hola@zenda.ai</a></li>
+              <li><a href="mailto:hola@mently.ai">✉️ hola@mently.ai</a></li>
               <li><a href="#">🐙 GitHub</a></li>
               <li><a href="#">🐦 Twitter</a></li>
             </ul>
           </div>
         </div>
         <div className="footer-bottom">
-          <p className="text-center">© {new Date().getFullYear()} Zenda.</p>
+          <p className="text-center">© {new Date().getFullYear()} Mently.</p>
         </div>
       </footer>
     </div>

@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -5,7 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Zenda",
+  title: "Mently",
   description: "Organiza tus citas, notas y evolución clínica desde un solo lugar.",
 };
 

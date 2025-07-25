@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useTheme } from "next-themes";
@@ -27,7 +28,7 @@ export function AuthLogo() {
   return (
     <Image
       src={currentLogo}
-      alt="Logo Zenda"
+      alt="Logo Mently"
       width={80}
       height={80}
       className="mx-auto mb-4 h-auto w-auto max-w-[80px]"
