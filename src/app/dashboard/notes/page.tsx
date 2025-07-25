@@ -635,7 +635,7 @@ export default function SmartNotesPage() {
             </p>
           </div>
           <div className="w-full max-w-xs">
-             <p className="font-bold text-primary mb-1">Selecciona el paciente</p>
+             <p className="font-bold text-primary mb-1 uppercase">Selecciona el paciente</p>
              <Select onValueChange={setSelectedPatientId} value={selectedPatientId || ""}>
                 <SelectTrigger>
                     <SelectValue placeholder="Selecciona un paciente..." />
