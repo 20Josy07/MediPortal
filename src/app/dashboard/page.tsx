@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { collection, onSnapshot, query, where, orderBy, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { format, isToday, isTomorrow, startOfDay, endOfDay, subDays } from "date-fns";
+import { format, isToday, isTomorrow, startOfDay, subDays } from "date-fns";
 import { es } from "date-fns/locale";
 import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
