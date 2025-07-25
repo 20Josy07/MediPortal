@@ -305,8 +305,8 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     }
   };
 
-  const getPatientAge = (dob: string | undefined) => {
-    if (!dob) return '';
+  const getPatientAge = (dob: string | undefined): number | null => {
+    if (!dob || isNaN(Date.parse(dob))) return null;
     return differenceInYears(new Date(), new Date(dob));
   }
 
@@ -327,6 +327,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     }
   };
 
+  const patientAge = getPatientAge(patient?.dob);
 
   if (isLoading) {
     return (
@@ -369,7 +370,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             </div>
 
             <Card className="p-6 shadow-sm">
-                <h2 className="text-3xl font-bold">{patient.name}, {getPatientAge(patient.dob)} años</h2>
+                <h2 className="text-3xl font-bold">
+                    {patient.name}
+                    {patientAge !== null && `, ${patientAge} años`}
+                </h2>
                 <p className="text-muted-foreground mt-1">Fecha última sesión: {getLastSessionDate()}</p>
             </Card>
 
