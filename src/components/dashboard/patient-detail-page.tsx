@@ -16,7 +16,7 @@ import { generateProgressReport, type GenerateProgressReportOutput } from "@/ai/
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin, Edit, Save, FileDown } from "lucide-react";
+import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin, Edit, Save, FileDown, ChevronLeft, Calendar as CalendarIcon, FileClock, BarChartHorizontal } from "lucide-react";
 import { addNote, updateNote as updateNoteInDb } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -334,7 +334,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   };
 
   const getPatientAge = (dob: string | undefined): string => {
-    if (!dob || isNaN(Date.parse(dob))) return 'No especificada';
+    if (!dob || isNaN(Date.parse(dob))) return 'N/A';
     return differenceInYears(new Date(), new Date(dob)).toString();
   }
 
@@ -575,6 +575,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                     {isEditingPatientDetails ? (
                         <>
                            <div className="space-y-1">
+                                <Label className="font-semibold text-muted-foreground">Edad</Label>
+                                <Input value={getPatientAge(editablePatient.dob)} disabled />
+                           </div>
+                           <div className="space-y-1">
                                 <Label className="font-semibold text-muted-foreground">Tipo de consulta</Label>
                                 <Input value={editablePatient.consultationType || ""} onChange={(e) => handlePatientDetailChange('consultationType', e.target.value)} />
                            </div>
@@ -590,16 +594,20 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                                 <Label className="font-semibold text-muted-foreground">Frecuencia</Label>
                                 <Input value={editablePatient.frequency || ""} onChange={(e) => handlePatientDetailChange('frequency', e.target.value)} />
                            </div>
-                           <div className="space-y-1 md:col-span-2 lg:col-span-3">
+                           <div className="space-y-1">
+                                <Label className="font-semibold text-muted-foreground">Última sesión</Label>
+                                <Input value={lastSession} disabled />
+                           </div>
+                           <div className="md:col-span-2 lg:col-span-3">
                                 <Label className="font-semibold text-muted-foreground">Contexto</Label>
                                 <Textarea value={editablePatient.context || ""} onChange={(e) => handlePatientDetailChange('context', e.target.value)} />
                            </div>
                         </>
                     ) : (
                         <>
-                            <div>
+                           <div>
                                <span className="font-semibold text-muted-foreground">Edad: </span>
-                               <span className="text-foreground">{age !== 'No especificada' ? `${age} años` : age}</span>
+                               <span className="text-foreground">{age}</span>
                            </div>
                            <div>
                                <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
@@ -669,17 +677,12 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         </div>
 
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{selectedNote ? 'Editar Entrada' : 'Nueva Entrada'}</DialogTitle>
-                    <DialogDescription>
-                        Añade o modifica una entrada en el historial médico de {patient.name}.
-                    </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="sm:max-w-[480px]">
                 <NoteEntryForm 
                     note={selectedNote} 
                     onSubmit={handleNoteSubmit} 
                     onCancel={() => setIsFormOpen(false)}
+                    patientName={patient.name}
                 />
             </DialogContent>
         </Dialog>
@@ -736,42 +739,240 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   );
 }
 
-const NoteEntryForm = ({ note, onSubmit, onCancel }: { note: Note | null, onSubmit: (values: { title: string; content: string }) => void, onCancel: () => void }) => {
-    const [title, setTitle] = useState(note?.title || '');
-    const [content, setContent] = useState(note?.content || '');
+type NoteType = 'session' | 'follow-up' | 'summary';
+
+const NoteEntryForm = ({ 
+    note, 
+    onSubmit, 
+    onCancel,
+    patientName
+}: { 
+    note: Note | null, 
+    onSubmit: (values: { title: string; content: string }) => void, 
+    onCancel: () => void,
+    patientName: string
+}) => {
+    const [noteType, setNoteType] = useState<NoteType | null>(null);
+
+    // Session Note State
+    const [sessionDate, setSessionDate] = useState<Date | undefined>(new Date());
+    const [sessionTopic, setSessionTopic] = useState('');
+    const [sessionObservations, setSessionObservations] = useState('');
+    const [sessionInterventions, setSessionInterventions] = useState('');
+    const [sessionNextSteps, setSessionNextSteps] = useState('');
+
+    // Follow-up Note State
+    const [followUpTask, setFollowUpTask] = useState('');
+    const [followUpDate, setFollowUpDate] = useState<Date | undefined>(new Date());
+    const [followUpProgress, setFollowUpProgress] = useState('');
+    const [followUpRecommendations, setFollowUpRecommendations] = useState('');
+    
+    // Summary Note State
+    const [summaryDateRange, setSummaryDateRange] = useState<DateRange | undefined>();
+    const [summaryObjectives, setSummaryObjectives] = useState('');
+    const [summaryChanges, setSummaryChanges] = useState('');
+    const [summaryPatientComments, setSummaryPatientComments] = useState('');
+    const [summaryEvaluation, setSummaryEvaluation] = useState('');
+
+    useEffect(() => {
+        // If editing an existing note, we can try to parse it, but for now, we'll just show a simple form
+        if (note) {
+            setNoteType('session'); // default to session for existing simple notes
+            setSessionTopic(note.title);
+            setSessionObservations(note.content);
+        }
+    }, [note]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        let title = '';
+        let content = '';
+
+        if (noteType === 'session') {
+            title = sessionTopic || `Nota de sesión - ${format(sessionDate || new Date(), "PPP", { locale: es })}`;
+            content = `Fecha: ${format(sessionDate || new Date(), "PPP", { locale: es })}\nTema Central: ${sessionTopic}\n\nObservaciones del Paciente:\n${sessionObservations}\n\nIntervenciones Realizadas:\n${sessionInterventions}\n\nConclusiones o Próximos Pasos:\n${sessionNextSteps}`;
+        } else if (noteType === 'follow-up') {
+            title = followUpTask || `Seguimiento - ${format(followUpDate || new Date(), "PPP", { locale: es })}`;
+            content = `Tarea Asignada: ${followUpTask}\nFecha Asignada: ${format(followUpDate || new Date(), "PPP", { locale: es })}\n\nProgreso Observado:\n${followUpProgress}\n\nRecomendaciones:\n${followUpRecommendations}`;
+        } else if (noteType === 'summary') {
+            const from = summaryDateRange?.from ? format(summaryDateRange.from, "PPP", { locale: es }) : 'N/A';
+            const to = summaryDateRange?.to ? format(summaryDateRange.to, "PPP", { locale: es }) : 'N/A';
+            title = `Resumen de evolución (${from} - ${to})`;
+            content = `Rango de Fechas: ${from} al ${to}\nObjetivos Trabajados: ${summaryObjectives}\n\nCambios Observados:\n${summaryChanges}\n\nComentarios del Paciente:\n${summaryPatientComments}\n\nEvaluación del Proceso:\n${summaryEvaluation}`;
+        }
+
         if (title && content) {
             onSubmit({ title, content });
         }
     };
+
+    if (!noteType) {
+        return (
+            <>
+                <DialogHeader>
+                    <DialogTitle>Elige un tipo de entrada</DialogTitle>
+                    <DialogDescription>
+                        Selecciona la plantilla que mejor se adapte a tu registro para {patientName}.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <Button variant="outline" className="justify-start h-14" onClick={() => setNoteType('session')}>
+                        <FileText className="mr-3 h-5 w-5" />
+                        <div className="text-left">
+                            <p className="font-semibold">Notas de la sesión</p>
+                            <p className="text-xs text-muted-foreground">Detalles de una consulta específica.</p>
+                        </div>
+                    </Button>
+                     <Button variant="outline" className="justify-start h-14" onClick={() => setNoteType('follow-up')}>
+                        <FileClock className="mr-3 h-5 w-5" />
+                        <div className="text-left">
+                           <p className="font-semibold">Seguimiento</p>
+                           <p className="text-xs text-muted-foreground">Registra el progreso de tareas o metas.</p>
+                        </div>
+                    </Button>
+                    <Button variant="outline" className="justify-start h-14" onClick={() => setNoteType('summary')}>
+                        <BarChartHorizontal className="mr-3 h-5 w-5" />
+                        <div className="text-left">
+                            <p className="font-semibold">Resumen de evolución</p>
+                            <p className="text-xs text-muted-foreground">Evalúa un período de la terapia.</p>
+                        </div>
+                    </Button>
+                </div>
+                 <DialogFooter>
+                    <Button type="button" variant="ghost" onClick={onCancel}>Cancelar</Button>
+                </DialogFooter>
+            </>
+        );
+    }
     
     return (
-        <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-            <div>
-                <label htmlFor="title" className="block text-sm font-medium mb-1">Título</label>
-                <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Ej: Motivo de consulta"
-                />
+        <form onSubmit={handleSubmit}>
+            <DialogHeader>
+                 <DialogTitle className="flex items-center">
+                    <Button variant="ghost" size="icon" className="mr-2 h-7 w-7" onClick={() => setNoteType(null)}>
+                        <ChevronLeft className="h-5 w-5"/>
+                    </Button>
+                    {
+                        noteType === 'session' ? 'Nota de la Sesión' : 
+                        noteType === 'follow-up' ? 'Nota de Seguimiento' : 'Resumen de Evolución'
+                    }
+                </DialogTitle>
+                 <DialogDescription>
+                    Rellena los campos para crear la nueva entrada.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+                {noteType === 'session' && (
+                    <>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label>Fecha</Label>
+                                 <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn("w-full justify-start text-left font-normal", !sessionDate && "text-muted-foreground")}
+                                        >
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {sessionDate ? format(sessionDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar mode="single" selected={sessionDate} onSelect={setSessionDate} initialFocus locale={es}/>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="session-topic">Tema central</Label>
+                                <Input id="session-topic" value={sessionTopic} onChange={(e) => setSessionTopic(e.target.value)} placeholder="Ej: Regulación emocional"/>
+                            </div>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="session-observations">Observaciones del paciente</Label>
+                            <Textarea id="session-observations" value={sessionObservations} onChange={(e) => setSessionObservations(e.target.value)} placeholder="El paciente reporta..." rows={3}/>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="session-interventions">Intervenciones realizadas</Label>
+                            <Textarea id="session-interventions" value={sessionInterventions} onChange={(e) => setSessionInterventions(e.target.value)} placeholder="Se aplicó técnica de..." rows={3}/>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="session-next-steps">Conclusiones o próximos pasos</Label>
+                            <Textarea id="session-next-steps" value={sessionNextSteps} onChange={(e) => setSessionNextSteps(e.target.value)} placeholder="Asignar tarea..." rows={3}/>
+                        </div>
+                    </>
+                )}
+                {noteType === 'follow-up' && (
+                     <>
+                        <div className="space-y-1">
+                            <Label htmlFor="follow-up-task">Tarea asignada</Label>
+                            <Input id="follow-up-task" value={followUpTask} onChange={(e) => setFollowUpTask(e.target.value)} placeholder="Ej: Registro de pensamientos automáticos"/>
+                        </div>
+                         <div className="space-y-1">
+                            <Label>Fecha asignada</Label>
+                             <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant={"outline"}
+                                        className={cn("w-full justify-start text-left font-normal", !followUpDate && "text-muted-foreground")}
+                                    >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {followUpDate ? format(followUpDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar mode="single" selected={followUpDate} onSelect={setFollowUpDate} initialFocus locale={es}/>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="follow-up-progress">Progreso observado</Label>
+                            <Textarea id="follow-up-progress" value={followUpProgress} onChange={(e) => setFollowUpProgress(e.target.value)} placeholder="El paciente completó..." rows={3}/>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="follow-up-recommendations">Recomendaciones</Label>
+                            <Textarea id="follow-up-recommendations" value={followUpRecommendations} onChange={(e) => setFollowUpRecommendations(e.target.value)} placeholder="Continuar con el registro..." rows={3}/>
+                        </div>
+                    </>
+                )}
+                 {noteType === 'summary' && (
+                     <>
+                        <div className="space-y-1">
+                            <Label>Rango de fechas</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !summaryDateRange && "text-muted-foreground")}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {summaryDateRange?.from ? (summaryDateRange.to ? `${format(summaryDateRange.from, "LLL dd, y")} - ${format(summaryDateRange.to, "LLL dd, y")}` : format(summaryDateRange.from, "LLL dd, y")) : <span>Elige un rango</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar initialFocus mode="range" defaultMonth={summaryDateRange?.from} selected={summaryDateRange} onSelect={setSummaryDateRange} numberOfMonths={2} locale={es}/>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="summary-objectives">Objetivos trabajados</Label>
+                            <Textarea id="summary-objectives" value={summaryObjectives} onChange={(e) => setSummaryObjectives(e.target.value)} placeholder="Durante este período, se trabajó en..." rows={2}/>
+                        </div>
+                        <div className="space-y-1">
+                            <Label htmlFor="summary-changes">Cambios observados</Label>
+                            <Textarea id="summary-changes" value={summaryChanges} onChange={(e) => setSummaryChanges(e.target.value)} placeholder="Se observó una disminución en..." rows={2}/>
+                        </div>
+                         <div className="space-y-1">
+                            <Label htmlFor="summary-patient-comments">Comentarios del paciente</Label>
+                            <Textarea id="summary-patient-comments" value={summaryPatientComments} onChange={(e) => setSummaryPatientComments(e.target.value)} placeholder="El paciente expresó sentirse..." rows={2}/>
+                        </div>
+                         <div className="space-y-1">
+                            <Label htmlFor="summary-evaluation">Evaluación del proceso</Label>
+                            <Textarea id="summary-evaluation" value={summaryEvaluation} onChange={(e) => setSummaryEvaluation(e.target.value)} placeholder="La evolución del paciente es..." rows={2}/>
+                        </div>
+                    </>
+                )}
             </div>
-            <div>
-                <label htmlFor="content" className="block text-sm font-medium mb-1">Contenido</label>
-                <Textarea
-                    id="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Describe los detalles aquí..."
-                    rows={5}
-                />
-            </div>
-            <div className="flex justify-end gap-2">
+            <DialogFooter className="mt-4">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
                 <Button type="submit">Guardar</Button>
-            </div>
+            </DialogFooter>
         </form>
     );
 };
