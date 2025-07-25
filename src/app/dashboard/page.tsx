@@ -101,7 +101,7 @@ export default function DashboardPage() {
     <div className="flex-1 space-y-4">
       <div className="space-y-4">
         <h3 className="mb-4 text-xl font-semibold">Resumen de la semana</h3>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
           <Card className="text-center">
             <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -120,16 +120,6 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">0</div>
-            </CardContent>
-          </Card>
-          <Card className="text-center">
-            <CardHeader className="flex flex-col items-center justify-center space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Ingresos estimados (semana)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$0</div>
             </CardContent>
           </Card>
         </div>
