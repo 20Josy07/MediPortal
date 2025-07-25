@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { collection, query, orderBy, onSnapshot, doc } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, doc, updateDoc } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Note, Patient } from "@/lib/types";
@@ -14,8 +14,8 @@ import type { DateRange } from "react-day-picker";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin } from "lucide-react";
-import { addNote, updateNote } from "@/lib/firebase";
+import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin, Edit, Save } from "lucide-react";
+import { addNote, updateNote as updateNoteInDb } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -32,7 +32,6 @@ import { cn } from "@/lib/utils";
 const noteTypes = [
     { id: 'Voz', label: 'Voz' },
     { id: 'Texto', label: 'Texto' },
-    // { id: 'summary', label: 'Resumen' }, // Add when ready
 ];
 
 const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void, onReset: () => void }) => {
@@ -183,7 +182,7 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
 
              <Separator />
             
-             <Button onClick={handleApplyFilters} className="bg-green-600 hover:bg-green-700">
+             <Button onClick={handleApplyFilters}>
                 <Filter className="w-4 h-4 mr-2" />
                 Filtrar
             </Button>
@@ -207,6 +206,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
+  const [isEditingPatientDetails, setIsEditingPatientDetails] = useState(false);
+  const [editablePatient, setEditablePatient] = useState<Partial<Patient>>({});
+
+
   useEffect(() => {
     if (!patientId || !user || !db) return;
 
@@ -214,7 +217,9 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     const unsubscribePatient = onSnapshot(patientDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data() as Omit<Patient, 'id'>;
-        setPatient({ id: docSnap.id, ...data });
+        const patientData = { id: docSnap.id, ...data };
+        setPatient(patientData);
+        setEditablePatient(patientData);
       } else {
         toast({ variant: "destructive", title: "Paciente no encontrado" });
         setPatient(null);
@@ -234,7 +239,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
          } as Note;
       });
       setNotes(noteList);
-      setFilteredNotes(noteList); // Initialize filtered notes
+      setFilteredNotes(noteList);
     });
 
     return () => {
@@ -261,12 +266,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     if (filters.keyword) {
         tempNotes = tempNotes.filter(note => 
             note.title.toLowerCase().includes(filters.keyword) || 
-            note.content.toLowerCase().includes(filters.keyword)
+            (note.content && note.content.toLowerCase().includes(filters.keyword))
         );
     }
     
-    // Starred filter logic would go here when implemented
-
     setFilteredNotes(tempNotes);
     toast({ title: `Se encontraron ${tempNotes.length} notas.` });
   };
@@ -285,7 +288,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     
     try {
         if (selectedNote) {
-            await updateNote(db, user.uid, patientId, selectedNote.id, values);
+            await updateNoteInDb(db, user.uid, patientId, selectedNote.id, values);
             toast({ title: "Nota actualizada" });
         } else {
             const newNote: Omit<Note, 'id'> = {
@@ -302,6 +305,23 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     } catch (error) {
         console.error("Error saving note:", error);
         toast({ variant: "destructive", title: "Error al guardar la nota" });
+    }
+  };
+
+  const handlePatientDetailChange = (field: keyof Patient, value: string) => {
+    setEditablePatient(prev => ({...prev, [field]: value}));
+  };
+  
+  const handleSavePatientDetails = async () => {
+    if (!user || !db || !patient) return;
+    const patientDocRef = doc(db, `users/${user.uid}/patients`, patient.id);
+    try {
+        await updateDoc(patientDocRef, editablePatient);
+        toast({title: "Datos del paciente actualizados."});
+        setIsEditingPatientDetails(false);
+    } catch (error) {
+        console.error("Error updating patient details:", error);
+        toast({variant: "destructive", title: "Error al guardar los cambios."})
     }
   };
 
@@ -349,6 +369,9 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     );
   }
 
+  const age = getPatientAge(patient.dob);
+  const lastSession = getLastSessionDate();
+
   return (
     <>
         <div className="flex-1 space-y-6 p-6">
@@ -368,40 +391,75 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             </div>
 
             <Card className="p-6 shadow-sm">
-                <h2 className="text-3xl font-bold mb-4">{patient.name}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
-                    {patient.dob && (
-                       <div>
-                           <span className="font-semibold text-muted-foreground">Edad: </span>
-                           <span className="text-foreground">{getPatientAge(patient.dob)} años</span>
-                       </div>
+                <div className="flex justify-between items-start">
+                    <h2 className="text-3xl font-bold mb-4">{patient.name}</h2>
+                    {!isEditingPatientDetails ? (
+                        <Button variant="ghost" size="icon" onClick={() => setIsEditingPatientDetails(true)}>
+                            <Edit className="w-5 h-5" />
+                        </Button>
+                    ) : (
+                        <div className="flex gap-2">
+                            <Button variant="outline" onClick={() => { setIsEditingPatientDetails(false); setEditablePatient(patient); }}>Cancelar</Button>
+                            <Button onClick={handleSavePatientDetails}><Save className="mr-2 h-4 w-4" /> Guardar</Button>
+                        </div>
                     )}
-                     <div>
-                       <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
-                       <span className="text-foreground">{patient.consultationType || "No especificado"}</span>
-                   </div>
-                   <div>
-                       <span className="font-semibold text-muted-foreground">Diagnóstico principal: </span>
-                       <span className="text-foreground">{patient.mainDiagnosis || "No especificado"}</span>
-                   </div>
-                   <div>
-                       <span className="font-semibold text-muted-foreground">Objetivo actual: </span>
-                       <span className="text-foreground">{patient.currentObjective || "No especificado"}</span>
-                   </div>
-                   <div className="flex items-center gap-2">
-                        <CalendarDays className="w-4 h-4 text-muted-foreground" />
-                        <div>
-                           <span className="font-semibold text-muted-foreground">Frecuencia: </span>
-                           <span className="text-foreground">{patient.frequency || "No especificada"}</span>
-                        </div>
-                   </div>
-                    <div className="flex items-start gap-2 col-span-1 md:col-span-2 lg:col-span-3">
-                        <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
-                         <div>
-                           <span className="font-semibold text-muted-foreground">Contexto: </span>
-                           <span className="text-foreground">{patient.context || "No especificado"}</span>
-                        </div>
-                   </div>
+                </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
+                    {isEditingPatientDetails ? (
+                        <>
+                           <div className="space-y-1">
+                                <Label className="font-semibold text-muted-foreground">Tipo de consulta</Label>
+                                <Input value={editablePatient.consultationType || ""} onChange={(e) => handlePatientDetailChange('consultationType', e.target.value)} />
+                           </div>
+                           <div className="space-y-1">
+                                <Label className="font-semibold text-muted-foreground">Diagnóstico principal</Label>
+                                <Input value={editablePatient.mainDiagnosis || ""} onChange={(e) => handlePatientDetailChange('mainDiagnosis', e.target.value)} />
+                           </div>
+                           <div className="space-y-1">
+                                <Label className="font-semibold text-muted-foreground">Objetivo actual</Label>
+                                <Input value={editablePatient.currentObjective || ""} onChange={(e) => handlePatientDetailChange('currentObjective', e.target.value)} />
+                           </div>
+                           <div className="space-y-1">
+                                <Label className="font-semibold text-muted-foreground">Frecuencia</Label>
+                                <Input value={editablePatient.frequency || ""} onChange={(e) => handlePatientDetailChange('frequency', e.target.value)} />
+                           </div>
+                           <div className="space-y-1 md:col-span-2 lg:col-span-3">
+                                <Label className="font-semibold text-muted-foreground">Contexto</Label>
+                                <Textarea value={editablePatient.context || ""} onChange={(e) => handlePatientDetailChange('context', e.target.value)} />
+                           </div>
+                        </>
+                    ) : (
+                        <>
+                            <div>
+                               <span className="font-semibold text-muted-foreground">Edad: </span>
+                               <span className="text-foreground">{age ? `${age} años` : 'No especificada'}</span>
+                           </div>
+                           <div>
+                               <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
+                               <span className="text-foreground">{patient.consultationType || "No especificado"}</span>
+                           </div>
+                           <div>
+                               <span className="font-semibold text-muted-foreground">Diagnóstico principal: </span>
+                               <span className="text-foreground">{patient.mainDiagnosis || "No especificado"}</span>
+                           </div>
+                           <div>
+                               <span className="font-semibold text-muted-foreground">Objetivo actual: </span>
+                               <span className="text-foreground">{patient.currentObjective || "No especificado"}</span>
+                           </div>
+                           <div>
+                               <span className="font-semibold text-muted-foreground">Frecuencia: </span>
+                               <span className="text-foreground">{patient.frequency || "No especificada"}</span>
+                           </div>
+                            <div>
+                                <span className="font-semibold text-muted-foreground">Última sesión: </span>
+                                <span className="text-foreground">{lastSession}</span>
+                           </div>
+                           <div className="md:col-span-2 lg:col-span-3">
+                               <span className="font-semibold text-muted-foreground">Contexto: </span>
+                               <span className="text-foreground">{patient.context || "No especificado"}</span>
+                           </div>
+                        </>
+                    )}
                 </div>
             </Card>
 
@@ -456,7 +514,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   );
 }
 
-// Sub-component for the form
 const NoteEntryForm = ({ note, onSubmit, onCancel }: { note: Note | null, onSubmit: (values: { title: string; content: string }) => void, onCancel: () => void }) => {
     const [title, setTitle] = useState(note?.title || '');
     const [content, setContent] = useState(note?.content || '');
