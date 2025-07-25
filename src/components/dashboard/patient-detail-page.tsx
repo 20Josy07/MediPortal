@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export function PatientDetailPage({ patientId }: { patientId: string }) {
   const { user, db, userProfile, loading: authLoading } = useAuth();
@@ -163,7 +164,20 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <aside className="md:col-span-1 flex flex-col gap-4">
                     <Button variant="outline" className="justify-between">Filtrar <ListFilter className="h-4 w-4" /></Button>
-                    <Button variant="outline" className="justify-between">Tipo de nota <FileType className="h-4 w-4" /></Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="justify-between w-full">
+                          Tipo de nota <FileType className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Audio</DropdownMenuItem>
+                        <DropdownMenuItem>Transcripción automática</DropdownMenuItem>
+                        <DropdownMenuItem>Nota escrita manual</DropdownMenuItem>
+                        <DropdownMenuItem>Resumen generado</DropdownMenuItem>
+                        <DropdownMenuItem>Recordatorio o seguimiento</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button className="w-full bg-[#39ac4d] hover:bg-[#39ac4d]/90 text-white" onClick={() => handleOpenForm()}>
                        <Plus className="mr-2 h-4 w-4" /> Nueva entrada
                     </Button>
