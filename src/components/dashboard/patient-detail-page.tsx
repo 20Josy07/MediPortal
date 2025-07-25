@@ -223,6 +223,7 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
                 }
             }
         };
+
         generateSummary();
     }, [needsSummary, note.content, summary, isSummarizing]);
 
@@ -621,7 +622,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
 
             <Card className="p-6 shadow-sm">
                 <div className="flex justify-between items-start">
-                    <h2 className="text-3xl font-bold mb-4">{patient.name}{ageText}</h2>
+                    <h2 className="text-3xl font-bold mb-4">{patient.name}</h2>
                     {!isEditingPatientDetails ? (
                         <Button variant="ghost" size="icon" onClick={() => setIsEditingPatientDetails(true)}>
                             <Edit className="w-5 h-5" />
