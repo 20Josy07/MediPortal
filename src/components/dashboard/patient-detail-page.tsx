@@ -27,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Switch } from "../ui/switch";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "../ui/scroll-area";
 
 
 const noteTypes = [
@@ -182,7 +183,7 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
 
              <Separator />
             
-             <Button onClick={handleApplyFilters}>
+             <Button onClick={handleApplyFilters} className="bg-green-600 hover:bg-green-700">
                 <Filter className="w-4 h-4 mr-2" />
                 Filtrar
             </Button>
@@ -217,7 +218,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     const unsubscribePatient = onSnapshot(patientDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data() as Omit<Patient, 'id'>;
-        const patientData = { id: docSnap.id, ...data };
+        const patientData = { id: docSnap.id, ...data, createdAt: data.createdAt ? (data.createdAt as any).toDate() : undefined };
         setPatient(patientData);
         setEditablePatient(patientData);
       } else {
@@ -325,9 +326,9 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     }
   };
 
-  const getPatientAge = (dob: string | undefined): number | null => {
-    if (!dob || isNaN(Date.parse(dob))) return null;
-    return differenceInYears(new Date(), new Date(dob));
+  const getPatientAge = (dob: string | undefined): string => {
+    if (!dob || isNaN(Date.parse(dob))) return 'No especificada';
+    return differenceInYears(new Date(), new Date(dob)).toString();
   }
 
   const getLastSessionDate = () => {
@@ -374,7 +375,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
 
   return (
     <>
-        <div className="flex-1 space-y-6 p-6">
+        <div className="flex-1 space-y-6 p-6 h-full flex flex-col">
             <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-4xl font-bold tracking-tight">Historial Médico</h1>
@@ -432,7 +433,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <>
                             <div>
                                <span className="font-semibold text-muted-foreground">Edad: </span>
-                               <span className="text-foreground">{age ? `${age} años` : 'No especificada'}</span>
+                               <span className="text-foreground">{age !== 'No especificada' ? `${age} años` : age}</span>
                            </div>
                            <div>
                                <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
@@ -463,34 +464,40 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                 </div>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
-                <aside className="md:col-span-1 flex flex-col gap-4 sticky top-20">
-                   <FilterSidebar onFilter={handleFilter} onReset={handleResetFilters} />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start flex-grow min-h-0">
+                <aside className="md:col-span-1 h-full">
+                    <ScrollArea className="h-full pr-4">
+                        <FilterSidebar onFilter={handleFilter} onReset={handleResetFilters} />
+                    </ScrollArea>
                 </aside>
 
-                <main className="md:col-span-3 space-y-4">
-                     {filteredNotes.length > 0 ? (
-                        filteredNotes.map((note) => (
-                        <Card key={note.id} className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => handleOpenForm(note)}>
-                            <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-4 mb-2">
-                                    {getNoteIcon(note.type)}
-                                    <h3 className="text-lg font-semibold">{note.title}</h3>
+                <main className="md:col-span-3 h-full">
+                     <ScrollArea className="h-full pr-4">
+                        <div className="space-y-4">
+                        {filteredNotes.length > 0 ? (
+                            filteredNotes.map((note) => (
+                            <Card key={note.id} className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => handleOpenForm(note)}>
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-4 mb-2">
+                                        {getNoteIcon(note.type)}
+                                        <h3 className="text-lg font-semibold">{note.title}</h3>
+                                    </div>
+                                    <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
                                 </div>
-                                <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
-                            </div>
-                            <div className="pl-10">
-                                <p className="text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words">{note.content}</p>
-                            </div>
-                        </Card>
-                        ))
-                    ) : (
-                        <Card className="p-6 text-center min-h-[200px] flex flex-col justify-center items-center">
-                            <NotebookPen className="w-12 h-12 text-muted-foreground mb-4" />
-                            <p className="text-muted-foreground font-semibold">No se encontraron notas.</p>
-                            <p className="text-sm text-muted-foreground">Ajusta los filtros o crea una nueva entrada.</p>
-                        </Card>
-                    )}
+                                <div className="pl-10">
+                                    <p className="text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words">{note.content}</p>
+                                </div>
+                            </Card>
+                            ))
+                        ) : (
+                            <Card className="p-6 text-center min-h-[200px] flex flex-col justify-center items-center">
+                                <NotebookPen className="w-12 h-12 text-muted-foreground mb-4" />
+                                <p className="text-muted-foreground font-semibold">No se encontraron notas.</p>
+                                <p className="text-sm text-muted-foreground">Ajusta los filtros o crea una nueva entrada.</p>
+                            </Card>
+                        )}
+                        </div>
+                     </ScrollArea>
                 </main>
             </div>
         </div>
