@@ -13,14 +13,15 @@ import jsPDF from "jspdf";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Edit, Download, MessageSquare, ListFilter, FileType, Plus, Smile, NotebookPen, FileText } from "lucide-react";
+import { Loader2, ArrowLeft, Edit, Download, MessageSquare, ListFilter, FileType, Plus, Smile, NotebookPen, FileText, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { addNote, updateNote, deleteNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 export function PatientDetailPage({ patientId }: { patientId: string }) {
   const { user, db, userProfile, loading: authLoading } = useAuth();
@@ -31,6 +32,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isNoteTypeOpen, setIsNoteTypeOpen] = useState(false);
 
   useEffect(() => {
     if (!patientId || !user || !db) return;
@@ -145,6 +147,14 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     );
   }
 
+  const noteTypes = [
+    { label: "Audio" },
+    { label: "Transcripción automática" },
+    { label: "Nota escrita manual" },
+    { label: "Resumen generado" },
+    { label: "Recordatorio o seguimiento" },
+  ];
+
   return (
     <>
         <div className="flex-1 space-y-6 p-6">
@@ -164,20 +174,26 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <aside className="md:col-span-1 flex flex-col gap-4">
                     <Button variant="outline" className="justify-between">Filtrar <ListFilter className="h-4 w-4" /></Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="justify-between w-full">
-                          Tipo de nota <FileType className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
-                        <DropdownMenuItem>Audio</DropdownMenuItem>
-                        <DropdownMenuItem>Transcripción automática</DropdownMenuItem>
-                        <DropdownMenuItem>Nota escrita manual</DropdownMenuItem>
-                        <DropdownMenuItem>Resumen generado</DropdownMenuItem>
-                        <DropdownMenuItem>Recordatorio o seguimiento</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    
+                    <Collapsible open={isNoteTypeOpen} onOpenChange={setIsNoteTypeOpen}>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="outline" className="justify-between w-full">
+                                Tipo de nota
+                                <div className="flex items-center gap-2">
+                                  <FileType className="h-4 w-4" />
+                                  <ChevronDown className={cn("h-4 w-4 transition-transform", isNoteTypeOpen && "rotate-180")} />
+                                </div>
+                            </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="space-y-2 py-2">
+                            {noteTypes.map((type) => (
+                                <Button key={type.label} variant="ghost" className="w-full justify-start">
+                                    {type.label}
+                                </Button>
+                            ))}
+                        </CollapsibleContent>
+                    </Collapsible>
+                    
                     <Button className="w-full bg-[#39ac4d] hover:bg-[#39ac4d]/90 text-white" onClick={() => handleOpenForm()}>
                        <Plus className="mr-2 h-4 w-4" /> Nueva entrada
                     </Button>
