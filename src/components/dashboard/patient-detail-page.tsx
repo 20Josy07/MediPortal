@@ -11,12 +11,13 @@ import { es } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 import jsPDF from "jspdf";
 import { generateProgressReport, type GenerateProgressReportOutput } from "@/ai/flows/generate-progress-report-flow";
+import { summarizeSingleNote } from "@/ai/flows/summarize-single-note-flow";
 
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin, Edit, Save, FileDown, ChevronLeft, Calendar as CalendarIcon, FileClock, BarChartHorizontal } from "lucide-react";
+import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin, Edit, Save, FileDown, ChevronLeft, Calendar as CalendarIcon, FileClock, BarChartHorizontal, ChevronDown } from "lucide-react";
 import { addNote, updateNote as updateNoteInDb } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -199,6 +200,77 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
     );
 }
 
+const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) => void }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [summary, setSummary] = useState<string | null>(null);
+    const [isSummarizing, setIsSummarizing] = useState(false);
+
+    const wordCount = useMemo(() => note.content.split(/\s+/).length, [note.content]);
+    const needsSummary = wordCount > 300;
+
+    useEffect(() => {
+        const generateSummary = async () => {
+            if (needsSummary && !summary && !isSummarizing) {
+                setIsSummarizing(true);
+                try {
+                    const result = await summarizeSingleNote({ noteContent: note.content });
+                    setSummary(result.summary);
+                } catch (error) {
+                    console.error("Error summarizing note:", error);
+                    setSummary("No se pudo generar el resumen.");
+                } finally {
+                    setIsSummarizing(false);
+                }
+            }
+        };
+        generateSummary();
+    }, [needsSummary, note.content, summary, isSummarizing]);
+
+    const getNoteIcon = (type: Note['type']) => {
+        switch (type) {
+            case 'Voz':
+                return <MessageSquare className="w-6 h-6 text-purple-500" />;
+            case 'Texto':
+                return <NotebookPen className="w-6 h-6 text-blue-500" />;
+            default:
+                return <FileText className="w-6 h-6 text-gray-500" />;
+        }
+    };
+
+    const displayContent = isExpanded ? note.content : (needsSummary ? summary : note.content);
+
+    return (
+        <Card className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => onOpenForm(note)}>
+            <div className="flex justify-between items-start">
+                <div className="flex items-center gap-4 mb-2">
+                    {getNoteIcon(note.type)}
+                    <h3 className="text-lg font-semibold">{note.title}</h3>
+                </div>
+                <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
+            </div>
+            <div className="pl-10">
+                {isSummarizing ? (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Resumiendo nota...</span>
+                    </div>
+                ) : (
+                    <p className="text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words">
+                        {displayContent}
+                    </p>
+                )}
+                {needsSummary && !isSummarizing && (
+                    <Button variant="link" size="sm" className="p-0 h-auto mt-2" onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}>
+                        {isExpanded ? "Ver menos" : "Ver más"}
+                        <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", isExpanded && "rotate-180")} />
+                    </Button>
+                )}
+            </div>
+        </Card>
+    );
+};
+
+
 export function PatientDetailPage({ patientId }: { patientId: string }) {
   const { user, db, userProfile, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -334,8 +406,9 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   };
 
   const getPatientAge = (dob: string | undefined): string => {
-    if (!dob || isNaN(Date.parse(dob))) return 'N/A';
-    return differenceInYears(new Date(), new Date(dob)).toString();
+    if (!dob || isNaN(Date.parse(dob))) return '';
+    const age = differenceInYears(new Date(), new Date(dob));
+    return `, ${age} años`;
   }
 
   const getLastSessionDate = () => {
@@ -343,17 +416,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     const lastNoteDate = notes[0].createdAt;
     return format(lastNoteDate, "d 'de' MMMM 'de' yyyy", { locale: es });
   }
-
-  const getNoteIcon = (type: Note['type']) => {
-    switch (type) {
-        case 'Voz':
-            return <MessageSquare className="w-6 h-6 text-purple-500" />;
-        case 'Texto':
-            return <NotebookPen className="w-6 h-6 text-blue-500" />;
-        default:
-            return <FileText className="w-6 h-6 text-gray-500" />;
-    }
-  };
 
   const handleGenerateReport = async () => {
     if (!patient || notes.length === 0) {
@@ -524,7 +586,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     );
   }
 
-  const age = getPatientAge(patient.dob);
+  const ageText = getPatientAge(patient.dob);
   const lastSession = getLastSessionDate();
 
   return (
@@ -559,7 +621,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
 
             <Card className="p-6 shadow-sm">
                 <div className="flex justify-between items-start">
-                    <h2 className="text-3xl font-bold mb-4">{patient.name}</h2>
+                    <h2 className="text-3xl font-bold mb-4">{patient.name}{ageText}</h2>
                     {!isEditingPatientDetails ? (
                         <Button variant="ghost" size="icon" onClick={() => setIsEditingPatientDetails(true)}>
                             <Edit className="w-5 h-5" />
@@ -576,7 +638,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <>
                            <div className="space-y-1">
                                 <Label className="font-semibold text-muted-foreground">Edad</Label>
-                                <Input value={getPatientAge(editablePatient.dob)} disabled />
+                                <Input value={ageText.replace(', ', '')} disabled />
                            </div>
                            <div className="space-y-1">
                                 <Label className="font-semibold text-muted-foreground">Tipo de consulta</Label>
@@ -607,7 +669,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <>
                            <div>
                                <span className="font-semibold text-muted-foreground">Edad: </span>
-                               <span className="text-foreground">{age}</span>
+                               <span className="text-foreground">{ageText.replace(', ', '') || 'N/A'}</span>
                            </div>
                            <div>
                                <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
@@ -650,18 +712,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <div className="space-y-4">
                         {filteredNotes.length > 0 ? (
                             filteredNotes.map((note) => (
-                            <Card key={note.id} className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => handleOpenForm(note)}>
-                                <div className="flex justify-between items-start">
-                                    <div className="flex items-center gap-4 mb-2">
-                                        {getNoteIcon(note.type)}
-                                        <h3 className="text-lg font-semibold">{note.title}</h3>
-                                    </div>
-                                    <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
-                                </div>
-                                <div className="pl-10">
-                                    <p className="text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words">{note.content}</p>
-                                </div>
-                            </Card>
+                                <NoteCard key={note.id} note={note} onOpenForm={handleOpenForm} />
                             ))
                         ) : (
                             <Card className="p-6 text-center min-h-[200px] flex flex-col justify-center items-center">
