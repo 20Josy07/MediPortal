@@ -12,6 +12,7 @@ import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { format, isToday, isTomorrow, startOfDay, endOfDay } from "date-fns";
+import { es } from "date-fns/locale";
 import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
