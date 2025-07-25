@@ -37,7 +37,6 @@ export interface UserProfile {
   fullName: string;
   email: string;
   phone?: string;
-  specialization?: string;
   photoURL?: string;
 }
 

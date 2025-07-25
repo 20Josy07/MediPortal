@@ -7,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,7 +20,6 @@ const profileSchema = z.object({
   fullName: z.string().min(1, "El nombre completo es requerido."),
   email: z.string().email("Correo electrónico inválido."),
   phone: z.string().optional(),
-  specialization: z.string().optional(),
   photoURL: z.string().optional(),
 });
 
@@ -44,7 +42,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
       fullName: "",
       email: "",
       phone: "",
-      specialization: "",
       photoURL: "",
     },
   });
@@ -58,7 +55,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
         fullName: userProfile?.fullName || user?.displayName || "",
         email: userProfile?.email || user?.email || "",
         phone: userProfile?.phone || "",
-        specialization: userProfile?.specialization || "",
         photoURL: userProfile?.photoURL || user?.photoURL || "",
       };
       form.reset(initialValues);
@@ -198,40 +194,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="specialization"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Especialización</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una especialización" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="clinical_psychology">
-                        Psicología Clínica
-                      </SelectItem>
-                      <SelectItem value="cognitive_behavioral">
-                        Terapia Cognitivo-Conductual
-                      </SelectItem>
-                      <SelectItem value="psychoanalysis">
-                        Psicoanálisis
-                      </SelectItem>
-                      <SelectItem value="humanistic_psychology">
-                        Psicología Humanista
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
