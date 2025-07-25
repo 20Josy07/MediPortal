@@ -134,11 +134,11 @@ export default function Home() {
                 Inicio
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white dark:bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works">
+              <Link className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
                 Ventajas
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white dark:bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
-              <Link className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary transition-all duration-300 ease-in-out relative group text-base font-medium" href="#features">
+              <Link className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary transition-all duration-300 ease-in-out relative group text-base font-medium" href="#how-it-works-steps">
                 Funcionalidades
                 <span className="absolute left-0 bottom-0 w-full h-0.5 bg-white dark:bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out"></span>
               </Link>
@@ -174,7 +174,7 @@ export default function Home() {
                         <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </Button>
-                <Button asChild variant="outline" className="py-4 px-8 rounded-lg text-base font-bold text-[#063C0F] border-[#063C0F] bg-white dark:text-primary dark:border-primary dark:bg-transparent" id="how-it-works-button"><Link href="#how-it-works">Ver como funciona</Link></Button>
+                <Button asChild variant="outline" className="py-4 px-8 rounded-lg text-base font-bold text-[#063C0F] border-[#063C0F] bg-white dark:text-primary dark:border-primary dark:bg-transparent" id="how-it-works-button"><Link href="#how-it-works-steps">Ver como funciona</Link></Button>
             </div>
           </div>
           <div className="hero-image">
@@ -271,7 +271,7 @@ export default function Home() {
           <div className="footer-column">
             <h3>Producto</h3>
             <ul>
-              <li><Link href="#how-it-works">Cómo funciona</Link></li>
+              <li><Link href="#how-it-works-steps">Cómo funciona</Link></li>
               <li><Link href="#features">Funcionalidades</Link></li>
               <li><Link href="/dashboard/support/chat">FAQ</Link></li>
               <li><Link href="/terms">Términos y Condiciones</Link></li>
