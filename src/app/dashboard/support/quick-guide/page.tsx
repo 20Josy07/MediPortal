@@ -38,17 +38,19 @@ export default function QuickGuidePage() {
                 </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-wrap gap-6">
                 {guideSteps.map((step, index) => (
-                    <Card key={index} className="flex flex-col">
-                        <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
-                           {step.icon}
-                           <CardTitle className="text-xl">{step.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-grow">
-                           <p className="text-muted-foreground">{step.description}</p>
-                        </CardContent>
-                    </Card>
+                    <div key={index} className="flex-1 min-w-[300px] md:min-w-[45%]">
+                        <Card className="flex flex-col h-full">
+                            <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
+                               {step.icon}
+                               <CardTitle className="text-xl">{step.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex-grow">
+                               <p className="text-muted-foreground">{step.description}</p>
+                            </CardContent>
+                        </Card>
+                    </div>
                 ))}
             </div>
 
