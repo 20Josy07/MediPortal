@@ -119,7 +119,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8</div>
+              <div className="text-2xl font-bold">0</div>
             </CardContent>
           </Card>
           <Card className="text-center">
@@ -129,7 +129,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$1,200</div>
+              <div className="text-2xl font-bold">$0</div>
             </CardContent>
           </Card>
         </div>
