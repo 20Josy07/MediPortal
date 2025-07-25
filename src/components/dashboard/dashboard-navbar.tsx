@@ -138,16 +138,16 @@ export function DashboardNavbar() {
       </header>
 
       <Dialog open={isProfileModalOpen} onOpenChange={setIsProfileModalOpen}>
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
-            <DialogTitle>Configura tu cuenta</DialogTitle>
-            <DialogDescription>
-              Configura tu cuenta y las preferencias de la aplicación
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-              <ProfileSettingsForm onSuccess={() => setIsProfileModalOpen(false)} />
+        <DialogContent className="max-w-xl p-0">
+          <div className="p-6">
+            <DialogHeader>
+              <DialogTitle>Configura tu cuenta</DialogTitle>
+              <DialogDescription>
+                Configura tu cuenta y las preferencias de la aplicación
+              </DialogDescription>
+            </DialogHeader>
           </div>
+          <ProfileSettingsForm onSuccess={() => setIsProfileModalOpen(false)} />
         </DialogContent>
       </Dialog>
     </>

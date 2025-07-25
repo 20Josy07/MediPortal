@@ -123,55 +123,84 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   };
 
   return (
-    <Card className="border-0 shadow-none">
+    <>
       {isFetching ? (
         <div className="flex justify-center items-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : (
-        <ScrollArea className="max-h-[70vh] pr-6">
+        <ScrollArea className="max-h-[70vh]">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <CardHeader className="p-0">
-                <div className="flex items-center gap-4">
-                  <User className="h-6 w-6 text-muted-foreground" />
-                  <div>
-                    <CardTitle className="text-lg">Configuración del Perfil</CardTitle>
-                    <CardDescription>Maneja tu información personal</CardDescription>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-6 pb-6">
+              <Card className="border-0 shadow-none p-0">
+                <CardHeader className="p-0">
+                  <div className="flex items-center gap-4">
+                    <User className="h-6 w-6 text-muted-foreground" />
+                    <div>
+                      <CardTitle className="text-lg">Configuración del Perfil</CardTitle>
+                      <CardDescription>Maneja tu información personal</CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0 space-y-4">
-                <div className="flex items-center gap-6">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src={photoUrlValue || undefined} alt="User avatar" />
-                    <AvatarFallback className="text-3xl">
-                      {getInitials(form.getValues("fullName") || "U")}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col gap-2">
-                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Cambiar Foto
-                    </Button>
-                    <p className="text-xs text-muted-foreground">JPG, PNG, GIF. Máximo 2MB.</p>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileChange}
-                      className="hidden"
-                      accept="image/png, image/jpeg, image/gif"
+                </CardHeader>
+                <CardContent className="p-0 pt-4 space-y-4">
+                  <div className="flex items-center gap-6">
+                    <Avatar className="h-24 w-24">
+                      <AvatarImage src={photoUrlValue || undefined} alt="User avatar" />
+                      <AvatarFallback className="text-3xl">
+                        {getInitials(form.getValues("fullName") || "U")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col gap-2">
+                      <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Cambiar Foto
+                      </Button>
+                      <p className="text-xs text-muted-foreground">JPG, PNG, GIF. Máximo 2MB.</p>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/png, image/jpeg, image/gif"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre Completo</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Correo Electrónico</FormLabel>
+                          <FormControl>
+                            <Input {...field} disabled />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="fullName"
+                    name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nombre Completo</FormLabel>
+                        <FormLabel>Teléfono</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -179,41 +208,14 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Correo Electrónico</FormLabel>
-                        <FormControl>
-                          <Input {...field} disabled />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Teléfono</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex justify-end pt-4">
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Guardar Cambios de Perfil
-                  </Button>
-                </div>
-              </CardContent>
+                  <div className="flex justify-end pt-4">
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Guardar Cambios de Perfil
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
 
               <Separator />
 
@@ -289,6 +291,6 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
           </Form>
         </ScrollArea>
       )}
-    </Card>
+    </>
   );
 }
