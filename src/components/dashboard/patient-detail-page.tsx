@@ -480,7 +480,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                                 <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
                             </div>
                             <div className="pl-10">
-                                <p className="text-muted-foreground bg-secondary p-3 rounded-lg inline-block">{note.content}</p>
+                                <p className="text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words">{note.content}</p>
                             </div>
                         </Card>
                         ))
