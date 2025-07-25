@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { format, isToday, isTomorrow, startOfDay, subDays } from "date-fns";
+import { format, isToday, isTomorrow, startOfDay, subDays, isPast } from "date-fns";
 import { es } from "date-fns/locale";
 import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,7 +28,7 @@ export default function DashboardPage() {
   const { user, db, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [allSessions, setAllSessions] = useState<Session[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("all");
@@ -64,7 +64,6 @@ export default function DashboardPage() {
     const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
     const q = query(
       sessionsCollection,
-      where("date", ">=", startOfDay(new Date())),
       orderBy("date")
     );
 
@@ -78,7 +77,7 @@ export default function DashboardPage() {
                 endDate: data.endDate ? (data.endDate as any).toDate() : new Date(),
             } as Session;
         });
-        setSessions(sessionList);
+        setAllSessions(sessionList);
         setIsLoading(false);
     }, (error) => {
         console.error("Error fetching sessions:", error);
@@ -95,26 +94,38 @@ export default function DashboardPage() {
         unsubscribeSessions();
     };
   }, [user, db, authLoading, toast]);
+
+  const upcomingSessions = useMemo(() => {
+    return allSessions.filter(session => session.date >= startOfDay(new Date()));
+  }, [allSessions]);
   
   const filteredSessions = useMemo(() => {
     if (filter === "today") {
-      return sessions.filter(session => isToday(session.date));
+      return upcomingSessions.filter(session => isToday(session.date));
     }
     if (filter === "tomorrow") {
-      return sessions.filter(session => isTomorrow(session.date));
+      return upcomingSessions.filter(session => isTomorrow(session.date));
     }
-    return sessions;
-  }, [sessions, filter]);
+    return upcomingSessions;
+  }, [upcomingSessions, filter]);
 
   const newPatientsThisWeek = useMemo(() => {
     const oneWeekAgo = subDays(new Date(), 7);
     return patients.filter(p => p.createdAt && p.createdAt >= oneWeekAgo).length;
   }, [patients]);
+  
+  const canceledSessionsCount = useMemo(() => {
+      return allSessions.filter(s => s.status === 'Cancelada').length;
+  }, [allSessions]);
+
+  const completedSessionsCount = useMemo(() => {
+      return allSessions.filter(s => s.status === 'No asistió' || (s.status === 'Confirmada' && isPast(s.date))).length;
+  }, [allSessions]);
 
 
   return (
     <div className="flex-1 space-y-6">
-      <DashboardAlerts sessions={sessions} />
+      <DashboardAlerts sessions={upcomingSessions} />
       
       <div>
         <h3 className="mb-4 text-xl font-semibold">Resumen de la semana</h3>
@@ -138,7 +149,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="text-3xl font-bold text-primary">0</div>
+              <div className="text-3xl font-bold text-primary">{completedSessionsCount}</div>
             </CardContent>
           </Card>
           <Card>
@@ -160,7 +171,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="text-3xl font-bold text-primary">0</div>
+              <div className="text-3xl font-bold text-primary">{canceledSessionsCount}</div>
             </CardContent>
           </Card>
         </div>
