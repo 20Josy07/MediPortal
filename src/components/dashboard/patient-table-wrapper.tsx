@@ -12,6 +12,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  serverTimestamp,
 } from "firebase/firestore";
 import type { Patient } from "@/lib/types";
 import { Input } from "@/components/ui/input";
@@ -78,7 +79,7 @@ export function PatientTableWrapper() {
       patient.name.toLowerCase().includes(searchTerm.toLowerCase())
     ), [patients, searchTerm]);
 
-  const handleFormSubmit = async (data: Omit<Patient, "id" | "nextSession">) => {
+  const handleFormSubmit = async (data: Omit<Patient, "id" | "nextSession" | "createdAt">) => {
     if (!user || !db) {
       toast({ variant: "destructive", title: "Error de autenticación. Intenta de nuevo." });
       return;
@@ -95,7 +96,11 @@ export function PatientTableWrapper() {
       } else {
         // Create
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
-        const newPatientData = { ...dataToSave, nextSession: null };
+        const newPatientData = { 
+          ...dataToSave,
+          nextSession: null,
+          createdAt: serverTimestamp(),
+        };
         await addDoc(patientsCollection, newPatientData);
         toast({ title: "Paciente agregado exitosamente." });
       }

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { format, isToday, isTomorrow, startOfDay, endOfDay } from "date-fns";
+import { format, isToday, isTomorrow, startOfDay, endOfDay, subDays } from "date-fns";
 import { es } from "date-fns/locale";
 import { DashboardAlerts } from "@/components/dashboard/dashboard-alerts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -41,23 +41,25 @@ export default function DashboardPage() {
 
     setIsLoading(true);
 
-    const fetchPatients = async () => {
-        try {
-            const patientsCollection = collection(db, `users/${user.uid}/patients`);
-            const patientSnapshot = await getDocs(patientsCollection);
-            const patientList = patientSnapshot.docs.map(
-              (doc) => ({ id: doc.id, ...doc.data() } as Patient)
-            );
-            setPatients(patientList);
-        } catch (error) {
-             console.error("Error fetching patients:", error);
-             toast({
-                variant: "destructive",
-                title: "Error al cargar los pacientes.",
-            });
-        }
-    };
-    fetchPatients();
+    const patientsCollection = collection(db, `users/${user.uid}/patients`);
+    const unsubscribePatients = onSnapshot(patientsCollection, (patientSnapshot) => {
+        const patientList = patientSnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return { 
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt ? (data.createdAt as any).toDate() : new Date(0), // handle legacy patients
+            } as Patient;
+        });
+        setPatients(patientList);
+    }, (error) => {
+        console.error("Error fetching patients:", error);
+        toast({
+            variant: "destructive",
+            title: "Error al cargar los pacientes.",
+        });
+    });
+
 
     const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
     const q = query(
@@ -66,7 +68,7 @@ export default function DashboardPage() {
       orderBy("date")
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribeSessions = onSnapshot(q, (snapshot) => {
         const sessionList = snapshot.docs.map((doc) => {
             const data = doc.data();
             return {
@@ -88,7 +90,10 @@ export default function DashboardPage() {
         setIsLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+        unsubscribePatients();
+        unsubscribeSessions();
+    };
   }, [user, db, authLoading, toast]);
   
   const filteredSessions = useMemo(() => {
@@ -100,6 +105,12 @@ export default function DashboardPage() {
     }
     return sessions;
   }, [sessions, filter]);
+
+  const newPatientsThisWeek = useMemo(() => {
+    const oneWeekAgo = subDays(new Date(), 7);
+    return patients.filter(p => p.createdAt && p.createdAt >= oneWeekAgo).length;
+  }, [patients]);
+
 
   return (
     <div className="flex-1 space-y-6">
@@ -138,7 +149,7 @@ export default function DashboardPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-primary">0</div>
+              <div className="text-3xl font-bold text-primary">{newPatientsThisWeek}</div>
             </CardContent>
           </Card>
           <Card>

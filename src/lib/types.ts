@@ -8,6 +8,7 @@ export interface Patient {
   nextSession: string | null;
   status: "Activo" | "Inactivo";
   dob?: string;
+  createdAt?: Date;
 }
 
 export interface Session {
