@@ -120,46 +120,46 @@ export default function DashboardPage() {
         <h3 className="mb-4 text-xl font-semibold">Resumen de la semana</h3>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-col items-center justify-center space-y-2 pb-2">
+              <Users className="h-6 w-6 text-muted-foreground" />
               <CardTitle className="text-sm font-medium">
                 Pacientes activos
               </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="text-center">
               <div className="text-3xl font-bold text-primary">{patients.filter(p => p.status === 'Activo').length}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
+            <CardHeader className="flex flex-col items-center justify-center space-y-2 pb-2">
+               <CheckCircle className="h-6 w-6 text-muted-foreground" />
+               <CardTitle className="text-sm font-medium">
                 Sesiones completadas
               </CardTitle>
-               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="text-center">
               <div className="text-3xl font-bold text-primary">0</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-col items-center justify-center space-y-2 pb-2">
+              <Users className="h-6 w-6 text-muted-foreground" />
               <CardTitle className="text-sm font-medium">
                 Nuevos pacientes
               </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="text-center">
               <div className="text-3xl font-bold text-primary">{newPatientsThisWeek}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-col items-center justify-center space-y-2 pb-2">
+              <CalendarOff className="h-6 w-6 text-muted-foreground" />
               <CardTitle className="text-sm font-medium">
                 Sesiones canceladas
               </CardTitle>
-              <CalendarOff className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="text-center">
               <div className="text-3xl font-bold text-primary">0</div>
             </CardContent>
           </Card>
