@@ -170,12 +170,12 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Paciente</TableHead>
-                  <TableHead className="hidden md:table-cell">Fecha</TableHead>
-                  <TableHead className="hidden md:table-cell">Hora</TableHead>
-                  <TableHead className="hidden sm:table-cell">Tipo</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead className="text-right">Acción</TableHead>
+                  <TableHead className="text-center font-bold text-base">Paciente</TableHead>
+                  <TableHead className="hidden md:table-cell text-center font-bold text-base">Fecha</TableHead>
+                  <TableHead className="hidden md:table-cell text-center font-bold text-base">Hora</TableHead>
+                  <TableHead className="hidden sm:table-cell text-center font-bold text-base">Tipo</TableHead>
+                  <TableHead className="text-center font-bold text-base">Estado</TableHead>
+                  <TableHead className="text-center font-bold text-base">Acción</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -190,22 +190,22 @@ export default function DashboardPage() {
                     const StatusIcon = statusDetails[session.status].icon;
                     return (
                       <TableRow key={session.id}>
-                        <TableCell>
+                        <TableCell className="text-center">
                            <div className="font-medium">{session.patientName}</div>
                            <div className="text-sm text-muted-foreground md:hidden">{format(session.date, 'PPp', {locale: es})}</div>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">{format(session.date, 'PP', {locale: es})}</TableCell>
-                        <TableCell className="hidden md:table-cell">{format(session.date, 'p', {locale: es})}</TableCell>
-                        <TableCell className="hidden sm:table-cell">
+                        <TableCell className="hidden md:table-cell text-center">{format(session.date, 'PP', {locale: es})}</TableCell>
+                        <TableCell className="hidden md:table-cell text-center">{format(session.date, 'p', {locale: es})}</TableCell>
+                        <TableCell className="hidden sm:table-cell text-center">
                           <Badge variant="outline">{session.type}</Badge>
                         </TableCell>
-                        <TableCell>
-                          <div className={cn("flex items-center gap-2 font-medium", statusDetails[session.status].className)}>
+                        <TableCell className="text-center">
+                          <div className={cn("flex items-center justify-center gap-2 font-medium", statusDetails[session.status].className)}>
                             <StatusIcon className="h-4 w-4"/>
                             <span>{statusDetails[session.status].text}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           {session.status === 'Confirmada' ? (
                             <Button variant="default" size="sm">
                               <Video className="mr-2 h-4 w-4" />
