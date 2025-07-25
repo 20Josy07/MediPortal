@@ -153,7 +153,7 @@ export default function SmartNotesPage() {
   useEffect(() => {
     if (generatedBlocks) {
       setTimeout(() => {
-        if (generatedBlocks.plan === "No se indica plan en el audio. Completa manualmente" && planRef.current) {
+        if (generatedBlocks.plan === "Completa manualmente" && planRef.current) {
           planRef.current.focus();
         } else if (selectedTemplate === 'SOAP' && subjectiveRef.current) {
           subjectiveRef.current.focus();
@@ -979,7 +979,7 @@ export default function SmartNotesPage() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>¿Estás absolutely seguro?</AlertDialogTitle>
+                          <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
                           <AlertDialogDescription>
                             Esta acción no se puede deshacer. Esto eliminará permanentemente tu nota.
                           </AlertDialogDescription>
