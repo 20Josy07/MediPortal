@@ -883,7 +883,7 @@ export default function SmartNotesPage() {
       </div>
       
       <Dialog open={isDetailViewOpen} onOpenChange={(isOpen) => { if (!isOpen) { setGeneratedBlocks(null); setIsEditing(false); } setIsDetailViewOpen(isOpen); }}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-4xl">
           {selectedNote && (
             <>
               <DialogHeader>
@@ -924,41 +924,41 @@ export default function SmartNotesPage() {
                     </div>
                  </div>
               </DialogHeader>
-              <ScrollArea className="max-h-[50vh] rounded-md border my-4 p-4">
+              <ScrollArea className="max-h-[60vh] rounded-md border my-4 p-4">
                 {generatedBlocks ? (
                   <div className="space-y-4">
                     {selectedTemplate === 'SOAP' ? (
                       <>
                         <div>
                           <label className="font-semibold">S (Subjetivo)</label>
-                          <Textarea ref={subjectiveRef} value={generatedBlocks.subjective} onChange={(e) => handleBlockChange('subjective', e.target.value)} className="mt-1" />
+                          <Textarea ref={subjectiveRef} value={generatedBlocks.subjective} onChange={(e) => handleBlockChange('subjective', e.target.value)} className="mt-1 min-h-[10vh]" />
                         </div>
                         <div>
                           <label className="font-semibold">O (Objetivo)</label>
-                          <Textarea value={generatedBlocks.objective} onChange={(e) => handleBlockChange('objective', e.target.value)} className="mt-1" />
+                          <Textarea value={generatedBlocks.objective} onChange={(e) => handleBlockChange('objective', e.target.value)} className="mt-1 min-h-[10vh]" />
                         </div>
                         <div>
                           <label className="font-semibold">A (Análisis/Evaluación)</label>
-                          <Textarea value={generatedBlocks.assessment} onChange={(e) => handleBlockChange('assessment', e.target.value)} className="mt-1" />
+                          <Textarea value={generatedBlocks.assessment} onChange={(e) => handleBlockChange('assessment', e.target.value)} className="mt-1 min-h-[15vh]" />
                         </div>
                         <div>
                           <label className="font-semibold">P (Plan)</label>
-                          <Textarea ref={planRef} value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
+                          <Textarea ref={planRef} value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1 min-h-[15vh]" />
                         </div>
                       </>
                     ) : (
                       <>
                          <div>
                           <label className="font-semibold">D (Datos)</label>
-                          <Textarea ref={dataRef} value={generatedBlocks.data} onChange={(e) => handleBlockChange('data', e.target.value)} className="mt-1" />
+                          <Textarea ref={dataRef} value={generatedBlocks.data} onChange={(e) => handleBlockChange('data', e.target.value)} className="mt-1 min-h-[15vh]" />
                         </div>
                         <div>
                           <label className="font-semibold">A (Análisis/Evaluación)</label>
-                          <Textarea value={generatedBlocks.assessment} onChange={(e) => handleBlockChange('assessment', e.target.value)} className="mt-1" />
+                          <Textarea value={generatedBlocks.assessment} onChange={(e) => handleBlockChange('assessment', e.target.value)} className="mt-1 min-h-[15vh]" />
                         </div>
                         <div>
                           <label className="font-semibold">P (Plan)</label>
-                          <Textarea ref={planRef} value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1" />
+                          <Textarea ref={planRef} value={generatedBlocks.plan} onChange={(e) => handleBlockChange('plan', e.target.value)} className="mt-1 min-h-[15vh]" />
                         </div>
                       </>
                     )}
@@ -967,7 +967,7 @@ export default function SmartNotesPage() {
                  <Textarea 
                     value={editableNoteContent}
                     onChange={(e) => setEditableNoteContent(e.target.value)}
-                    className="text-sm whitespace-pre-wrap min-h-[30vh] border-0 shadow-none focus-visible:ring-0 p-0"
+                    className="text-sm whitespace-pre-wrap min-h-[40vh] border-0 shadow-none focus-visible:ring-0 p-0"
                     disabled={!isEditingTranscription && !isEditing}
                   />
                 )}
