@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -21,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres." }),
@@ -28,6 +30,11 @@ const formSchema = z.object({
   phone: z.string().min(10, { message: "El teléfono debe tener al menos 10 caracteres." }),
   status: z.enum(["Activo", "Inactivo"]),
   dob: z.string().optional(),
+  consultationType: z.string().optional(),
+  mainDiagnosis: z.string().optional(),
+  currentObjective: z.string().optional(),
+  frequency: z.string().optional(),
+  context: z.string().optional(),
 });
 
 type PatientFormValues = z.infer<typeof formSchema>;
@@ -47,6 +54,11 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
       phone: patient?.phone || "",
       status: patient?.status || "Activo",
       dob: patient?.dob || "",
+      consultationType: patient?.consultationType || "",
+      mainDiagnosis: patient?.mainDiagnosis || "",
+      currentObjective: patient?.currentObjective || "",
+      frequency: patient?.frequency || "",
+      context: patient?.context || "",
     },
   });
 
@@ -126,6 +138,72 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
             </FormItem>
           )}
         />
+         <FormField
+          control={form.control}
+          name="consultationType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tipo de Consulta</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej: Terapia Cognitivo-Conductual" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="mainDiagnosis"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Diagnóstico Principal</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej: Trastorno de Ansiedad Generalizada" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="currentObjective"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Objetivo Actual</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej: Reducir ataques de pánico" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="frequency"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Frecuencia</FormLabel>
+              <FormControl>
+                <Input placeholder="Ej: Semanal" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+         <FormField
+          control={form.control}
+          name="context"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Contexto</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Información relevante sobre el contexto del paciente..." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
             <Button type="submit">Guardar</Button>

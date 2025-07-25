@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export interface Patient {
@@ -9,6 +10,11 @@ export interface Patient {
   status: "Activo" | "Inactivo";
   dob?: string;
   createdAt?: Date;
+  consultationType?: string;
+  mainDiagnosis?: string;
+  currentObjective?: string;
+  frequency?: string;
+  context?: string;
 }
 
 export interface Session {

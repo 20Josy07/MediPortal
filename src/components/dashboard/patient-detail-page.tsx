@@ -196,6 +196,16 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
     );
 }
 
+const InfoRow = ({ label, value }: { label: string, value: string | undefined | null }) => {
+    if (!value) return null;
+    return (
+        <div>
+            <span className="font-semibold text-muted-foreground">{label}: </span>
+            <span className="text-foreground">{value}</span>
+        </div>
+    );
+};
+
 export function PatientDetailPage({ patientId }: { patientId: string }) {
   const { user, db, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -370,11 +380,16 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             </div>
 
             <Card className="p-6 shadow-sm">
-                <h2 className="text-3xl font-bold">
-                    {patient.name}
-                    {patientAge !== null && `, ${patientAge} años`}
-                </h2>
-                <p className="text-muted-foreground mt-1">Fecha última sesión: {getLastSessionDate()}</p>
+                <h2 className="text-3xl font-bold mb-4">{patient.name}</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
+                    <InfoRow label="Edad" value={patientAge !== null ? `${patientAge} años` : undefined} />
+                    <InfoRow label="Tipo de consulta" value={patient.consultationType} />
+                    <InfoRow label="Diagnóstico principal" value={patient.mainDiagnosis} />
+                    <InfoRow label="Objetivo actual" value={patient.currentObjective} />
+                    <InfoRow label="Frecuencia" value={patient.frequency} />
+                    <InfoRow label="Última sesión" value={getLastSessionDate()} />
+                    <InfoRow label="Contexto" value={patient.context} />
+                </div>
             </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
