@@ -305,10 +305,9 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     }
   };
 
-  const getPatientAge = (dob: string | undefined): string | null => {
+  const getPatientAge = (dob: string | undefined): number | null => {
     if (!dob || isNaN(Date.parse(dob))) return null;
-    const age = differenceInYears(new Date(), new Date(dob));
-    return `, ${age} años`;
+    return differenceInYears(new Date(), new Date(dob));
   }
 
   const getLastSessionDate = () => {
@@ -369,8 +368,18 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             </div>
 
             <Card className="p-6 shadow-sm">
-                <h2 className="text-3xl font-bold mb-4">{patient.name}{getPatientAge(patient.dob)}</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                <h2 className="text-3xl font-bold mb-4">{patient.name}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4 text-sm">
+                    {patient.dob && (
+                       <div>
+                           <span className="font-semibold text-muted-foreground">Edad: </span>
+                           <span className="text-foreground">{getPatientAge(patient.dob)} años</span>
+                       </div>
+                    )}
+                     <div>
+                       <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
+                       <span className="text-foreground">{patient.consultationType || "No especificado"}</span>
+                   </div>
                    <div>
                        <span className="font-semibold text-muted-foreground">Diagnóstico principal: </span>
                        <span className="text-foreground">{patient.mainDiagnosis || "No especificado"}</span>
@@ -386,7 +395,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                            <span className="text-foreground">{patient.frequency || "No especificada"}</span>
                         </div>
                    </div>
-                    <div className="flex items-start gap-2">
+                    <div className="flex items-start gap-2 col-span-1 md:col-span-2 lg:col-span-3">
                         <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
                          <div>
                            <span className="font-semibold text-muted-foreground">Contexto: </span>
@@ -487,4 +496,3 @@ const NoteEntryForm = ({ note, onSubmit, onCancel }: { note: Note | null, onSubm
         </form>
     );
 };
-
