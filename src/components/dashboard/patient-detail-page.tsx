@@ -9,14 +9,16 @@ import type { Note, Patient } from "@/lib/types";
 import { format, formatDistanceToNow, differenceInYears, addDays, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
+import jsPDF from "jspdf";
+import { generateProgressReport, type GenerateProgressReportOutput } from "@/ai/flows/generate-progress-report-flow";
 
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin, Edit, Save } from "lucide-react";
+import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin, Edit, Save, FileDown } from "lucide-react";
 import { addNote, updateNote as updateNoteInDb } from "@/lib/firebase";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
@@ -28,6 +30,7 @@ import { Calendar } from "../ui/calendar";
 import { Switch } from "../ui/switch";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 
 const noteTypes = [
@@ -197,7 +200,7 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
 }
 
 export function PatientDetailPage({ patientId }: { patientId: string }) {
-  const { user, db, loading: authLoading } = useAuth();
+  const { user, db, userProfile, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -209,6 +212,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
 
   const [isEditingPatientDetails, setIsEditingPatientDetails] = useState(false);
   const [editablePatient, setEditablePatient] = useState<Partial<Patient>>({});
+  
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [generatedReport, setGeneratedReport] = useState<GenerateProgressReportOutput | null>(null);
 
 
   useEffect(() => {
@@ -348,6 +355,153 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     }
   };
 
+  const handleGenerateReport = async () => {
+    if (!patient || notes.length === 0) {
+        toast({ variant: "destructive", title: "No hay suficientes datos", description: "Se necesitan notas para generar un informe." });
+        return;
+    }
+    setIsGeneratingReport(true);
+    setIsReportModalOpen(true);
+    setGeneratedReport(null);
+    try {
+        const notesContent = notes.map(n => `[${format(n.createdAt, 'PPp', {locale: es})}] ${n.title}:\n${n.content}`).join('\n\n---\n\n');
+        const result = await generateProgressReport({
+            patientName: patient.name,
+            notesContent: notesContent,
+            initialObjective: patient.currentObjective || 'No especificado',
+        });
+        setGeneratedReport(result);
+    } catch (error) {
+        console.error("Error generating report:", error);
+        toast({ variant: "destructive", title: "Error al generar el informe." });
+        setIsReportModalOpen(false);
+    } finally {
+        setIsGeneratingReport(false);
+    }
+  };
+  
+  const handleReportChange = (field: keyof GenerateProgressReportOutput, value: string) => {
+    if (generatedReport) {
+      setGeneratedReport({
+        ...generatedReport,
+        [field]: value,
+      });
+    }
+  };
+
+  const getBase64FromUrl = async (url: string): Promise<string> => {
+    const data = await fetch(url);
+    const blob = await data.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        resolve(base64data as string);
+      };
+    });
+  };
+
+  const handleDownloadReport = async () => {
+    if (!patient || !generatedReport) return;
+    
+    const doc = new jsPDF();
+    const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    let yPos = 0;
+    
+    // Header
+    const headerFooterColor = '#141f16';
+    doc.setFillColor(headerFooterColor);
+    doc.rect(0, 0, pageWidth, 20, 'F');
+    try {
+        const logoUrl = 'https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png';
+        const logoBase64 = await getBase64FromUrl(logoUrl);
+        doc.addImage(logoBase64, 'PNG', margin, 4, 12, 12);
+    } catch (error) {
+        console.error("Error loading logo for PDF:", error);
+    }
+    doc.setFontSize(16);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Informe de Progreso Terapéutico', margin + 15, 12);
+
+    // Footer
+    doc.setFillColor(headerFooterColor);
+    doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 6);
+    
+    // Title and patient info
+    yPos = 35;
+    doc.setTextColor(0,0,0);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text(patient.name, margin, yPos);
+    yPos += 10;
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    const psychologistName = userProfile?.fullName || user?.displayName || 'N/A';
+    doc.text(`Psicólogo/a: ${psychologistName}`, margin, yPos);
+    yPos += 5;
+    doc.text(`Fecha del informe: ${format(new Date(), "PPP", { locale: es })}`, margin, yPos);
+    yPos += 5;
+    
+    doc.setLineWidth(0.2);
+    doc.line(margin, yPos, pageWidth - margin, yPos);
+    yPos += 10;
+    
+    // Report Content
+    const addSection = (title: string, content?: string) => {
+        if (!content) return;
+        
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text(title, margin, yPos);
+        yPos += 7;
+        
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const splitContent = doc.splitTextToSize(content, pageWidth - margin * 2);
+        const contentHeight = doc.getTextDimensions(splitContent).h;
+
+        if (yPos + contentHeight > pageHeight - 25) {
+            doc.addPage();
+            yPos = 20;
+        }
+
+        doc.text(splitContent, margin, yPos);
+        yPos += contentHeight + 10;
+    };
+    
+    addSection("Objetivo Inicial", patient.currentObjective);
+    addSection("Resumen de Evolución", generatedReport.summary);
+    addSection("Logros Alcanzados", generatedReport.achievements);
+    addSection("Cambios Detectados", generatedReport.detectedChanges);
+    if(generatedReport.keyPhrases) {
+        addSection("Frases Clave", generatedReport.keyPhrases);
+    }
+
+    doc.save(`Informe_Progreso_${patient.name.replace(/\s/g, '_')}.pdf`);
+  };
+
+  const handleDownloadCurrentNote = () => {
+    if (!selectedNote || !patient) {
+      toast({variant: "destructive", title: "Ninguna nota seleccionada"});
+      return;
+    }
+    const doc = new jsPDF();
+    doc.text(`Nota para ${patient.name}`, 10, 10);
+    doc.text(`Fecha: ${format(selectedNote.createdAt, "PPP", {locale: es})}`, 10, 20);
+    doc.text(selectedNote.title, 10, 30);
+    doc.text(selectedNote.content, 10, 40);
+    doc.save(`${selectedNote.title.replace(/\s/g, '_')}.pdf`);
+  }
+
+
   if (isLoading) {
     return (
         <div className="flex h-screen w-full items-center justify-center">
@@ -384,7 +538,19 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                     </p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline"><Download className="mr-2 h-4 w-4" /> Exportar</Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline"><FileDown className="mr-2 h-4 w-4" /> Exportar</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={handleDownloadCurrentNote} disabled={!selectedNote}>
+                          Descargar Nota Actual (PDF)
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleGenerateReport}>
+                          Generar Informe de Progreso
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button onClick={() => handleOpenForm()}>
                        <PlusCircle className="mr-2 h-4 w-4" /> Nueva entrada
                     </Button>
@@ -515,6 +681,55 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                     onSubmit={handleNoteSubmit} 
                     onCancel={() => setIsFormOpen(false)}
                 />
+            </DialogContent>
+        </Dialog>
+        
+        <Dialog open={isReportModalOpen} onOpenChange={setIsReportModalOpen}>
+            <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>Informe de Progreso Terapéutico</DialogTitle>
+                    <DialogDescription>
+                        Informe generado por IA para {patient?.name}. Puedes editar el contenido antes de exportar.
+                    </DialogDescription>
+                </DialogHeader>
+                {isGeneratingReport ? (
+                    <div className="flex items-center justify-center h-64">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="ml-4 text-muted-foreground">Generando informe...</p>
+                    </div>
+                ) : generatedReport ? (
+                    <ScrollArea className="max-h-[60vh] pr-4">
+                        <div className="space-y-4">
+                            <div>
+                                <Label className="font-semibold">Resumen de Evolución</Label>
+                                <Textarea value={generatedReport.summary} onChange={e => handleReportChange('summary', e.target.value)} rows={4} className="mt-1"/>
+                            </div>
+                            <div>
+                                <Label className="font-semibold">Logros Alcanzados</Label>
+                                <Textarea value={generatedReport.achievements} onChange={e => handleReportChange('achievements', e.target.value)} rows={4} className="mt-1"/>
+                            </div>
+                            <div>
+                                <Label className="font-semibold">Cambios Detectados</Label>
+                                <Textarea value={generatedReport.detectedChanges} onChange={e => handleReportChange('detectedChanges', e.target.value)} rows={4} className="mt-1"/>
+                            </div>
+                            <div>
+                                <Label className="font-semibold">Frases Clave (Opcional)</Label>
+                                <Textarea value={generatedReport.keyPhrases || ""} onChange={e => handleReportChange('keyPhrases', e.target.value)} rows={3} className="mt-1"/>
+                            </div>
+                        </div>
+                    </ScrollArea>
+                ) : (
+                     <div className="flex items-center justify-center h-64">
+                        <p className="text-muted-foreground">No se pudo generar el informe.</p>
+                    </div>
+                )}
+                 <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsReportModalOpen(false)}>Cancelar</Button>
+                    <Button onClick={handleDownloadReport} disabled={!generatedReport}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Descargar PDF
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     </>
