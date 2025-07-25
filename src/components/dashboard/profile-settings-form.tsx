@@ -20,6 +20,7 @@ import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "../ui/scroll-area";
 
 
 const profileSchema = z.object({
@@ -129,161 +130,163 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
             </div>
         ) : (
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <CardHeader className="p-0">
-              <div className="flex items-center gap-4">
-                  <User className="h-6 w-6 text-muted-foreground" />
-                  <div>
-                  <CardTitle className="text-lg">Configuración del Perfil</CardTitle>
-                  <CardDescription>Maneja tu información personal</CardDescription>
-                  </div>
-              </div>
-          </CardHeader>
-          <CardContent className="p-0 space-y-4">
-            <div className="flex items-center gap-6">
-                <Avatar className="h-24 w-24">
-                    <AvatarImage src={photoUrlValue || undefined} alt="User avatar" />
-                    <AvatarFallback className="text-3xl">
-                    {getInitials(form.getValues("fullName") || "U")}
-                    </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col gap-2">
-                     <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Cambiar Foto
-                     </Button>
-                     <p className="text-xs text-muted-foreground">JPG, PNG, GIF. Máximo 2MB.</p>
-                     <input 
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        className="hidden"
-                        accept="image/png, image/jpeg, image/gif"
-                      />
+        <ScrollArea className="max-h-[70vh] pr-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <CardHeader className="p-0">
+                <div className="flex items-center gap-4">
+                    <User className="h-6 w-6 text-muted-foreground" />
+                    <div>
+                    <CardTitle className="text-lg">Configuración del Perfil</CardTitle>
+                    <CardDescription>Maneja tu información personal</CardDescription>
+                    </div>
                 </div>
-            </div>
+            </CardHeader>
+            <CardContent className="p-0 space-y-4">
+                <div className="flex items-center gap-6">
+                    <Avatar className="h-24 w-24">
+                        <AvatarImage src={photoUrlValue || undefined} alt="User avatar" />
+                        <AvatarFallback className="text-3xl">
+                        {getInitials(form.getValues("fullName") || "U")}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col gap-2">
+                        <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                            <Upload className="mr-2 h-4 w-4" />
+                            Cambiar Foto
+                        </Button>
+                        <p className="text-xs text-muted-foreground">JPG, PNG, GIF. Máximo 2MB.</p>
+                        <input 
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/png, image/jpeg, image/gif"
+                        />
+                    </div>
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <FormField
-                  control={form.control}
-                  name="fullName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre Completo</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <FormField
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
                     control={form.control}
-                    name="email"
+                    name="fullName"
                     render={({ field }) => (
                         <FormItem>
-                        <FormLabel>Correo Electrónico</FormLabel>
+                        <FormLabel>Nombre Completo</FormLabel>
                         <FormControl>
-                            <Input {...field} disabled />
+                            <Input {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
                     )}
                     />
-            </div>
-           
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Teléfono</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <div className="flex justify-end pt-4">
-                <Button type="submit" disabled={isLoading}>
-                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Guardar Cambios de Perfil
-                </Button>
-            </div>
-          </CardContent>
-
-          <Separator />
-          
-          <div className="space-y-6">
-             <CardHeader className="p-0">
-              <div className="flex items-center gap-4">
-                  <Settings className="h-6 w-6 text-muted-foreground" />
-                  <div>
-                    <CardTitle className="text-lg">Configuración de cuenta</CardTitle>
-                    <CardDescription>Maneja la seguridad y preferencias de tu cuenta.</CardDescription>
-                  </div>
-              </div>
-            </CardHeader>
-
-            <CardContent className="p-0 space-y-4">
-              <Collapsible open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
-                <CollapsibleTrigger asChild>
-                  <button className="flex justify-between items-center w-full text-left p-3 border rounded-md hover:bg-muted/50 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <KeyRound className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <p className="font-semibold">Cambiar contraseña</p>
-                      </div>
-                    </div>
-                    <ChevronDown className={cn("h-5 w-5 transition-transform", isPasswordOpen && "rotate-180")} />
-                  </button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="p-4 border border-t-0 rounded-b-md space-y-4">
-                    <FormItem>
-                      <FormLabel>Contraseña Actual</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="••••••••" />
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormLabel>Nueva Contraseña</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="••••••••" />
-                      </FormControl>
-                    </FormItem>
-                </CollapsibleContent>
-              </Collapsible>
-
-              <div className="flex items-center justify-between p-3 border rounded-md">
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-semibold">Zona horaria</p>
-                  </div>
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Correo Electrónico</FormLabel>
+                            <FormControl>
+                                <Input {...field} disabled />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
                 </div>
-                <span className="text-sm text-muted-foreground">GMT-5 Colombia</span>
-              </div>
-              
-              <div className="flex items-center justify-between p-3 border rounded-md">
-                <div className="flex items-center gap-3">
-                  <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-semibold">Doble autenticación</p>
-                  </div>
+            
+                <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Teléfono</FormLabel>
+                    <FormControl>
+                        <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <div className="flex justify-end pt-4">
+                    <Button type="submit" disabled={isLoading}>
+                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Guardar Cambios de Perfil
+                    </Button>
                 </div>
-                <Switch id="2fa-switch" />
-              </div>
             </CardContent>
-          </div>
-          
-           <div className="flex justify-end pt-4">
-              <Button type="button" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Guardar Configuración
-              </Button>
+
+            <Separator />
+            
+            <div className="space-y-6">
+                <CardHeader className="p-0">
+                <div className="flex items-center gap-4">
+                    <Settings className="h-6 w-6 text-muted-foreground" />
+                    <div>
+                        <CardTitle className="text-lg">Configuración de cuenta</CardTitle>
+                        <CardDescription>Maneja la seguridad y preferencias de tu cuenta.</CardDescription>
+                    </div>
+                </div>
+                </CardHeader>
+
+                <CardContent className="p-0 space-y-4">
+                <Collapsible open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
+                    <CollapsibleTrigger asChild>
+                    <button type="button" className="flex justify-between items-center w-full text-left p-3 border rounded-md hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                        <KeyRound className="h-5 w-5 text-muted-foreground" />
+                        <div>
+                            <p className="font-semibold">Cambiar contraseña</p>
+                        </div>
+                        </div>
+                        <ChevronDown className={cn("h-5 w-5 transition-transform", isPasswordOpen && "rotate-180")} />
+                    </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="p-4 border border-t-0 rounded-b-md space-y-4">
+                        <FormItem>
+                        <FormLabel>Contraseña Actual</FormLabel>
+                        <FormControl>
+                            <Input type="password" placeholder="••••••••" />
+                        </FormControl>
+                        </FormItem>
+                        <FormItem>
+                        <FormLabel>Nueva Contraseña</FormLabel>
+                        <FormControl>
+                            <Input type="password" placeholder="••••••••" />
+                        </FormControl>
+                        </FormItem>
+                    </CollapsibleContent>
+                </Collapsible>
+
+                <div className="flex items-center justify-between p-3 border rounded-md">
+                    <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">Zona horaria</p>
+                    </div>
+                    </div>
+                    <span className="text-sm text-muted-foreground">GMT-5 Colombia</span>
+                </div>
+                
+                <div className="flex items-center justify-between p-3 border rounded-md">
+                    <div className="flex items-center gap-3">
+                    <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold">Doble autenticación</p>
+                    </div>
+                    </div>
+                    <Switch id="2fa-switch" />
+                </div>
+                </CardContent>
             </div>
-        </form>
+            
+            <div className="flex justify-end pt-4">
+                <Button type="button" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Guardar Configuración
+                </Button>
+                </div>
+            </form>
+        </ScrollArea>
       </Form>
       )}
     </Card>
