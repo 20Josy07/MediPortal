@@ -17,39 +17,6 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 
-const SecuritySettings = () => (
-    <div className="space-y-8">
-      <div>
-        <h4 className="text-base font-semibold mb-2">Cambiar contraseña</h4>
-        <div className="space-y-4 max-w-md">
-           <Button variant="outline"><KeyRound className="mr-2 h-4 w-4" /> Actualizar Contraseña</Button>
-        </div>
-      </div>
-      <Separator />
-      <div>
-        <h4 className="text-base font-semibold mb-4">Sesiones Activas</h4>
-        <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Actualmente tienes 2 sesiones activas.</p>
-            <Button variant="outline"><Eye className="mr-2 h-4 w-4" /> Ver Sesiones Activas</Button>
-        </div>
-      </div>
-       <Separator />
-      <div>
-        <h4 className="text-base font-semibold mb-4">Autenticación de Dos Factores (2FA)</h4>
-        <div className="flex items-center justify-between max-w-md">
-           <div className="flex items-start gap-3">
-            <Smartphone className="h-5 w-5 text-muted-foreground mt-1" />
-            <div>
-              <Label htmlFor="2fa-switch" className="font-semibold">Habilitar 2FA</Label>
-              <p className="text-sm text-muted-foreground">Añade una capa extra de seguridad a tu cuenta.</p>
-            </div>
-          </div>
-          <Switch id="2fa-switch" />
-        </div>
-      </div>
-    </div>
-);
-
 const NotificationSettings = () => (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -171,12 +138,6 @@ const BillingSettings = () => (
 
 
 const settingsItems = [
-  {
-    icon: Shield,
-    title: "Seguridad",
-    description: "Gestiona la configuración de seguridad de tu cuenta",
-    content: <SecuritySettings />,
-  },
   {
     icon: Bell,
     title: "Notificaciones",
