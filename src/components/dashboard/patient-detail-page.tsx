@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { collection, query, orderBy, onSnapshot, doc } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Note, Patient } from "@/lib/types";
-import { format, formatDistanceToNow, differenceInYears, addDays } from "date-fns";
+import { format, formatDistanceToNow, differenceInYears, addDays, isWithinInterval, startOfDay, endOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 
@@ -14,7 +14,7 @@ import type { DateRange } from "react-day-picker";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Edit, Download, MessageSquare, Plus, Smile, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle } from "lucide-react";
+import { Loader2, ArrowLeft, Download, MessageSquare, Plus, Smile, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter } from "lucide-react";
 import { addNote, updateNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -26,13 +26,48 @@ import { Label } from "../ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { Switch } from "../ui/switch";
+import { cn } from "@/lib/utils";
 
 
-const FilterSidebar = () => {
-    const [dateRange, setDateRange] = useState<DateRange | undefined>({
-        from: new Date(),
-        to: addDays(new Date(), 7),
-    });
+const noteTypes = [
+    { id: 'Voz', label: 'Voz' },
+    { id: 'Texto', label: 'Texto' },
+    // { id: 'summary', label: 'Resumen' }, // Add when ready
+];
+
+const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void, onReset: () => void }) => {
+    const [dateRange, setDateRange] = useState<DateRange | undefined>();
+    const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
+    const [keyword, setKeyword] = useState("");
+    const [showStarred, setShowStarred] = useState(false);
+
+    const handleTypeChange = (typeId: string, checked: boolean) => {
+        const newSelectedTypes = new Set(selectedTypes);
+        if (checked) {
+            newSelectedTypes.add(typeId);
+        } else {
+            newSelectedTypes.delete(typeId);
+        }
+        setSelectedTypes(newSelectedTypes);
+    };
+
+    const handleApplyFilters = () => {
+        onFilter({
+            dateRange,
+            types: Array.from(selectedTypes),
+            keyword: keyword.trim().toLowerCase(),
+            showStarred,
+        });
+    };
+
+    const handleReset = () => {
+        setDateRange(undefined);
+        setSelectedTypes(new Set());
+        setKeyword("");
+        setShowStarred(false);
+        onReset();
+    }
+
 
     return (
         <Card className="p-4 shadow-sm flex flex-col gap-6">
@@ -44,31 +79,27 @@ const FilterSidebar = () => {
                 <Separator />
             </div>
 
-            {/* Note Type Filter */}
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
                     <Folder className="w-4 h-4 text-muted-foreground" />
                     <Label className="font-semibold">Tipo de nota</Label>
                 </div>
                 <div className="space-y-2 pl-6">
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="type-audio" />
-                        <Label htmlFor="type-audio" className="font-normal">Audio</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="type-transcription" />
-                        <Label htmlFor="type-transcription" className="font-normal">Transcripción</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="type-manual" />
-                        <Label htmlFor="type-manual" className="font-normal">Manual</Label>
-                    </div>
+                    {noteTypes.map(type => (
+                        <div key={type.id} className="flex items-center space-x-2">
+                            <Checkbox 
+                                id={`type-${type.id}`} 
+                                checked={selectedTypes.has(type.id)}
+                                onCheckedChange={(checked) => handleTypeChange(type.id, !!checked)}
+                            />
+                            <Label htmlFor={`type-${type.id}`} className="font-normal">{type.label}</Label>
+                        </div>
+                    ))}
                 </div>
             </div>
 
             <Separator />
             
-            {/* Date Range Filter */}
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
                     <CalendarDays className="w-4 h-4 text-muted-foreground" />
@@ -78,17 +109,17 @@ const FilterSidebar = () => {
                     <PopoverTrigger asChild>
                         <Button
                             variant={"outline"}
-                            className="w-full justify-start text-left font-normal"
+                            className={cn("w-full justify-start text-left font-normal", !dateRange && "text-muted-foreground")}
                         >
                             <CalendarDays className="mr-2 h-4 w-4" />
                             {dateRange?.from ? (
                                 dateRange.to ? (
                                     <>
-                                        {format(dateRange.from, "LLL dd, y")} -{" "}
-                                        {format(dateRange.to, "LLL dd, y")}
+                                        {format(dateRange.from, "dd LLL, y", { locale: es })} -{" "}
+                                        {format(dateRange.to, "dd LLL, y", { locale: es })}
                                     </>
                                 ) : (
-                                    format(dateRange.from, "LLL dd, y")
+                                    format(dateRange.from, "dd LLL, y", { locale: es })
                                 )
                             ) : (
                                 <span>Selecciona un rango</span>
@@ -111,7 +142,6 @@ const FilterSidebar = () => {
 
             <Separator />
 
-            {/* Tags Filter */}
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
                     <Tags className="w-4 h-4 text-muted-foreground" />
@@ -120,38 +150,45 @@ const FilterSidebar = () => {
                 <div className="flex flex-wrap gap-2">
                     <Badge variant="secondary">Ansiedad</Badge>
                     <Badge variant="secondary">Progreso</Badge>
-                    <Button variant="outline" size="sm" className="h-6 px-2 text-xs"><Plus className="h-3 w-3 mr-1" />Agregar</Button>
+                    <Button variant="outline" size="sm" className="h-6 px-2 text-xs" disabled><Plus className="h-3 w-3 mr-1" />Agregar</Button>
                 </div>
             </div>
 
              <Separator />
 
-             {/* Keyword Filter */}
             <div className="space-y-2">
                  <div className="flex items-center gap-2">
                     <Search className="w-4 h-4 text-muted-foreground" />
-                    <Label className="font-semibold">Contiene palabra</Label>
+                    <Label htmlFor="keyword-search" className="font-semibold">Contiene palabra</Label>
                 </div>
                  <div className="flex items-center space-x-2">
-                    <Input placeholder="colegio..." />
-                    <Button variant="outline" size="icon" className="h-9 w-9"><Search className="h-4 w-4" /></Button>
+                    <Input 
+                        id="keyword-search"
+                        placeholder="colegio..." 
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    />
                  </div>
             </div>
 
             <Separator />
 
-            {/* Show Starred */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 text-muted-foreground" />
                     <Label htmlFor="show-starred" className="font-semibold">Mostrar destacadas</Label>
                 </div>
-                 <Switch id="show-starred" />
+                 <Switch id="show-starred" disabled />
             </div>
 
              <Separator />
-
-            <Button variant="ghost">
+            
+             <Button onClick={handleApplyFilters} className="bg-green-600 hover:bg-green-700">
+                <Filter className="w-4 h-4 mr-2" />
+                Filtrar
+            </Button>
+            
+            <Button variant="ghost" onClick={handleReset}>
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Reset filtros
             </Button>
@@ -165,6 +202,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   
   const [patient, setPatient] = useState<Patient | null>(null);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -196,6 +234,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
          } as Note;
       });
       setNotes(noteList);
+      setFilteredNotes(noteList); // Initialize filtered notes
     });
 
     return () => {
@@ -203,6 +242,38 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         unsubscribeNotes();
     }
   }, [patientId, user, db, toast]);
+  
+  const handleFilter = (filters: { dateRange?: DateRange, types: string[], keyword: string, showStarred: boolean }) => {
+    let tempNotes = [...notes];
+
+    if (filters.types.length > 0) {
+        tempNotes = tempNotes.filter(note => filters.types.includes(note.type));
+    }
+    
+    if (filters.dateRange?.from) {
+        const interval = {
+            start: startOfDay(filters.dateRange.from),
+            end: filters.dateRange.to ? endOfDay(filters.dateRange.to) : endOfDay(filters.dateRange.from)
+        };
+        tempNotes = tempNotes.filter(note => isWithinInterval(note.createdAt, interval));
+    }
+
+    if (filters.keyword) {
+        tempNotes = tempNotes.filter(note => 
+            note.title.toLowerCase().includes(filters.keyword) || 
+            note.content.toLowerCase().includes(filters.keyword)
+        );
+    }
+    
+    // Starred filter logic would go here when implemented
+
+    setFilteredNotes(tempNotes);
+    toast({ title: `Se encontraron ${tempNotes.length} notas.` });
+  };
+  
+  const handleResetFilters = () => {
+    setFilteredNotes(notes);
+  }
 
   const handleOpenForm = (note: Note | null = null) => {
     setSelectedNote(note);
@@ -245,18 +316,15 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     return format(lastNoteDate, "d 'de' MMMM 'de' yyyy", { locale: es });
   }
 
-  const getNoteIcon = (title: string) => {
-    const lowerCaseTitle = title.toLowerCase();
-    if (lowerCaseTitle.includes('motivo') || lowerCaseTitle.includes('consulta')) {
-        return <MessageSquare className="w-6 h-6 text-purple-500" />;
+  const getNoteIcon = (type: Note['type']) => {
+    switch (type) {
+        case 'Voz':
+            return <MessageSquare className="w-6 h-6 text-purple-500" />;
+        case 'Texto':
+            return <NotebookPen className="w-6 h-6 text-blue-500" />;
+        default:
+            return <FileText className="w-6 h-6 text-gray-500" />;
     }
-    if (lowerCaseTitle.includes('plan') || lowerCaseTitle.includes('seguimiento')) {
-        return <NotebookPen className="w-6 h-6 text-blue-500" />;
-    }
-    if (lowerCaseTitle.includes('síntoma')) {
-        return <Smile className="w-6 h-6 text-yellow-500" />;
-    }
-    return <FileText className="w-6 h-6 text-gray-500" />;
   };
 
 
@@ -307,16 +375,16 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
                 <aside className="md:col-span-1 flex flex-col gap-4 sticky top-20">
-                   <FilterSidebar />
+                   <FilterSidebar onFilter={handleFilter} onReset={handleResetFilters} />
                 </aside>
 
                 <main className="md:col-span-3 space-y-4">
-                     {notes.length > 0 ? (
-                        notes.map((note) => (
+                     {filteredNotes.length > 0 ? (
+                        filteredNotes.map((note) => (
                         <Card key={note.id} className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => handleOpenForm(note)}>
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-4 mb-2">
-                                    {getNoteIcon(note.title)}
+                                    {getNoteIcon(note.type)}
                                     <h3 className="text-lg font-semibold">{note.title}</h3>
                                 </div>
                                 <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
@@ -329,8 +397,8 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                     ) : (
                         <Card className="p-6 text-center min-h-[200px] flex flex-col justify-center items-center">
                             <NotebookPen className="w-12 h-12 text-muted-foreground mb-4" />
-                            <p className="text-muted-foreground font-semibold">No hay notas para este paciente.</p>
-                            <p className="text-sm text-muted-foreground">Crea la primera entrada para empezar el historial.</p>
+                            <p className="text-muted-foreground font-semibold">No se encontraron notas.</p>
+                            <p className="text-sm text-muted-foreground">Ajusta los filtros o crea una nueva entrada.</p>
                         </Card>
                     )}
                 </main>
