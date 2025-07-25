@@ -14,7 +14,7 @@ import type { DateRange } from "react-day-picker";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Download, MessageSquare, Plus, Smile, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter } from "lucide-react";
+import { Loader2, ArrowLeft, Download, MessageSquare, Plus, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle, Filter, MapPin } from "lucide-react";
 import { addNote, updateNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -196,16 +196,6 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
     );
 }
 
-const InfoRow = ({ label, value }: { label: string, value: string | undefined | null }) => {
-    if (!value) return null;
-    return (
-        <div>
-            <span className="font-semibold text-muted-foreground">{label}: </span>
-            <span className="text-foreground">{value}</span>
-        </div>
-    );
-};
-
 export function PatientDetailPage({ patientId }: { patientId: string }) {
   const { user, db, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -315,9 +305,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     }
   };
 
-  const getPatientAge = (dob: string | undefined): number | null => {
+  const getPatientAge = (dob: string | undefined): string | null => {
     if (!dob || isNaN(Date.parse(dob))) return null;
-    return differenceInYears(new Date(), new Date(dob));
+    const age = differenceInYears(new Date(), new Date(dob));
+    return `, ${age} años`;
   }
 
   const getLastSessionDate = () => {
@@ -336,8 +327,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             return <FileText className="w-6 h-6 text-gray-500" />;
     }
   };
-
-  const patientAge = getPatientAge(patient?.dob);
 
   if (isLoading) {
     return (
@@ -380,15 +369,30 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             </div>
 
             <Card className="p-6 shadow-sm">
-                <h2 className="text-3xl font-bold mb-4">{patient.name}</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
-                    <InfoRow label="Edad" value={patientAge !== null ? `${patientAge} años` : undefined} />
-                    <InfoRow label="Tipo de consulta" value={patient.consultationType} />
-                    <InfoRow label="Diagnóstico principal" value={patient.mainDiagnosis} />
-                    <InfoRow label="Objetivo actual" value={patient.currentObjective} />
-                    <InfoRow label="Frecuencia" value={patient.frequency} />
-                    <InfoRow label="Última sesión" value={getLastSessionDate()} />
-                    <InfoRow label="Contexto" value={patient.context} />
+                <h2 className="text-3xl font-bold mb-4">{patient.name}{getPatientAge(patient.dob)}</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                   <div>
+                       <span className="font-semibold text-muted-foreground">Diagnóstico principal: </span>
+                       <span className="text-foreground">{patient.mainDiagnosis || "No especificado"}</span>
+                   </div>
+                   <div>
+                       <span className="font-semibold text-muted-foreground">Objetivo actual: </span>
+                       <span className="text-foreground">{patient.currentObjective || "No especificado"}</span>
+                   </div>
+                   <div className="flex items-center gap-2">
+                        <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                        <div>
+                           <span className="font-semibold text-muted-foreground">Frecuencia: </span>
+                           <span className="text-foreground">{patient.frequency || "No especificada"}</span>
+                        </div>
+                   </div>
+                    <div className="flex items-start gap-2">
+                        <MapPin className="w-4 h-4 text-muted-foreground mt-0.5" />
+                         <div>
+                           <span className="font-semibold text-muted-foreground">Contexto: </span>
+                           <span className="text-foreground">{patient.context || "No especificado"}</span>
+                        </div>
+                   </div>
                 </div>
             </Card>
 
@@ -483,3 +487,4 @@ const NoteEntryForm = ({ note, onSubmit, onCancel }: { note: Note | null, onSubm
         </form>
     );
 };
+
