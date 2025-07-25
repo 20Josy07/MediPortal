@@ -6,25 +6,161 @@ import { collection, query, orderBy, onSnapshot, doc } from "firebase/firestore"
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Note, Patient } from "@/lib/types";
-import { format, formatDistanceToNow, differenceInYears } from "date-fns";
+import { format, formatDistanceToNow, differenceInYears, addDays } from "date-fns";
 import { es } from "date-fns/locale";
-import jsPDF from "jspdf";
+import type { DateRange } from "react-day-picker";
+
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ArrowLeft, Edit, Download, MessageSquare, ListFilter, FileType, Plus, Smile, NotebookPen, FileText, ChevronDown } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { addNote, updateNote, deleteNote } from "@/lib/firebase";
+import { Loader2, ArrowLeft, Edit, Download, MessageSquare, Plus, Smile, NotebookPen, FileText, BrainCircuit, Folder, CalendarDays, Tags, Search, Star, RotateCcw, PlusCircle } from "lucide-react";
+import { addNote, updateNote } from "@/lib/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
+import { Separator } from "../ui/separator";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
+import { Switch } from "../ui/switch";
+
+
+const FilterSidebar = () => {
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+        from: new Date(),
+        to: addDays(new Date(), 7),
+    });
+
+    return (
+        <Card className="p-4 shadow-sm flex flex-col gap-6">
+            <div>
+                <div className="flex items-center gap-2 mb-4">
+                    <BrainCircuit className="w-5 h-5 text-primary" />
+                    <h3 className="text-lg font-semibold">Filtrar notas</h3>
+                </div>
+                <Separator />
+            </div>
+
+            {/* Note Type Filter */}
+            <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                    <Folder className="w-4 h-4 text-muted-foreground" />
+                    <Label className="font-semibold">Tipo de nota</Label>
+                </div>
+                <div className="space-y-2 pl-6">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="type-audio" />
+                        <Label htmlFor="type-audio" className="font-normal">Audio</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="type-transcription" />
+                        <Label htmlFor="type-transcription" className="font-normal">Transcripción</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="type-manual" />
+                        <Label htmlFor="type-manual" className="font-normal">Manual</Label>
+                    </div>
+                </div>
+            </div>
+
+            <Separator />
+            
+            {/* Date Range Filter */}
+            <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                    <CalendarDays className="w-4 h-4 text-muted-foreground" />
+                    <Label className="font-semibold">Rango de fechas</Label>
+                </div>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className="w-full justify-start text-left font-normal"
+                        >
+                            <CalendarDays className="mr-2 h-4 w-4" />
+                            {dateRange?.from ? (
+                                dateRange.to ? (
+                                    <>
+                                        {format(dateRange.from, "LLL dd, y")} -{" "}
+                                        {format(dateRange.to, "LLL dd, y")}
+                                    </>
+                                ) : (
+                                    format(dateRange.from, "LLL dd, y")
+                                )
+                            ) : (
+                                <span>Selecciona un rango</span>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={dateRange?.from}
+                            selected={dateRange}
+                            onSelect={setDateRange}
+                            numberOfMonths={2}
+                            locale={es}
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
+
+            <Separator />
+
+            {/* Tags Filter */}
+            <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                    <Tags className="w-4 h-4 text-muted-foreground" />
+                    <Label className="font-semibold">Etiquetas</Label>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary">Ansiedad</Badge>
+                    <Badge variant="secondary">Progreso</Badge>
+                    <Button variant="outline" size="sm" className="h-6 px-2 text-xs"><Plus className="h-3 w-3 mr-1" />Agregar</Button>
+                </div>
+            </div>
+
+             <Separator />
+
+             {/* Keyword Filter */}
+            <div className="space-y-2">
+                 <div className="flex items-center gap-2">
+                    <Search className="w-4 h-4 text-muted-foreground" />
+                    <Label className="font-semibold">Contiene palabra</Label>
+                </div>
+                 <div className="flex items-center space-x-2">
+                    <Input placeholder="colegio..." />
+                    <Button variant="outline" size="icon" className="h-9 w-9"><Search className="h-4 w-4" /></Button>
+                 </div>
+            </div>
+
+            <Separator />
+
+            {/* Show Starred */}
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <Star className="w-4 h-4 text-muted-foreground" />
+                    <Label htmlFor="show-starred" className="font-semibold">Mostrar destacadas</Label>
+                </div>
+                 <Switch id="show-starred" />
+            </div>
+
+             <Separator />
+
+            <Button variant="ghost">
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset filtros
+            </Button>
+        </Card>
+    );
+}
 
 export function PatientDetailPage({ patientId }: { patientId: string }) {
-  const { user, db, userProfile, loading: authLoading } = useAuth();
+  const { user, db, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
   const [patient, setPatient] = useState<Patient | null>(null);
@@ -32,7 +168,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-  const [isNoteTypeOpen, setIsNoteTypeOpen] = useState(false);
 
   useEffect(() => {
     if (!patientId || !user || !db) return;
@@ -147,22 +282,21 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     );
   }
 
-  const noteTypes = [
-    { label: "Audio" },
-    { label: "Transcripción automática" },
-    { label: "Nota escrita manual" },
-    { label: "Resumen generado" },
-    { label: "Recordatorio o seguimiento" },
-  ];
-
   return (
     <>
         <div className="flex-1 space-y-6 p-6">
-            <div className="flex justify-between items-center">
-                <h1 className="text-4xl font-bold tracking-tight">Historial Médico</h1>
+            <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-4xl font-bold tracking-tight">Historial Médico</h1>
+                   <p className="text-muted-foreground mt-1">
+                        Revisa y gestiona todas las notas del paciente.
+                    </p>
+                </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => handleOpenForm(notes[0])}><Edit className="mr-2 h-4 w-4" /> Editar</Button>
                     <Button variant="outline"><Download className="mr-2 h-4 w-4" /> Exportar</Button>
+                    <Button onClick={() => handleOpenForm()}>
+                       <PlusCircle className="mr-2 h-4 w-4" /> Nueva entrada
+                    </Button>
                 </div>
             </div>
 
@@ -171,41 +305,21 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                 <p className="text-muted-foreground mt-1">Fecha última sesión: {getLastSessionDate()}</p>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <aside className="md:col-span-1 flex flex-col gap-4">
-                    <Button variant="outline" className="justify-between">Filtrar <ListFilter className="h-4 w-4" /></Button>
-                    
-                    <Collapsible open={isNoteTypeOpen} onOpenChange={setIsNoteTypeOpen}>
-                        <CollapsibleTrigger asChild>
-                            <Button variant="outline" className="justify-between w-full">
-                                Tipo de nota
-                                <div className="flex items-center gap-2">
-                                  <FileType className="h-4 w-4" />
-                                  <ChevronDown className={cn("h-4 w-4 transition-transform", isNoteTypeOpen && "rotate-180")} />
-                                </div>
-                            </Button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="space-y-2 py-2">
-                            {noteTypes.map((type) => (
-                                <Button key={type.label} variant="ghost" className="w-full justify-start">
-                                    {type.label}
-                                </Button>
-                            ))}
-                        </CollapsibleContent>
-                    </Collapsible>
-                    
-                    <Button className="w-full bg-[#39ac4d] hover:bg-[#39ac4d]/90 text-white" onClick={() => handleOpenForm()}>
-                       <Plus className="mr-2 h-4 w-4" /> Nueva entrada
-                    </Button>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
+                <aside className="md:col-span-1 flex flex-col gap-4 sticky top-20">
+                   <FilterSidebar />
                 </aside>
 
                 <main className="md:col-span-3 space-y-4">
                      {notes.length > 0 ? (
                         notes.map((note) => (
                         <Card key={note.id} className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => handleOpenForm(note)}>
-                            <div className="flex items-center gap-4 mb-2">
-                                {getNoteIcon(note.title)}
-                                <h3 className="text-lg font-semibold">{note.title}</h3>
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-4 mb-2">
+                                    {getNoteIcon(note.title)}
+                                    <h3 className="text-lg font-semibold">{note.title}</h3>
+                                </div>
+                                <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
                             </div>
                             <div className="pl-10">
                                 <p className="text-muted-foreground bg-secondary p-3 rounded-lg inline-block">{note.content}</p>
@@ -213,8 +327,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         </Card>
                         ))
                     ) : (
-                        <Card className="p-6 text-center">
-                            <p className="text-muted-foreground">No hay notas para este paciente.</p>
+                        <Card className="p-6 text-center min-h-[200px] flex flex-col justify-center items-center">
+                            <NotebookPen className="w-12 h-12 text-muted-foreground mb-4" />
+                            <p className="text-muted-foreground font-semibold">No hay notas para este paciente.</p>
+                            <p className="text-sm text-muted-foreground">Crea la primera entrada para empezar el historial.</p>
                         </Card>
                     )}
                 </main>
