@@ -40,8 +40,8 @@ export function DashboardSidebar() {
     <Sidebar className="border-r">
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2">
-          <Image alt="Mently Logo" loading="lazy" width="28" height="28" src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" style={{color: 'transparent'}} />
-          <span className="font-bold text-lg">Mently</span>
+          <Image alt="Zenda Logo" loading="lazy" width="28" height="28" src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" style={{color: 'transparent'}} />
+          <span className="font-bold text-lg">Zenda</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">

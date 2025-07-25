@@ -28,7 +28,7 @@ export function AuthLogo() {
   return (
     <Image
       src={currentLogo}
-      alt="Logo Mently"
+      alt="Logo Zenda"
       width={80}
       height={80}
       className="mx-auto mb-4 h-auto w-auto max-w-[80px]"

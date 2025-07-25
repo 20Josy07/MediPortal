@@ -6,7 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Mently",
+  title: "Zenda",
   description: "Organiza tus citas, notas y evolución clínica desde un solo lugar.",
 };
 

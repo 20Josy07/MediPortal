@@ -32,7 +32,7 @@ export default function QuickGuidePage() {
     return (
         <div className="flex-1 space-y-8">
              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Guía Rápida de Mently</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Guía Rápida de Zenda</h1>
                 <p className="text-muted-foreground mt-1">
                     Un recorrido por las funcionalidades clave para potenciar tu práctica.
                 </p>
