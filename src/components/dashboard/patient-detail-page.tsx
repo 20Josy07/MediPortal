@@ -35,8 +35,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 
 const noteTypes = [
-    { id: 'Voz', label: 'Voz' },
-    { id: 'Texto', label: 'Texto' },
+    { id: 'Voz', label: 'Audio' },
+    { id: 'Texto', label: 'Transcripción' },
+    { id: 'Manual', label: 'Manual' },
 ];
 
 const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void, onReset: () => void }) => {
@@ -205,7 +206,7 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
     const [summary, setSummary] = useState<string | null>(null);
     const [isSummarizing, setIsSummarizing] = useState(false);
 
-    const wordCount = useMemo(() => note.content.split(/\s+/).length, [note.content]);
+    const wordCount = useMemo(() => note.content.split(/\s+/).filter(Boolean).length, [note.content]);
     const needsSummary = wordCount > 300;
 
     useEffect(() => {
@@ -238,7 +239,9 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
         }
     };
 
-    const displayContent = isExpanded ? note.content : (needsSummary ? summary : note.content);
+    const displayContent = isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content);
+    const isLoadingSummary = needsSummary && isSummarizing;
+    const showToggleButton = needsSummary && !isLoadingSummary;
 
     return (
         <Card className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => onOpenForm(note)}>
@@ -249,18 +252,17 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
                 </div>
                 <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
             </div>
-            <div className="pl-10">
-                {isSummarizing ? (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span>Resumiendo nota...</span>
+            <div className="pl-10 relative">
+                <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words", isLoadingSummary && "blur-sm")}>
+                    {displayContent}
+                </div>
+                {isLoadingSummary && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-secondary/50 rounded-lg">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                        <span className="ml-2 text-sm text-primary">Resumiendo...</span>
                     </div>
-                ) : (
-                    <p className="text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words">
-                        {displayContent}
-                    </p>
                 )}
-                {needsSummary && !isSummarizing && (
+                {showToggleButton && (
                     <Button variant="link" size="sm" className="p-0 h-auto mt-2" onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}>
                         {isExpanded ? "Ver menos" : "Ver más"}
                         <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", isExpanded && "rotate-180")} />
@@ -409,7 +411,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   const getPatientAge = (dob: string | undefined): string => {
     if (!dob || isNaN(Date.parse(dob))) return '';
     const age = differenceInYears(new Date(), new Date(dob));
-    return `, ${age} años`;
+    return `${age} años`;
   }
 
   const getLastSessionDate = () => {
@@ -639,7 +641,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <>
                            <div className="space-y-1">
                                 <Label className="font-semibold text-muted-foreground">Edad</Label>
-                                <Input value={ageText.replace(', ', '')} disabled />
+                                <Input value={ageText} disabled />
                            </div>
                            <div className="space-y-1">
                                 <Label className="font-semibold text-muted-foreground">Tipo de consulta</Label>
@@ -670,7 +672,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <>
                            <div>
                                <span className="font-semibold text-muted-foreground">Edad: </span>
-                               <span className="text-foreground">{ageText.replace(', ', '') || 'N/A'}</span>
+                               <span className="text-foreground">{ageText || 'N/A'}</span>
                            </div>
                            <div>
                                <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
