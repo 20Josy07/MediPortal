@@ -48,6 +48,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -538,7 +549,7 @@ export function SessionsCalendar() {
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent>
           {selectedSession && (
-            <>
+            <AlertDialog>
               <DialogHeader>
                 <DialogTitle>Detalles de la Sesión</DialogTitle>
                 <DialogDescription>
@@ -567,15 +578,31 @@ export function SessionsCalendar() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setIsDetailOpen(false)}>Cerrar</Button>
-                <Button variant="destructive" onClick={handleDeleteSession}>Eliminar</Button>
+                
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive">Eliminar</Button>
+                </AlertDialogTrigger>
+                
                 <Button onClick={handleEditSession}>Editar</Button>
               </div>
-            </>
+
+               <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción no se puede deshacer. Se eliminará permanentemente la sesión.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteSession}>Continuar</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+
+            </AlertDialog>
           )}
         </DialogContent>
       </Dialog>
     </>
   );
 }
-
-    
