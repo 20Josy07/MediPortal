@@ -170,7 +170,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                           Tipo de nota <FileType className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent>
+                      <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
                         <DropdownMenuItem>Audio</DropdownMenuItem>
                         <DropdownMenuItem>Transcripción automática</DropdownMenuItem>
                         <DropdownMenuItem>Nota escrita manual</DropdownMenuItem>
