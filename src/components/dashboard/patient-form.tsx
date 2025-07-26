@@ -212,5 +212,3 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
     </Form>
   );
 }
-
-    
