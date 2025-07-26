@@ -409,7 +409,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   };
 
   const getPatientAge = (dob: string | undefined): string => {
-    if (!dob || isNaN(Date.parse(dob))) return '';
+    if (!dob || isNaN(Date.parse(dob))) return 'N/A';
     const age = differenceInYears(new Date(), new Date(dob));
     return `${age} años`;
   }
@@ -497,7 +497,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
-    doc.text(`© ${new Date().getFullYear()} Mently. Todos los derechos reservados.`, margin, pageHeight - 6);
+    doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 6);
     
     // Title and patient info
     yPos = 35;
@@ -672,7 +672,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <>
                            <div>
                                <span className="font-semibold text-muted-foreground">Edad: </span>
-                               <span className="text-foreground">{ageText || 'N/A'}</span>
+                               <span className="text-foreground">{ageText}</span>
                            </div>
                            <div>
                                <span className="font-semibold text-muted-foreground">Tipo de consulta: </span>
