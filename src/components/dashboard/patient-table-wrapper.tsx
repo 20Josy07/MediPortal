@@ -38,6 +38,7 @@ import { PlusCircle, Edit, Trash2, Eye, Search, Loader2 } from "lucide-react";
 import { PatientForm } from "./patient-form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
+import { ScrollArea } from "../ui/scroll-area";
 
 export function PatientTableWrapper() {
   const { user, db, loading: authLoading } = useAuth();
@@ -223,11 +224,13 @@ export function PatientTableWrapper() {
           <DialogHeader>
             <DialogTitle>{selectedPatient ? 'Editar Paciente' : 'Agregar Nuevo Paciente'}</DialogTitle>
           </DialogHeader>
-          <PatientForm
-            patient={selectedPatient}
-            onSubmit={handleFormSubmit}
-            onCancel={() => setIsFormOpen(false)}
-          />
+          <ScrollArea className="max-h-[80vh] pr-6">
+            <PatientForm
+              patient={selectedPatient}
+              onSubmit={handleFormSubmit}
+              onCancel={() => setIsFormOpen(false)}
+            />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
       
@@ -249,5 +252,3 @@ export function PatientTableWrapper() {
     </>
   );
 }
-
-    
