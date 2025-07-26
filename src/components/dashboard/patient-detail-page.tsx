@@ -302,7 +302,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         const data = docSnap.data() as Omit<Patient, 'id'>;
         const patientData = { id: docSnap.id, ...data, createdAt: data.createdAt ? (data.createdAt as any).toDate() : undefined };
         setPatient(patientData);
-        setEditablePatient(patientData);
       } else {
         toast({ variant: "destructive", title: "Paciente no encontrado" });
         setPatient(null);
@@ -330,6 +329,12 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         unsubscribeNotes();
     }
   }, [patientId, user, db, toast]);
+
+  useEffect(() => {
+    if (patient) {
+      setEditablePatient(patient);
+    }
+  }, [patient]);
   
   const handleFilter = (filters: { dateRange?: DateRange, types: string[], keyword: string, showStarred: boolean }) => {
     let tempNotes = [...notes];
