@@ -62,7 +62,7 @@ export default function SmartNotesPage() {
   const { user, db, userProfile, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(isTranscribing);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
@@ -76,7 +76,7 @@ export default function SmartNotesPage() {
   const [editableNoteContent, setEditableNoteContent] = useState("");
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [isFileProcessing, setIsFileProcessing] = useState(isFileProcessing);
+  const [isFileProcessing, setIsFileProcessing] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   
@@ -1043,5 +1043,3 @@ export default function SmartNotesPage() {
     </>
   );
 }
-
-    
