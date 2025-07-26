@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, Heading1, Heading2, Type } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -28,7 +28,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 
 // Configure PDF.js worker
@@ -77,20 +76,6 @@ const RichTextEditorToolbar = ({ onCommand }) => {
                 <AlignRight className="h-4 w-4" />
             </Button>
             <Separator orientation="vertical" className="h-6 mx-1" />
-            <Popover>
-                <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <Type className="h-4 w-4" />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-1">
-                    <div className="flex flex-col gap-1">
-                        <Button variant="ghost" className="w-full justify-start" onMouseDown={(e) => { e.preventDefault(); onCommand('formatBlock', 'p'); }}>Normal</Button>
-                        <Button variant="ghost" className="w-full justify-start" onMouseDown={(e) => { e.preventDefault(); onCommand('formatBlock', 'h2'); }}><Heading1 className="h-5 w-5 mr-2" /> Título 1</Button>
-                        <Button variant="ghost" className="w-full justify-start" onMouseDown={(e) => { e.preventDefault(); onCommand('formatBlock', 'h3'); }}><Heading2 className="h-4 w-4 mr-2" /> Título 2</Button>
-                    </div>
-                </PopoverContent>
-            </Popover>
              <Button variant="ghost" size="icon" onMouseDown={(e) => e.preventDefault()} onClick={handleColorClick}>
                 <Palette className="h-4 w-4" />
             </Button>
