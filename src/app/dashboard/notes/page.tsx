@@ -16,7 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -27,6 +27,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 
 // Configure PDF.js worker
@@ -42,11 +43,26 @@ type ChatMessage = {
 type NoteTemplate = "SOAP" | "DAP";
 type GeneratedBlocks = ReformatNoteOutput;
 
+const RichTextEditorToolbar = ({ onCommand }) => (
+    <div className="flex items-center gap-1 p-2 border-b bg-muted rounded-t-md">
+      <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); onCommand('bold'); }}>
+        <Bold className="h-4 w-4" />
+      </Button>
+      <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); onCommand('italic'); }}>
+        <Italic className="h-4 w-4" />
+      </Button>
+      <Button variant="ghost" size="icon" onMouseDown={(e) => { e.preventDefault(); onCommand('underline'); }}>
+        <Underline className="h-4 w-4" />
+      </Button>
+    </div>
+);
+
+
 export default function SmartNotesPage() {
   const { user, db, userProfile, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(isTranscribing);
   
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
@@ -60,7 +76,7 @@ export default function SmartNotesPage() {
   const [editableNoteContent, setEditableNoteContent] = useState("");
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [isFileProcessing, setIsFileProcessing] = useState(false);
+  const [isFileProcessing, setIsFileProcessing] = useState(isFileProcessing);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   
@@ -80,6 +96,7 @@ export default function SmartNotesPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const audioFileInputRef = useRef<HTMLInputElement | null>(null);
   const chatScrollAreaRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   const subjectiveRef = useRef<HTMLTextAreaElement>(null);
   const dataRef = useRef<HTMLTextAreaElement>(null);
@@ -300,6 +317,8 @@ export default function SmartNotesPage() {
       } else { // DAP
         finalContent = `D (Datos):\n${generatedBlocks.data}\n\nA (Análisis/Evaluación):\n${generatedBlocks.assessment}\n\nP (Plan):\n${generatedBlocks.plan}`;
       }
+    } else if (editorRef.current) {
+        finalContent = editorRef.current.innerHTML;
     }
 
     const updatedData = {
@@ -623,6 +642,10 @@ export default function SmartNotesPage() {
     doc.save(`${editableNoteTitle}.pdf`);
   };
 
+  const handleEditorCommand = (command: string) => {
+    document.execCommand(command, false);
+    editorRef.current?.focus();
+  };
 
   return (
     <>
@@ -924,9 +947,9 @@ export default function SmartNotesPage() {
                     </div>
                  </div>
               </DialogHeader>
-              <ScrollArea className="max-h-[60vh] rounded-md border my-4 p-4">
+              <ScrollArea className="max-h-[60vh] my-4">
                 {generatedBlocks ? (
-                  <div className="space-y-4">
+                  <div className="space-y-4 p-1">
                     {selectedTemplate === 'SOAP' ? (
                       <>
                         <div>
@@ -964,12 +987,19 @@ export default function SmartNotesPage() {
                     )}
                   </div>
                 ) : (
-                 <Textarea 
-                    value={editableNoteContent}
-                    onChange={(e) => setEditableNoteContent(e.target.value)}
-                    className={cn("text-sm whitespace-pre-wrap border-0 shadow-none focus-visible:ring-0 p-0", isEditing || isEditingTranscription ? "min-h-[40vh]" : "min-h-[20vh]")}
-                    disabled={!isEditingTranscription && !isEditing}
-                  />
+                    <div className="border rounded-md">
+                        {(isEditing || isEditingTranscription) && <RichTextEditorToolbar onCommand={handleEditorCommand} />}
+                        <div
+                            ref={editorRef}
+                            contentEditable={isEditing || isEditingTranscription}
+                            dangerouslySetInnerHTML={{ __html: editableNoteContent }}
+                            onBlur={(e) => setEditableNoteContent(e.currentTarget.innerHTML)}
+                            className={cn(
+                                "text-sm whitespace-pre-wrap p-4 focus:outline-none",
+                                (isEditing || isEditingTranscription) ? "min-h-[40vh] bg-background" : "min-h-[20vh] bg-muted/30 cursor-not-allowed"
+                            )}
+                        />
+                    </div>
                 )}
               </ScrollArea>
               <DialogFooter className="sm:justify-between">
@@ -1013,3 +1043,5 @@ export default function SmartNotesPage() {
     </>
   );
 }
+
+    
