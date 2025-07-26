@@ -967,7 +967,7 @@ export default function SmartNotesPage() {
                  <Textarea 
                     value={editableNoteContent}
                     onChange={(e) => setEditableNoteContent(e.target.value)}
-                    className="text-sm whitespace-pre-wrap min-h-[40vh] border-0 shadow-none focus-visible:ring-0 p-0"
+                    className={cn("text-sm whitespace-pre-wrap border-0 shadow-none focus-visible:ring-0 p-0", isEditing || isEditingTranscription ? "min-h-[40vh]" : "min-h-[20vh]")}
                     disabled={!isEditingTranscription && !isEditing}
                   />
                 )}
