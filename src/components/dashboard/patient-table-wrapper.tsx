@@ -80,13 +80,16 @@ export function PatientTableWrapper() {
       patient.name.toLowerCase().includes(searchTerm.toLowerCase())
     ), [patients, searchTerm]);
 
-  const handleFormSubmit = async (data: Omit<Patient, "id" | "nextSession" | "createdAt">) => {
+  const handleFormSubmit = async (data: Omit<Patient, "id" | "nextSession" | "createdAt" | "dob"> & { dob?: string }) => {
     if (!user || !db) {
       toast({ variant: "destructive", title: "Error de autenticación. Intenta de nuevo." });
       return;
     };
     
-    const dataToSave = { ...data };
+    const dataToSave: any = { ...data };
+    if (data.dob) {
+      dataToSave.dob = data.dob;
+    }
 
     try {
       if (selectedPatient) {
@@ -164,10 +167,10 @@ export function PatientTableWrapper() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Paciente</TableHead>
-              <TableHead>Contacto</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Acciones</TableHead>
+              <TableHead className="text-center font-bold text-base text-foreground">Paciente</TableHead>
+              <TableHead className="text-center font-bold text-base text-foreground">Contacto</TableHead>
+              <TableHead className="text-center font-bold text-base text-foreground">Estado</TableHead>
+              <TableHead className="text-center font-bold text-base text-foreground">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
