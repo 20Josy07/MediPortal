@@ -389,7 +389,7 @@ export function SessionsCalendar() {
   
 
   const renderDayView = () => {
-    const timeSlots = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM
+    const timeSlots = Array.from({ length: 12 }, (_, i) => i + 1); // 1 AM to 12 PM
     const daySessions = sessions.filter(session => isSameDay(session.date, currentDate));
 
     return (
@@ -416,7 +416,7 @@ export function SessionsCalendar() {
             {daySessions.map(session => {
               const startHour = getHours(session.date);
               const startMinute = getMinutes(session.date);
-              const top = ((startHour - 7) * 64) + (startMinute / 60 * 64);
+              const top = ((startHour - 1) * 64) + (startMinute / 60 * 64);
               const height = (session.duration / 60) * 64;
               const isShortSession = session.duration <= 45;
 
