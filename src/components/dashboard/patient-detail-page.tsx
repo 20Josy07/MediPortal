@@ -244,17 +244,22 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
     const showToggleButton = needsSummary && !isLoadingSummary;
 
     return (
-        <Card className="p-4 cursor-pointer hover:bg-muted/50" onClick={() => onOpenForm(note)}>
+        <Card className="p-4" >
             <div className="flex justify-between items-start">
                 <div className="flex items-center gap-4 mb-2">
                     {getNoteIcon(note.type)}
                     <h3 className="text-lg font-semibold">{note.title}</h3>
                 </div>
-                <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
+                 <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
+                     <Button variant="outline" size="sm" onClick={() => onOpenForm(note)}>
+                        Ver detalle
+                     </Button>
+                 </div>
             </div>
             <div className="pl-10 relative">
-                <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words", isLoadingSummary && "blur-sm")}>
-                    {displayContent}
+                <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
+                     <div dangerouslySetInnerHTML={{ __html: displayContent }} />
                 </div>
                 {isLoadingSummary && (
                     <div className="absolute inset-0 flex items-center justify-center bg-secondary/50 rounded-lg">
@@ -302,6 +307,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         const data = docSnap.data() as Omit<Patient, 'id'>;
         const patientData = { id: docSnap.id, ...data, createdAt: data.createdAt ? (data.createdAt as any).toDate() : undefined };
         setPatient(patientData);
+        setEditablePatient(patientData);
       } else {
         toast({ variant: "destructive", title: "Paciente no encontrado" });
         setPatient(null);
@@ -329,12 +335,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         unsubscribeNotes();
     }
   }, [patientId, user, db, toast]);
-
-  useEffect(() => {
-    if (patient) {
-      setEditablePatient(patient);
-    }
-  }, [patient]);
   
   const handleFilter = (filters: { dateRange?: DateRange, types: string[], keyword: string, showStarred: boolean }) => {
     let tempNotes = [...notes];
@@ -736,7 +736,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         </div>
 
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <DialogContent className="sm:max-w-[480px]">
+            <DialogContent className="sm:max-w-4xl">
                 <NoteEntryForm 
                     note={selectedNote} 
                     onSubmit={handleNoteSubmit} 
@@ -920,114 +920,116 @@ const NoteEntryForm = ({
                     Rellena los campos para crear la nueva entrada.
                 </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
-                {noteType === 'session' && (
-                    <>
-                        <div className="grid grid-cols-2 gap-4">
+             <ScrollArea className="max-h-[60vh] -mx-6 px-6 pt-4">
+                <div className="space-y-4 pb-4">
+                    {noteType === 'session' && (
+                        <>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <Label>Fecha</Label>
+                                     <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant={"outline"}
+                                                className={cn("w-full justify-start text-left font-normal", !sessionDate && "text-muted-foreground")}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {sessionDate ? format(sessionDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0">
+                                            <Calendar mode="single" selected={sessionDate} onSelect={setSessionDate} initialFocus locale={es}/>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <div className="space-y-1">
+                                    <Label htmlFor="session-topic">Tema central</Label>
+                                    <Input id="session-topic" value={sessionTopic} onChange={(e) => setSessionTopic(e.target.value)} placeholder="Ej: Regulación emocional"/>
+                                </div>
+                            </div>
                             <div className="space-y-1">
-                                <Label>Fecha</Label>
+                                <Label htmlFor="session-observations">Observaciones del paciente</Label>
+                                <Textarea id="session-observations" value={sessionObservations} onChange={(e) => setSessionObservations(e.target.value)} placeholder="El paciente reporta..." rows={3}/>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="session-interventions">Intervenciones realizadas</Label>
+                                <Textarea id="session-interventions" value={sessionInterventions} onChange={(e) => setSessionInterventions(e.target.value)} placeholder="Se aplicó técnica de..." rows={3}/>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="session-next-steps">Conclusiones o próximos pasos</Label>
+                                <Textarea id="session-next-steps" value={sessionNextSteps} onChange={(e) => setSessionNextSteps(e.target.value)} placeholder="Asignar tarea..." rows={3}/>
+                            </div>
+                        </>
+                    )}
+                    {noteType === 'follow-up' && (
+                         <>
+                            <div className="space-y-1">
+                                <Label htmlFor="follow-up-task">Tarea asignada</Label>
+                                <Input id="follow-up-task" value={followUpTask} onChange={(e) => setFollowUpTask(e.target.value)} placeholder="Ej: Registro de pensamientos automáticos"/>
+                            </div>
+                             <div className="space-y-1">
+                                <Label>Fecha asignada</Label>
                                  <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant={"outline"}
-                                            className={cn("w-full justify-start text-left font-normal", !sessionDate && "text-muted-foreground")}
+                                            className={cn("w-full justify-start text-left font-normal", !followUpDate && "text-muted-foreground")}
                                         >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {sessionDate ? format(sessionDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
+                                            {followUpDate ? format(followUpDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0">
-                                        <Calendar mode="single" selected={sessionDate} onSelect={setSessionDate} initialFocus locale={es}/>
+                                        <Calendar mode="single" selected={followUpDate} onSelect={setFollowUpDate} initialFocus locale={es}/>
                                     </PopoverContent>
                                 </Popover>
                             </div>
                             <div className="space-y-1">
-                                <Label htmlFor="session-topic">Tema central</Label>
-                                <Input id="session-topic" value={sessionTopic} onChange={(e) => setSessionTopic(e.target.value)} placeholder="Ej: Regulación emocional"/>
+                                <Label htmlFor="follow-up-progress">Progreso observado</Label>
+                                <Textarea id="follow-up-progress" value={followUpProgress} onChange={(e) => setFollowUpProgress(e.target.value)} placeholder="El paciente completó..." rows={3}/>
                             </div>
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="session-observations">Observaciones del paciente</Label>
-                            <Textarea id="session-observations" value={sessionObservations} onChange={(e) => setSessionObservations(e.target.value)} placeholder="El paciente reporta..." rows={3}/>
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="session-interventions">Intervenciones realizadas</Label>
-                            <Textarea id="session-interventions" value={sessionInterventions} onChange={(e) => setSessionInterventions(e.target.value)} placeholder="Se aplicó técnica de..." rows={3}/>
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="session-next-steps">Conclusiones o próximos pasos</Label>
-                            <Textarea id="session-next-steps" value={sessionNextSteps} onChange={(e) => setSessionNextSteps(e.target.value)} placeholder="Asignar tarea..." rows={3}/>
-                        </div>
-                    </>
-                )}
-                {noteType === 'follow-up' && (
-                     <>
-                        <div className="space-y-1">
-                            <Label htmlFor="follow-up-task">Tarea asignada</Label>
-                            <Input id="follow-up-task" value={followUpTask} onChange={(e) => setFollowUpTask(e.target.value)} placeholder="Ej: Registro de pensamientos automáticos"/>
-                        </div>
-                         <div className="space-y-1">
-                            <Label>Fecha asignada</Label>
-                             <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant={"outline"}
-                                        className={cn("w-full justify-start text-left font-normal", !followUpDate && "text-muted-foreground")}
-                                    >
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {followUpDate ? format(followUpDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar mode="single" selected={followUpDate} onSelect={setFollowUpDate} initialFocus locale={es}/>
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="follow-up-progress">Progreso observado</Label>
-                            <Textarea id="follow-up-progress" value={followUpProgress} onChange={(e) => setFollowUpProgress(e.target.value)} placeholder="El paciente completó..." rows={3}/>
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="follow-up-recommendations">Recomendaciones</Label>
-                            <Textarea id="follow-up-recommendations" value={followUpRecommendations} onChange={(e) => setFollowUpRecommendations(e.target.value)} placeholder="Continuar con el registro..." rows={3}/>
-                        </div>
-                    </>
-                )}
-                 {noteType === 'summary' && (
-                     <>
-                        <div className="space-y-1">
-                            <Label>Rango de fechas</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !summaryDateRange && "text-muted-foreground")}>
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {summaryDateRange?.from ? (summaryDateRange.to ? `${format(summaryDateRange.from, "LLL dd, y")} - ${format(summaryDateRange.to, "LLL dd, y")}` : format(summaryDateRange.from, "LLL dd, y")) : <span>Elige un rango</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar initialFocus mode="range" defaultMonth={summaryDateRange?.from} selected={summaryDateRange} onSelect={setSummaryDateRange} numberOfMonths={2} locale={es}/>
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="summary-objectives">Objetivos trabajados</Label>
-                            <Textarea id="summary-objectives" value={summaryObjectives} onChange={(e) => setSummaryObjectives(e.target.value)} placeholder="Durante este período, se trabajó en..." rows={2}/>
-                        </div>
-                        <div className="space-y-1">
-                            <Label htmlFor="summary-changes">Cambios observados</Label>
-                            <Textarea id="summary-changes" value={summaryChanges} onChange={(e) => setSummaryChanges(e.target.value)} placeholder="Se observó una disminución en..." rows={2}/>
-                        </div>
-                         <div className="space-y-1">
-                            <Label htmlFor="summary-patient-comments">Comentarios del paciente</Label>
-                            <Textarea id="summary-patient-comments" value={summaryPatientComments} onChange={(e) => setSummaryPatientComments(e.target.value)} placeholder="El paciente expresó sentirse..." rows={2}/>
-                        </div>
-                         <div className="space-y-1">
-                            <Label htmlFor="summary-evaluation">Evaluación del proceso</Label>
-                            <Textarea id="summary-evaluation" value={summaryEvaluation} onChange={(e) => setSummaryEvaluation(e.target.value)} placeholder="La evolución del paciente es..." rows={2}/>
-                        </div>
-                    </>
-                )}
-            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="follow-up-recommendations">Recomendaciones</Label>
+                                <Textarea id="follow-up-recommendations" value={followUpRecommendations} onChange={(e) => setFollowUpRecommendations(e.target.value)} placeholder="Continuar con el registro..." rows={3}/>
+                            </div>
+                        </>
+                    )}
+                     {noteType === 'summary' && (
+                         <>
+                            <div className="space-y-1">
+                                <Label>Rango de fechas</Label>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !summaryDateRange && "text-muted-foreground")}>
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {summaryDateRange?.from ? (summaryDateRange.to ? `${format(summaryDateRange.from, "LLL dd, y")} - ${format(summaryDateRange.to, "LLL dd, y")}` : format(summaryDateRange.from, "LLL dd, y")) : <span>Elige un rango</span>}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar initialFocus mode="range" defaultMonth={summaryDateRange?.from} selected={summaryDateRange} onSelect={setSummaryDateRange} numberOfMonths={2} locale={es}/>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="summary-objectives">Objetivos trabajados</Label>
+                                <Textarea id="summary-objectives" value={summaryObjectives} onChange={(e) => setSummaryObjectives(e.target.value)} placeholder="Durante este período, se trabajó en..." rows={2}/>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="summary-changes">Cambios observados</Label>
+                                <Textarea id="summary-changes" value={summaryChanges} onChange={(e) => setSummaryChanges(e.target.value)} placeholder="Se observó una disminución en..." rows={2}/>
+                            </div>
+                             <div className="space-y-1">
+                                <Label htmlFor="summary-patient-comments">Comentarios del paciente</Label>
+                                <Textarea id="summary-patient-comments" value={summaryPatientComments} onChange={(e) => setSummaryPatientComments(e.target.value)} placeholder="El paciente expresó sentirse..." rows={2}/>
+                            </div>
+                             <div className="space-y-1">
+                                <Label htmlFor="summary-evaluation">Evaluación del proceso</Label>
+                                <Textarea id="summary-evaluation" value={summaryEvaluation} onChange={(e) => setSummaryEvaluation(e.target.value)} placeholder="La evolución del paciente es..." rows={2}/>
+                            </div>
+                        </>
+                    )}
+                </div>
+             </ScrollArea>
             <DialogFooter className="mt-4">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
                 <Button type="submit">Guardar</Button>
