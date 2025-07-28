@@ -183,18 +183,18 @@ export function PatientTableWrapper() {
             ) : filteredPatients.length > 0 ? (
               filteredPatients.map((patient) => (
                 <TableRow key={patient.id}>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <div className="font-medium">{patient.name}</div>
                     <div className="text-sm text-muted-foreground">{patient.email}</div>
                   </TableCell>
-                  <TableCell>{patient.phone}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">{patient.phone}</TableCell>
+                  <TableCell className="text-center">
                     <Badge variant={patient.status === 'Activo' ? 'default' : 'destructive'} className={patient.status === 'Activo' ? 'bg-green-600/90' : 'bg-red-600/90'}>
                       {patient.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-center gap-2">
                        <Button asChild variant="ghost" size="icon" className="h-8 w-8">
                         <Link href={`/dashboard/patients/${patient.id}`}>
                           <Eye className="h-4 w-4" />
