@@ -23,6 +23,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { FacebookIcon, GoogleIcon, LinkedinIcon, MicrosoftIcon } from "../icons";
 import { signInWithGoogle } from "@/lib/firebase";
+import { getDoc, doc } from "firebase/firestore";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Por favor, introduce un correo válido." }),
@@ -71,7 +72,7 @@ export function LoginForm() {
 
   const handleGoogleSignIn = async () => {
     if (!auth || !db) {
-       toast({
+      toast({
         variant: "destructive",
         title: "Error de configuración",
         description: "Firebase no está disponible. Por favor, contacta al soporte.",
@@ -80,19 +81,35 @@ export function LoginForm() {
     }
     setIsGoogleLoading(true);
     try {
-      await signInWithGoogle(auth, db);
+      const user = await signInWithGoogle(auth, db);
+      
+      // Verificar si el usuario está validado
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (userDoc.exists() && !userDoc.data()?.validated) {
+        await auth.signOut();  // Cerrar sesión
+        throw new Error('account-not-validated');
+      }
+      
       router.push("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google Sign In Error:", error);
-      toast({
-        variant: "destructive",
-        title: "Error de inicio de sesión con Google",
-        description: "No se pudo iniciar sesión con Google. Por favor, inténtalo de nuevo.",
-      });
+      if (error.message === 'account-not-validated') {
+        toast({
+          variant: "destructive",
+          title: "Cuenta no validada",
+          description: "Tu cuenta está pendiente de validación por un administrador.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error de inicio de sesión con Google",
+          description: "No se pudo iniciar sesión con Google. Por favor, inténtalo de nuevo.",
+        });
+      }
     } finally {
       setIsGoogleLoading(false);
     }
-  }
+}
 
   return (
     <div>

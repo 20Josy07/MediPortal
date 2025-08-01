@@ -32,26 +32,72 @@ if (
 }
 
 export const signInWithGoogle = async (auth: Auth, db: Firestore): Promise<User> => {
+  console.log("Iniciando proceso de autenticación con Google...");
   const provider = new GoogleAuthProvider();
+  
+  // Añadir scopes para los permisos necesarios
+  provider.addScope('email');
+  provider.addScope('profile');
+  provider.addScope('https://www.googleapis.com/auth/calendar');
+  provider.addScope('https://www.googleapis.com/auth/calendar.events');
+  
+  // Configurar el parámetro de acceso sin conexión para obtener refresh tokens
+  provider.setCustomParameters({
+    access_type: 'offline',
+    prompt: 'consent'
+  });
+
   try {
+    console.log("Abriendo ventana de autenticación...");
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+    console.log("Usuario autenticado:", {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName
+    });
+
+    // Obtener el token de acceso de Google
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const accessToken = credential?.accessToken;
+    const refreshToken = user.refreshToken;
+    
+    console.log("Tokens obtenidos:", {
+      accessToken: accessToken ? "✅ Token de acceso recibido" : "❌ No se recibió token de acceso",
+      refreshToken: refreshToken ? "✅ Refresh token recibido" : "❌ No se recibió refresh token"
+    });
 
     const userDocRef = doc(db, 'users', user.uid);
+    console.log("Buscando usuario en Firestore...");
     const docSnap = await getDoc(userDocRef);
 
     if (!docSnap.exists()) {
+      console.log("Usuario no existe en Firestore, creando documento...");
       await setDoc(userDocRef, {
         fullName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
+        validated: false,
+        calendarAccessToken: accessToken,
+        calendarRefreshToken: refreshToken,
         createdAt: serverTimestamp(),
       });
+      console.log("Documento de usuario creado en Firestore");
+    } else {
+      console.log("Usuario encontrado en Firestore, actualizando tokens...");
+      await updateDoc(userDocRef, {
+        calendarAccessToken: accessToken,
+        calendarRefreshToken: refreshToken,
+      });
+      console.log("Tokens actualizados en Firestore");
     }
     
+    console.log("Proceso de autenticación completado con éxito");
     return user;
   } catch (error) {
-    console.error("Error during Google sign-in:", error);
+    console.error("❌ Error durante el inicio de sesión con Google:", {
+      errorDetails: error
+    });
     throw error;
   }
 };

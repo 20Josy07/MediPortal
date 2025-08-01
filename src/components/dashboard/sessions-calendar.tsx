@@ -66,6 +66,9 @@ import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { SessionForm } from "./session-form";
+import AddEventForm from "@/components/AddEventForm";
+import GoogleAuthButton from "@/components/googleauthbutton";
+import { CalendarIcon } from "@heroicons/react/24/outline";
 
 export function SessionsCalendar() {
   const { user, db, loading: authLoading } = useAuth();
@@ -79,6 +82,7 @@ export function SessionsCalendar() {
   const [selectedSession, setSelectedSession] = React.useState<Session | null>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
   const [view, setView] = React.useState<"month" | "week" | "day">("month");
+  const [showEventForm, setShowEventForm] = React.useState(false);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -483,6 +487,15 @@ export function SessionsCalendar() {
             >
                 Agendar
             </Button>
+            <GoogleAuthButton />
+            {/* <button
+              onClick={() => setShowEventForm(true)}
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+            >
+              <CalendarIcon className="h-5 w-5" />
+              Nuevo Evento
+            </button>
+            {showEventForm && <AddEventForm onClose={() => setShowEventForm(false)} />} */}
          </div>
       </div>
 
