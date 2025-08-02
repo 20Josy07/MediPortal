@@ -6,8 +6,32 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Zenda",
-  description: "Organiza tus citas, notas y evolución clínica desde un solo lugar.",
+  title: "Zenda | Software de Gestión para Psicólogos con IA",
+  description: "Optimiza tu práctica clínica con Zenda. Gestiona pacientes, agenda sesiones, transcribe audios y genera notas clínicas con inteligencia artificial. Creado para psicólogos y terapeutas.",
+  keywords: ["software para psicólogos", "gestión de pacientes", "notas clínicas", "terapia", "inteligencia artificial", "psicología", "Zenda"],
+  authors: [{ name: "Zenda Team" }],
+  openGraph: {
+    title: "Zenda | Software de Gestión para Psicólogos con IA",
+    description: "Optimiza tu práctica clínica con Zenda. Gestiona pacientes, agenda sesiones, transcribe audios y genera notas clínicas con inteligencia artificial.",
+    url: "https://www.zendapsi.com", // Assuming this will be the final URL
+    siteName: "Zenda",
+    images: [
+      {
+        url: "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png", // Main OG image
+        width: 1200,
+        height: 630,
+        alt: "Logo de Zenda sobre un fondo representativo de la app.",
+      },
+    ],
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Zenda | Software de Gestión para Psicólogos con IA",
+    description: "Optimiza tu práctica clínica con Zenda. Gestiona pacientes, agenda sesiones, transcribe audios y genera notas clínicas con inteligencia artificial.",
+    images: ["https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"],
+  },
 };
 
 export default function RootLayout({
