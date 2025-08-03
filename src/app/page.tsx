@@ -276,6 +276,7 @@ export default function Home() {
               <li><Link href="/dashboard/support/chat">FAQ</Link></li>
               <li><Link href="/terms">Términos y Condiciones</Link></li>
               <li><Link href="/privacy">Política de privacidad</Link></li>
+              <li><Link href="/data-deletion">Eliminación de Datos</Link></li>
             </ul>
           </div>
           <div className="footer-column">
