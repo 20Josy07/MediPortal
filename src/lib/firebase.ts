@@ -1,6 +1,6 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
 import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
@@ -110,6 +110,18 @@ export const updateUserProfile = async (
   // 3. Update Auth profile only if there are changes.
   if (Object.keys(authUpdate).length > 0) {
     await updateProfile(user, authUpdate);
+  }
+};
+
+export const deleteUserAccount = async (user: User) => {
+  try {
+    await deleteUser(user);
+    // Note: Deleting user data from Firestore should be handled by a Cloud Function
+    // triggered by the user deletion event for security and completeness.
+    // This client-side function only deletes the auth record.
+  } catch (error) {
+    console.error("Error deleting user account:", error);
+    throw error;
   }
 };
 

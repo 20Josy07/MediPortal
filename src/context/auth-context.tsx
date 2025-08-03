@@ -11,6 +11,7 @@ export interface AuthContextType {
   userProfile: UserProfile | null;
   loading: boolean;
   logout: () => Promise<void>;
+  deleteUserAccount: () => Promise<void>;
   auth: Auth | null;
   db: Firestore | null;
 }
@@ -20,6 +21,7 @@ export const AuthContext = createContext<AuthContextType>({
   userProfile: null,
   loading: true,
   logout: async () => {},
+  deleteUserAccount: async () => {},
   auth: null,
   db: null,
 });
