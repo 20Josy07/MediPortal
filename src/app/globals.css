@@ -493,7 +493,11 @@
 
 
     .footer-column p {
-        @apply text-white/80 leading-relaxed mb-6;
+        color: rgba(255, 255, 255, 0.8);
+        @apply leading-relaxed mb-6;
+    }
+    .dark .footer-column p {
+        @apply text-muted-foreground;
     }
     
     .footer-column ul {
@@ -505,7 +509,8 @@
     }
     
     .footer-column ul li a {
-        @apply text-white/70 no-underline transition-colors duration-300 ease-in-out;
+        color: rgba(255, 255, 255, 0.7);
+        @apply no-underline transition-colors duration-300 ease-in-out;
     }
     
     .footer-column ul li a:hover {
@@ -526,8 +531,17 @@
     }
     
     .footer-bottom {
-        @apply text-center pt-4 border-t border-white/10 text-white/70 text-xs;
+        @apply text-center pt-4 border-t border-white/10 text-xs;
     }
+
+    .footer-bottom p {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .dark .footer-bottom p {
+        @apply text-muted-foreground;
+    }
+
     .login-shimmer-button {
       @apply relative p-4 rounded-lg border border-primary text-lg uppercase font-bold tracking-[2px] bg-transparent text-white overflow-hidden shadow-none transition-all duration-200 ease-in;
     }
@@ -681,3 +695,6 @@
 
     
 
+
+
+  

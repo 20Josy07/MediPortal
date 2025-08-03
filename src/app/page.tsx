@@ -266,7 +266,7 @@ export default function Home() {
         <div className="footer-container">
           <div className="footer-column">
             <h3>Zenda</h3>
-            <p className="text-white/80">Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
+            <p>Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
           </div>
           <div className="footer-column">
             <h3>Producto</h3>
@@ -288,9 +288,11 @@ export default function Home() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p className="text-center text-white/70">© {new Date().getFullYear()} Zenda.</p>
+          <p className="text-center">© {new Date().getFullYear()} Zenda.</p>
         </div>
       </footer>
     </div>
   );
 }
+
+  
