@@ -271,7 +271,7 @@
     .before-card h3, .after-card h3 {
         @apply text-2xl font-bold mb-6 text-[#063C0F];
     }
-    .dark .before-card h3, .dark .after-card h3 {
+    .dark .before-card h3, .after-card h3 {
        @apply text-primary;
     }
 
@@ -493,7 +493,7 @@
 
 
     .footer-column p {
-        @apply text-white/70 leading-relaxed mb-6;
+        @apply text-white/80 leading-relaxed mb-6;
     }
     
     .footer-column ul {
@@ -526,7 +526,7 @@
     }
     
     .footer-bottom {
-        @apply text-center pt-4 border-t border-white/10 text-white/50 text-xs;
+        @apply text-center pt-4 border-t border-white/10 text-white/70 text-xs;
     }
     .login-shimmer-button {
       @apply relative p-4 rounded-lg border border-primary text-lg uppercase font-bold tracking-[2px] bg-transparent text-white overflow-hidden shadow-none transition-all duration-200 ease-in;
@@ -680,3 +680,4 @@
 
 
     
+
