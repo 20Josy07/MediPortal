@@ -14,25 +14,16 @@ export default function DataDeletionPage() {
   const { toast } = useToast();
 
   const dataDeletionInstructions = `
-    <p>En Zenda, respetamos tu derecho a controlar tu información. Si deseas eliminar tu cuenta y todos los datos asociados, tienes dos opciones:</p>
-    <h3>Opción 1: Eliminación Inmediata (Recomendado)</h3>
-    <p>Si has iniciado sesión, puedes eliminar tu cuenta y todos tus datos de forma inmediata y segura desde el panel de control.</p>
+    <p>En Zenda, respetamos tu derecho a controlar tu información. Si deseas eliminar tu cuenta y todos los datos asociados, puedes hacerlo de forma inmediata y segura desde el panel de control.</p>
+    <h3>Eliminación desde tu cuenta (Recomendado)</h3>
+    <p>Para eliminar tu cuenta y todos tus datos, sigue estos pasos:</p>
     <ol>
-        <li>Ve a tu <strong>Dashboard</strong>.</li>
+        <li>Inicia sesión y ve a tu <strong>Dashboard</strong>.</li>
         <li>Navega a la sección de <strong>Configuración</strong>.</li>
         <li>En el apartado de <strong>Seguridad y Cuenta</strong>, encontrarás la opción para eliminar tu cuenta permanentemente.</li>
     </ol>
     <br/>
-    <h3>Opción 2: Solicitud por Correo Electrónico</h3>
-    <p>Si no puedes acceder a tu cuenta, sigue estos pasos:</p>
-    <ol>
-        <li><strong>Envía un correo electrónico:</strong> Redacta un correo electrónico desde la dirección de email con la que te registraste en nuestra plataforma.</li>
-        <li><strong>Destinatario:</strong> Dirige el correo a <a href="mailto:soporte-baja@zenda.ai" style="color: hsl(var(--primary)); text-decoration: underline;">soporte-baja@zenda.ai</a>.</li>
-        <li><strong>Asunto:</strong> Utiliza el asunto "Solicitud de Eliminación de Datos".</li>
-        <li><strong>Contenido del correo:</strong> En el cuerpo del mensaje, por favor, indica claramente tu nombre de usuario y tu deseo de eliminar permanentemente tu cuenta y toda la información asociada.</li>
-    </ol>
-    <p><strong>Proceso y plazos (Opción 2):</strong></p>
-    <p>Una vez que recibamos tu solicitud, nuestro equipo la verificará. La eliminación de los datos se completará en un plazo máximo de 30 días hábiles. Te enviaremos una confirmación por correo electrónico una vez que el proceso haya finalizado. Esta acción es irreversible.</p>
+    <p>Esta acción es irreversible y eliminará todos los datos de tus pacientes, sesiones y notas de forma definitiva.</p>
   `;
 
     const handleDelete = async () => {
