@@ -1,10 +1,11 @@
-
 import type { Metadata } from "next";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Inter } from "next/font/google";
+import Script from "next/script";
+
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -62,6 +63,27 @@ export default function RootLayout({
             <Toaster />
           </AuthProvider>
         </ThemeProvider>
+         <Script id="facebook-sdk-setup" strategy="afterInteractive">
+          {`
+            window.fbAsyncInit = function() {
+              FB.init({
+                appId      : '{your-app-id}',
+                cookie     : true,
+                xfbml      : true,
+                version    : '{api-version}'
+              });
+              FB.AppEvents.logPageView();
+            };
+
+            (function(d, s, id){
+               var js, fjs = d.getElementsByTagName(s)[0];
+               if (d.getElementById(id)) {return;}
+               js = d.createElement(s); js.id = id;
+               js.src = "https://connect.facebook.net/en_US/sdk.js";
+               fjs.parentNode.insertBefore(js, fjs);
+             }(document, 'script', 'facebook-jssdk'));
+          `}
+        </Script>
       </body>
     </html>
   );

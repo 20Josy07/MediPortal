@@ -85,6 +85,20 @@ function HeroImage() {
     return (
       <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8">
         <div style={{width: '128px', height: '128px'}}></div>
+         <ul className="space-y-4 w-full max-w-sm opacity-0">
+              <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Notas automáticas con resúmenes e insights clave</span>
+              </li>
+              <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                  <BarChart2 className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Visualización de evolución y objetivos terapéuticos</span>
+              </li>
+              <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                  <Folder className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">Historial organizado y fácil de consultar</span>
+              </li>
+          </ul>
       </div>
     );
   }
@@ -295,7 +309,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
