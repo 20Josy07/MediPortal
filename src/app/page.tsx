@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const advantages = [
@@ -225,9 +225,9 @@ export default function Home() {
                               data-ai-hint={advantage.hint}
                             />
                           </div>
-                          <div className="bg-accent/20 text-accent-foreground rounded-lg p-3 inline-block mb-4">
-                            {advantage.icon}
-                          </div>
+                          {React.cloneElement(advantage.icon, {
+                            className: "w-8 h-8 text-primary p-1.5 bg-accent/20 rounded-lg mb-4",
+                          })}
                           <h3 className="font-headline text-2xl font-bold text-foreground mb-2">{advantage.title}</h3>
                           <p className="text-foreground/80 flex-grow">{advantage.description}</p>
                         </CardContent>
