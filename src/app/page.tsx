@@ -85,31 +85,29 @@ function HeroImage() {
 
   return (
       <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8 min-h-[480px]">
-        {mounted ? (
-           <>
-              <Image
-                src={currentLogo}
-                alt="Zenda Logo"
-                width={128}
-                height={128}
-                priority
-              />
-              <ul className="space-y-4 w-full max-w-sm">
-                  <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
-                      <FileText className="h-5 w-5 text-primary" />
-                      <span className="text-sm font-medium">Notas automáticas con resúmenes e insights clave</span>
-                  </li>
-                  <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
-                      <BarChart2 className="h-5 w-5 text-primary" />
-                      <span className="text-sm font-medium">Visualización de evolución y objetivos terapéuticos</span>
-                  </li>
-                  <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
-                      <Folder className="h-5 w-5 text-primary" />
-                      <span className="text-sm font-medium">Historial organizado y fácil de consultar</span>
-                  </li>
-              </ul>
-            </>
-        ) : null}
+        <div className={cn("transition-opacity duration-500", mounted ? "opacity-100" : "opacity-0")}>
+          <Image
+            src={currentLogo}
+            alt="Zenda Logo"
+            width={128}
+            height={128}
+            priority
+          />
+        </div>
+        <ul className={cn("space-y-4 w-full max-w-sm transition-opacity duration-500", mounted ? "opacity-100" : "opacity-0")}>
+            <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                <FileText className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">Notas automáticas con resúmenes e insights clave</span>
+            </li>
+            <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                <BarChart2 className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">Visualización de evolución y objetivos terapéuticos</span>
+            </li>
+            <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
+                <Folder className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">Historial organizado y fácil de consultar</span>
+            </li>
+        </ul>
       </div>
   );
 }

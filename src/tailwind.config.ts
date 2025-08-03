@@ -106,6 +106,9 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'slide-in-top': 'slide-in-top 0.3s both',
       },
+      transitionProperty: {
+        'opacity': 'opacity',
+      }
     },
   },
   plugins: [require('tailwindcss-animate')],
