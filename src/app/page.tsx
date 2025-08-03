@@ -155,7 +155,7 @@ export default function Home() {
 
       <main className="flex-grow pt-20">
         <section className="hero-section bg-hero dark:bg-background">
-          <div className="hero-content text-gray-800">
+          <div className="hero-content">
             <div className="tag">
                 <span>Análisis Clínico • Notas Instantáneas • Seguimiento Visual</span>
             </div>
@@ -295,3 +295,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
