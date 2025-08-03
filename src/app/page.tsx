@@ -225,9 +225,9 @@ export default function Home() {
                               data-ai-hint={advantage.hint}
                             />
                           </div>
-                          {React.cloneElement(advantage.icon, {
-                            className: "w-8 h-8 text-primary p-1.5 bg-accent/20 rounded-lg mb-4",
-                          })}
+                           <div className="bg-accent/20 text-accent-foreground rounded-lg p-3 inline-block mb-4">
+                             {advantage.icon}
+                           </div>
                           <h3 className="font-headline text-2xl font-bold text-foreground mb-2">{advantage.title}</h3>
                           <p className="text-foreground/80 flex-grow">{advantage.description}</p>
                         </CardContent>
@@ -266,7 +266,7 @@ export default function Home() {
         <div className="footer-container">
           <div className="footer-column">
             <h3>Zenda</h3>
-            <p>Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
+            <p className="text-white/80">Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
           </div>
           <div className="footer-column">
             <h3>Producto</h3>
@@ -288,7 +288,7 @@ export default function Home() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p className="text-center">© {new Date().getFullYear()} Zenda.</p>
+          <p className="text-center text-white/70">© {new Date().getFullYear()} Zenda.</p>
         </div>
       </footer>
     </div>
