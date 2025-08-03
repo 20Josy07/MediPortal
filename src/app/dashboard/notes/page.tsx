@@ -8,9 +8,10 @@ import { useToast } from "@/hooks/use-toast";
 import type { Note, Patient } from "@/lib/types";
 import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import * as pdfjs from 'pdfjs-dist/build/pdf';
-import mammoth from 'mammoth';
-import jsPDF from "jspdf";
+import type * as PdfJs from 'pdfjs-dist/build/pdf';
+import type Mammoth from 'mammoth';
+import type JsPDF from "jspdf";
+
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,11 +30,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
-
-// Configure PDF.js worker
-if (typeof window !== 'undefined') {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-}
 
 type ChatMessage = {
   from: "user" | "ai";
@@ -401,6 +397,9 @@ export default function SmartNotesPage() {
       if (file.type === 'text/plain') {
         text = await file.text();
       } else if (file.type === 'application/pdf') {
+        const { default: pdfjs } = await import('pdfjs-dist/build/pdf');
+        const { GlobalWorkerOptions } = await import('pdfjs-dist/build/pdf');
+        GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjs.getDocument(arrayBuffer).promise;
         let fullText = '';
@@ -411,6 +410,7 @@ export default function SmartNotesPage() {
         }
         text = fullText;
       } else if (file.name.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        const { default: mammoth } = await import('mammoth');
         const arrayBuffer = await file.arrayBuffer();
         const result = await mammoth.extractRawText({ arrayBuffer });
         text = result.value;
@@ -608,6 +608,7 @@ export default function SmartNotesPage() {
   const handleDownloadPdf = async () => {
     if (!selectedNote) return;
 
+    const { default: jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     const pageHeight = doc.internal.pageSize.height;
     const pageWidth = doc.internal.pageSize.width;
