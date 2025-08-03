@@ -71,7 +71,7 @@ const howItWorksSteps = [
 
 function HeroImage() {
   const logoDark = "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
-
+  
   return (
     <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8 min-h-[480px]">
       <div className="transition-opacity duration-500 opacity-100">

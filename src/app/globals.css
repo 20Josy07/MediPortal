@@ -50,6 +50,12 @@
     --sidebar-border: 130 20% 20%;
     --sidebar-ring: 130 50% 45%;
 
+    --footer-bg: #18441E;
+    --footer-text: rgba(255, 255, 255, 0.8);
+    --footer-link-text: rgba(255, 255, 255, 0.7);
+    --footer-link-hover: white;
+    --footer-title-text: white;
+    --footer-bottom-border: rgba(255, 255, 255, 0.1);
   }
 
   .dark {
@@ -80,6 +86,13 @@
     --border: 130 20% 25%;
     --input: 130 20% 20%;
     --ring: 130 50% 55%;
+
+    --footer-bg: hsl(var(--background));
+    --footer-text: hsl(var(--muted-foreground));
+    --footer-link-text: hsl(var(--muted-foreground));
+    --footer-link-hover: hsl(var(--primary));
+    --footer-title-text: hsl(var(--primary));
+    --footer-bottom-border: hsl(var(--border));
   }
 }
 
@@ -89,6 +102,12 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .hero-content p {
+    @apply text-black;
+  }
+  .dark .hero-content p {
+    @apply text-white;
   }
 }
 
@@ -143,14 +162,6 @@
 
     .alumbra-highlight {
         @apply bg-gradient-to-r from-[hsl(var(--highlight-yellow))] to-[hsl(var(--highlight-purple))] bg-clip-text text-transparent;
-    }
-
-    .hero-content p {
-        @apply text-xl leading-relaxed mb-8 text-black;
-    }
-    
-    .dark .hero-content p {
-        @apply text-white;
     }
 
     .buttons {
@@ -271,7 +282,7 @@
     .before-card h3, .after-card h3 {
         @apply text-2xl font-bold mb-6 text-[#063C0F];
     }
-    .dark .before-card h3, .after-card h3 {
+    .dark .before-card h3, .dark .after-card h3 {
        @apply text-primary;
     }
 
@@ -469,11 +480,9 @@
     }
 
     footer {
-        @apply bg-[#18441E] py-4 px-[5%] text-white text-sm;
-    }
-
-    .dark footer {
-        @apply bg-background;
+        background-color: var(--footer-bg);
+        color: var(--footer-text);
+        @apply py-4 px-[5%] text-sm;
     }
 
     .footer-container {
@@ -485,19 +494,13 @@
     }
 
     .footer-column h3 {
-        @apply text-xl font-bold mb-6 text-white;
+        color: var(--footer-title-text);
+        @apply text-xl font-bold mb-6;
     }
-     .dark .footer-column h3 {
-        @apply text-primary;
-    }
-
 
     .footer-column p {
-        color: rgba(255, 255, 255, 0.8);
+        color: var(--footer-text);
         @apply leading-relaxed mb-6;
-    }
-    .dark .footer-column p {
-        @apply text-muted-foreground;
     }
     
     .footer-column ul {
@@ -509,18 +512,13 @@
     }
     
     .footer-column ul li a {
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--footer-link-text);
         @apply no-underline transition-colors duration-300 ease-in-out;
     }
     
     .footer-column ul li a:hover {
-      @apply text-white;
+        color: var(--footer-link-hover);
     }
-
-     .dark .footer-column ul li a:hover {
-        @apply text-primary;
-    }
-
     
     .footer-badges {
         @apply flex gap-4 mt-4;
@@ -531,15 +529,12 @@
     }
     
     .footer-bottom {
-        @apply text-center pt-4 border-t border-white/10 text-xs;
+        border-color: var(--footer-bottom-border);
+        @apply text-center pt-4 border-t text-xs;
     }
 
     .footer-bottom p {
-        color: rgba(255, 255, 255, 0.7);
-    }
-
-    .dark .footer-bottom p {
-        @apply text-muted-foreground;
+        color: var(--footer-text);
     }
 
     .login-shimmer-button {
