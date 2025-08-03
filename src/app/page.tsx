@@ -70,17 +70,11 @@ const howItWorksSteps = [
 ]
 
 function HeroImage() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const logoDark = "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
   
   return (
     <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8 min-h-[480px]">
-      <div className={cn("transition-opacity duration-500", mounted ? "opacity-100" : "opacity-0")}>
+      <div>
         <Image
           src={logoDark}
           alt="Zenda Logo"
@@ -89,7 +83,7 @@ function HeroImage() {
           priority
         />
       </div>
-      <ul className={cn("space-y-4 w-full max-w-sm transition-opacity duration-500", mounted ? "opacity-100" : "opacity-0")}>
+      <ul className="space-y-4 w-full max-w-sm">
           <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
               <FileText className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium">Notas automáticas con resúmenes e insights clave</span>
