@@ -79,6 +79,7 @@ function HeroImage() {
           alt="Zenda Logo"
           width={128}
           height={128}
+          loading="eager"
         />
       </div>
       <ul className="space-y-4 w-full max-w-sm">
@@ -261,6 +262,7 @@ export default function Home() {
                               fill
                               className="relative rounded-lg shadow-inner object-cover"
                               data-ai-hint={advantage.hint}
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                           </div>
                            <div className="bg-accent/20 text-accent-foreground rounded-lg p-3 inline-block mb-4">
