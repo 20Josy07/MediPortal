@@ -1,5 +1,4 @@
-
-import { PatientDetailPage } from "@/components/dashboard/patient-detail-page";
+import React from 'react';
 
 type PageProps = {
   params: {
@@ -7,6 +6,6 @@ type PageProps = {
   };
 };
 
-export default async function Page({ params }: PageProps) {
-  return <PatientDetailPage patientId={params.patientId} />;
+export default async function PatientPage({ params }: PageProps) {
+  const { patientId } = params;
 }
