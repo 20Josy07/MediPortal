@@ -1,6 +1,6 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
 import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
@@ -156,6 +156,16 @@ export const updateUserProfile = async (
   // 3. Update Auth profile only if there are changes.
   if (Object.keys(authUpdate).length > 0) {
     await updateProfile(user, authUpdate);
+  }
+};
+
+export const deleteUserAccount = async (user: User) => {
+  try {
+    await deleteUser(user);
+  } catch (error) {
+    console.error("Error al eliminar la cuenta del usuario:", error);
+    // Lanza el error para que pueda ser manejado por el llamador
+    throw error;
   }
 };
 
