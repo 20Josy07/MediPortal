@@ -1,33 +1,16 @@
 
 "use client";
 
-import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 export function AuthLogo() {
-  const { theme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const logoLight = "https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png";
-  const logoDark = "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
-
-  if (!mounted) {
-    // Render a placeholder or nothing until the theme is determined
-    return (
-        <div style={{width: '80px', height: '80px'}} className="mx-auto mb-4"></div>
-    );
-  }
-
-  const currentLogo = resolvedTheme === "dark" ? logoDark : logoLight;
+  // Always use a single, consistent logo URL to prevent hydration mismatches.
+  // This logo should be visible on both light and dark backgrounds.
+  const logoUrl = "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
 
   return (
     <Image
-      src={currentLogo}
+      src={logoUrl}
       alt="Logo Zenda"
       width={80}
       height={80}

@@ -79,7 +79,6 @@ function HeroImage() {
           alt="Zenda Logo"
           width={128}
           height={128}
-          priority
         />
       </div>
       <ul className="space-y-4 w-full max-w-sm">
