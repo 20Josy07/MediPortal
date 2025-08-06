@@ -7,6 +7,7 @@ import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { Loader2 } from "lucide-react";
 import { DashboardNavbar } from "@/components/dashboard/dashboard-navbar";
+import GoogleApiLoader from "@/components/GoogleApiloader";
 
 export default function DashboardLayout({
   children,
@@ -37,6 +38,7 @@ export default function DashboardLayout({
         <DashboardNavbar />
         <main className="flex-1 p-6 md:p-8">{children}</main>
       </SidebarInset>
+      <GoogleApiLoader />
     </SidebarProvider>
   );
 }
