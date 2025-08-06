@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { doc, onSnapshot, type Firestore } from "firebase/firestore";
 import { AuthContext } from "@/context/auth-context";
-import { auth, db, deleteUserAccount as deleteFirebaseUser } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 
 interface AuthProviderProps {
@@ -63,24 +63,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const deleteUserAccount = async () => {
-    if (user) {
-        await deleteFirebaseUser(user);
-        setUser(null);
-        setUserProfile(null);
-    } else {
-        throw new Error("No user is currently signed in.");
-    }
-  };
-
-
   const value = useMemo(
     () => ({
       user,
       userProfile,
       loading,
       logout,
-      deleteUserAccount,
       auth,
       db,
     }),

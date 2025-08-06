@@ -1,14 +1,13 @@
-
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, BarChart, Folder, X, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays, BarChart2 } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays, BarChart2, X } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const advantages = [
@@ -70,17 +69,11 @@ const howItWorksSteps = [
 ]
 
 function HeroImage() {
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const logoDark = "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
-
+  
   return (
     <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8 min-h-[480px]">
-      <div className={cn("transition-opacity duration-500", mounted ? "opacity-100" : "opacity-0")}>
+      <div>
         <Image
           src={logoDark}
           alt="Zenda Logo"
@@ -89,7 +82,7 @@ function HeroImage() {
           priority
         />
       </div>
-      <ul className={cn("space-y-4 w-full max-w-sm transition-opacity duration-500", mounted ? "opacity-100" : "opacity-0")}>
+      <ul className="space-y-4 w-full max-w-sm">
           <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
               <FileText className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium">Notas automáticas con resúmenes e insights clave</span>
@@ -107,13 +100,18 @@ function HeroImage() {
   );
 }
 
-
 export default function Home() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="fixed top-0 w-full bg-[#18441E] dark:bg-background dark:border-b dark:border-border z-50">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between ">
             <Link className="flex items-center" href="/">
               <Image alt="Zenda Logo" loading="lazy" width="36" height="36" src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" style={{color: 'transparent'}} />
               <span className="ml-2 text-xs font-semibold text-white dark:text-foreground border border-white/50 dark:border-border px-2 py-0.5 rounded-full">BETA</span>
@@ -135,11 +133,63 @@ export default function Home() {
                 Iniciar sesión
               </a>
             </nav>
-            <button className="md:hidden text-white dark:text-foreground focus:outline-none focus:ring-2 focus:ring-white rounded-md" aria-label="Toggle menu">
-              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+            <button 
+              onClick={toggleMenu}
+              className="md:hidden text-white dark:text-foreground focus:outline-none focus:ring-2 focus:ring-white rounded-md p-1" 
+              aria-label="Toggle menu"
+              aria-expanded={isMenuOpen}
+            >
+              {isMenuOpen ? (
+                <X className="h-8 w-8" />
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-menu">
+                  <line x1="4" x2="20" y1="12" y2="12"></line>
+                  <line x1="4" x2="20" y1="6" y2="6"></line>
+                  <line x1="4" x2="20" y1="18" y2="18"></line>
+                </svg>
+              )}
             </button>
           </div>
         </div>
+        {/* Mobile Menu */}
+        {isMenuOpen && (
+        <div 
+          className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
+            isMenuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <nav className="flex flex-col space-y-4 py-4">
+            <Link 
+              href="/" 
+              className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary py-2 text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Inicio
+            </Link>
+            <Link 
+              href="#features" 
+              className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary py-2 text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Ventajas
+            </Link>
+            <Link 
+              href="#how-it-works-steps" 
+              className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary py-2 text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Funcionalidades
+            </Link>
+            <a 
+              href="/login" 
+              className="inline-flex items-center justify-center bg-white hover:bg-white/90 text-[#063C0F] dark:bg-primary dark:text-primary-foreground font-semibold px-6 py-2 rounded-lg shadow transition-all duration-300 text-base"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Iniciar sesión
+            </a>
+          </nav>
+        </div>
+        )}
       </header>
 
       <main className="flex-grow pt-20">

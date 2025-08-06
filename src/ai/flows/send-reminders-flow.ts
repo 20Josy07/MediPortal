@@ -17,7 +17,7 @@ const SendReminderInputSchema = z.object({
   patientName: z.string().describe("The patient's name."),
   patientEmail: z.string().describe("The patient's email address."),
   patientPhone: z.string().describe("The patient's phone number."),
-  sessionDate: z.date().describe('The date and time of the session.'),
+  sessionDate: z.string().describe('The date and time of the session.'),
   reminderType: z.enum(['patient', 'psychologist', 'both']).describe('Who to send the reminder to.'),
 });
 export type SendReminderInput = z.infer<typeof SendReminderInputSchema>;

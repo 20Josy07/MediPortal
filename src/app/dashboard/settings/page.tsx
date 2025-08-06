@@ -8,19 +8,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Shield, Settings2, CreditCard, Puzzle, KeyRound, Eye, Smartphone, Calendar, Video, MessageSquare, Mail, Banknote, LogOut } from "lucide-react";
+import { User, Bell, Shield, Settings2, CreditCard, Puzzle, KeyRound, Eye, Smartphone, Calendar, Video, MessageSquare, Mail, Banknote } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import Link from "next/link";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { useAuth } from "@/context/auth-context";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
 
 const NotificationSettings = () => (
@@ -142,64 +136,6 @@ const BillingSettings = () => (
     </div>
 );
 
-const SecuritySettings = () => {
-    const { deleteUserAccount } = useAuth();
-    const router = useRouter();
-    const { toast } = useToast();
-
-    const handleDelete = async () => {
-        try {
-            await deleteUserAccount();
-            toast({
-                title: "Cuenta eliminada",
-                description: "Tu cuenta ha sido eliminada permanentemente.",
-            });
-            router.push('/');
-        } catch (error: any) {
-            toast({
-                variant: "destructive",
-                title: "Error al eliminar la cuenta",
-                description: error.message || "Por favor, inténtalo de nuevo.",
-            });
-        }
-    };
-
-    return (
-        <div className="space-y-6">
-            <Card className="border-red-500/50 bg-destructive/10">
-                <CardHeader>
-                    <CardTitle className="text-red-600">Eliminar Cuenta</CardTitle>
-                    <CardDescription className="text-red-600/80">
-                        Esta acción es irreversible. Toda la información de tus pacientes, sesiones y notas será eliminada permanentemente.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive">Eliminar mi cuenta permanentemente</Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Esta acción no se puede deshacer. Se eliminarán permanentemente tu cuenta y todos tus datos. Para confirmar, por favor, escribe "eliminar" en el campo de abajo.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDelete}>Continuar</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </CardContent>
-            </Card>
-            <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Para más detalles sobre cómo manejamos tus datos, consulta nuestra <Link href="/privacy" className="underline text-primary">Política de Privacidad</Link>.</p>
-            </div>
-        </div>
-    );
-};
-
 
 const settingsItems = [
   {
@@ -219,12 +155,6 @@ const settingsItems = [
     title: "Plan y Facturación",
     description: "Revisa tu plan actual y gestiona tu suscripción.",
     content: <BillingSettings />,
-  },
-  {
-    icon: Shield,
-    title: "Seguridad y Cuenta",
-    description: "Gestiona la seguridad y la eliminación de tu cuenta.",
-    content: <SecuritySettings />,
   },
 ];
 
