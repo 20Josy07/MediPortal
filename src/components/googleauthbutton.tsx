@@ -1,6 +1,6 @@
 // components/GoogleAuthButton.tsx
 'use client';
-import { CalendarIcon, CheckIcon} from "@heroicons/react/24/outline";
+import { Calendar, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function GoogleAuthButton() {
@@ -61,7 +61,8 @@ export default function GoogleAuthButton() {
               fill="#EA4335"
             />
           </svg>
-           <CalendarIcon className="w-5 h-5" /> <CheckIcon className="w-3 h-3 mt-4" />
+           <Calendar className="w-5 h-5" />
+           <Check className="w-3 h-3 ml-1" />
         </button>
       );
     }
@@ -70,8 +71,8 @@ export default function GoogleAuthButton() {
         onClick={handleAuthClick}
         className="flex items-center justify-center px-4 py-2 bg-primary text-secondary rounded-md hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
       >
-        <CalendarIcon className="w-5 h-5 mr-2" />
-        Vincular con Google Calendar <CalendarIcon className="w-5 h-5 ml-2" />
+        <Calendar className="w-5 h-5 mr-2" />
+        Vincular con Google Calendar
       </button>
     );
   };
