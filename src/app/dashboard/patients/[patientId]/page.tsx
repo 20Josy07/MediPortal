@@ -1,6 +1,11 @@
-
 import { PatientDetailPage } from "@/components/dashboard/patient-detail-page";
 
-export default function PatientPage({ params }: { params: { patientId: string } }) {
+type PatientPageProps = {
+  params: {
+    patientId: string;
+  };
+};
+
+export default function PatientPage({ params }: PatientPageProps) {
   return <PatientDetailPage patientId={params.patientId} />;
 }
