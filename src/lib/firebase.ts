@@ -24,6 +24,7 @@ if (firebaseConfig.apiKey) {
     db = getFirestore(app);
 } else {
     console.error("Firebase config is missing, please check your .env file");
+    // You might want to throw an error here or handle it gracefully
 }
 
 
