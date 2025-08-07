@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import ClientLayout from "@/components/providers/client-layout";
 
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -57,10 +57,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-          <AuthProvider>
+          <ClientLayout>
             {children}
             <Toaster />
-          </AuthProvider>
+          </ClientLayout>
         </ThemeProvider>
          <Script id="facebook-sdk-setup" strategy="afterInteractive">
           {`

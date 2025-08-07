@@ -1,18 +1,35 @@
-
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import { doc, onSnapshot, type Firestore } from "firebase/firestore";
-import { AuthContext } from "@/context/auth-context";
 import { auth, db } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 
-interface AuthProviderProps {
-  children: React.ReactNode;
+interface AuthContextType {
+  user: User | null;
+  userProfile: UserProfile | null;
+  loading: boolean;
+  logout: () => Promise<void>;
+  auth: typeof auth;
+  db: Firestore | null;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  userProfile: null,
+  loading: true,
+  logout: async () => {},
+  auth: auth,
+  db: db,
+});
+
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
+
+export function AuthProvider({ children }: {children: React.ReactNode}) {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
