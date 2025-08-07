@@ -13,23 +13,19 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Initialize Firebase
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
 
-if (
-  firebaseConfig.apiKey &&
-  firebaseConfig.authDomain &&
-  firebaseConfig.projectId
-) {
-  app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
+if (firebaseConfig.apiKey) {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    auth = getAuth(app);
+    db = getFirestore(app);
 } else {
-  console.error(
-    "Firebase configuration is missing or incomplete. Make sure to set up your environment variables."
-  );
+    console.error("Firebase config is missing, please check your .env file");
 }
+
 
 export const signInWithGoogle = async (auth: Auth, db: Firestore): Promise<User> => {
   console.log("Iniciando proceso de autenticación con Google...");
