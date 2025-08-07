@@ -1,11 +1,6 @@
-import React from 'react';
 
-type PageProps = {
-  params: {
-    patientId: string;
-  };
-};
+import { PatientDetailPage } from "@/components/dashboard/patient-detail-page";
 
-export default async function PatientPage({ params }: PageProps) {
-  const { patientId } = params;
+export default function PatientPage({ params }: { params: { patientId: string } }) {
+  return <PatientDetailPage patientId={params.patientId} />;
 }
