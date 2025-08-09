@@ -394,36 +394,49 @@ export default function SmartNotesPage() {
 
     setIsFileProcessing(true);
     try {
-      let text = '';
-      if (file.type === 'text/plain') {
+      let text = "";
+
+      if (file.type === "text/plain") {
+        // TXT
         text = await file.text();
-        } else if (file.type === 'application/pdf') {
-          // Importa la librería principal (no la ruta build/pdf)
-          const pdfjsLib = await import('pdfjs-dist');
-          const { getDocument, GlobalWorkerOptions, version } = pdfjsLib;
-        
-          // Configura el worker (ruta interna del paquete)
-          GlobalWorkerOptions.workerSrc = new URL(
-            'pdfjs-dist/build/pdf.worker.min.mjs',
-            import.meta.url
-          ).toString();
-        
-          // Leer y procesar el PDF
-          const arrayBuffer = await file.arrayBuffer();
-          const loadingTask = getDocument({ data: new Uint8Array(arrayBuffer) });
-          const pdf = await loadingTask.promise;
-        
-          // Ejemplo: leer el texto de la primera página
-          const page = await pdf.getPage(1);
-          const textContent = await page.getTextContent();
-          text = textContent.items.map((item: any) => item.str).join(' ');
-        }   
-        text = fullText;
-      } else if (file.name.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-        const { default: mammoth } = await import('mammoth');
+      
+      } else if (file.type === "application/pdf") {
+        // PDF (pdfjs-dist moderno)
+        const pdfjsLib = await import("pdfjs-dist");
+        const { getDocument, GlobalWorkerOptions } = pdfjsLib;
+      
+        GlobalWorkerOptions.workerSrc = new URL(
+          "pdfjs-dist/build/pdf.worker.min.mjs",
+          import.meta.url
+        ).toString();
+      
         const arrayBuffer = await file.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        text = result.value;
+        const pdf = await getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
+      
+        let fullText = "";
+        const maxPages = Math.min(pdf.numPages, 10); // limita páginas si quieres
+      
+        for (let i = 1; i <= maxPages; i++) {
+          const page = await pdf.getPage(i);
+          const tc = await page.getTextContent();
+          fullText +=
+            tc.items
+              .map((it: any) => ("str" in it ? (it as any).str : ""))
+              .join(" ") + "\n";
+        }
+      
+        text = fullText.trim();
+      
+      } else if (
+        file.name.endsWith(".docx") ||
+        file.type ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ) {
+        // DOCX (mammoth)
+        const mammoth = await import("mammoth");
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.default.extractRawText({ arrayBuffer });
+        text = result.value ?? "";
       } else {
         toast({ variant: "destructive", title: "Formato de archivo no soportado.", description: "Por favor, sube un .txt, .pdf, or .docx." });
         setIsFileProcessing(false);
