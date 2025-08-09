@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -7,8 +8,9 @@ import { ArrowRight, FileText, BarChart, Folder, Check, UserPlus, Calendar, Spar
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 const advantages = [
   {
@@ -69,17 +71,25 @@ const howItWorksSteps = [
 ]
 
 function HeroImage() {
-  const logoDark = "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
+  const { resolvedTheme } = useTheme();
+  const [logoSrc, setLogoSrc] = useState("https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"); // Default to dark
+
+  useEffect(() => {
+    setLogoSrc(resolvedTheme === 'dark' 
+      ? "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png" 
+      : "https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png");
+  }, [resolvedTheme]);
   
   return (
     <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8 min-h-[480px]">
       <div>
         <Image
-          src={logoDark}
+          src={logoSrc}
           alt="Zenda Logo"
           width={128}
           height={128}
           loading="eager"
+          key={resolvedTheme}
         />
       </div>
       <ul className="space-y-4 w-full max-w-sm">
@@ -335,3 +345,4 @@ export default function Home() {
     </div>
   );
 }
+
