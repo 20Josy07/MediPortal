@@ -1077,3 +1077,5 @@ export default function SmartNotesPage() {
     </>
   );
 }
+
+    
