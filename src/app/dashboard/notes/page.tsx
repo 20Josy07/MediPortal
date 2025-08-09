@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Note, Patient } from "@/lib/types";
 import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import type * as PdfJs from 'pdfjs-dist/build/pdf';
+import type * as PdfJs from 'pdfjs-dist/types/src/pdf';
 import type Mammoth from 'mammoth';
 import type JsPDF from "jspdf";
 
