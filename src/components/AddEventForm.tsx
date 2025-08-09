@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarIcon, ClockIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, ClockIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function AddEventForm({ onClose }: { onClose: () => void }) {
   const [formData, setFormData] = useState({
