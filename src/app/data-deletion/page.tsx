@@ -14,10 +14,10 @@ export default function DataDeletionPage() {
         <li><strong>Ve a la Configuración:</strong> Dentro de la aplicación, navega a la sección "Configuración" en tu panel de control.</li>
         <li><strong>Busca la sección "Seguridad y Privacidad":</strong> Expande esta sección para ver las opciones relacionadas con tu cuenta.</li>
         <li><strong>Haz clic en "Eliminar mi cuenta":</strong> Encontrarás un botón para iniciar el proceso de eliminación.</li>
-        <li><strong>Confirma la acción:</strong> Se te pedirá que confirmes tu decisión. Lee atentamente las advertencias, ya que esta acción es irreversible.</li>
+        <li><strong>Confirma la acción:</strong> Se te pedirá que confirmes tu decisión. Es posible que, por seguridad, necesitemos que vuelvas a introducir tu contraseña para verificar tu identidad.</li>
     </ol>
     <p><strong>Proceso y plazos:</strong></p>
-    <p>Una vez que confirmes la eliminación, tu cuenta y todos los datos asociados se borrarán de forma inmediata y permanente de nuestros servidores. No podrás recuperar tu información una vez completado el proceso.</p>
+    <p>Una vez que confirmes la eliminación, tu cuenta y todos los datos asociados (pacientes, notas, sesiones) se borrarán de forma permanente de nuestros servidores. No podrás recuperar tu información una vez completado el proceso.</p>
     <p>Si tienes problemas para acceder a tu cuenta, puedes enviar un correo a <a href="mailto:soporte-baja@zenda.ai" style="color: hsl(var(--primary)); text-decoration: underline;">soporte-baja@zenda.ai</a> para solicitar la eliminación manual.</p>
   `;
 

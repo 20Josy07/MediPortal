@@ -1,6 +1,6 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser } from "firebase/auth";
+import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
@@ -57,7 +57,7 @@ export const signInWithGoogle = async (auth: Auth, db: Firestore): Promise<User>
     // Obtener el token de acceso de Google
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const accessToken = credential?.accessToken;
-    const refreshToken = user.refreshToken;
+    const refreshToken = credential?.refreshToken; // Correct way to get refresh token is usually server-side
     
     console.log("Tokens obtenidos:", {
       accessToken: accessToken ? "✅ Token de acceso recibido" : "❌ No se recibió token de acceso",
@@ -159,10 +159,21 @@ export const updateUserProfile = async (
 export const deleteUserAccount = async (user: User) => {
   try {
     await deleteUser(user);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error al eliminar la cuenta del usuario:", error);
-    // Lanza el error para que pueda ser manejado por el llamador
-    throw error;
+    if (error.code === 'auth/requires-recent-login') {
+        const password = prompt("Por seguridad, por favor, introduce tu contraseña para confirmar:");
+        if (password && user.email) {
+            const credential = EmailAuthProvider.credential(user.email, password);
+            await reauthenticateWithCredential(user, credential);
+            // Retry deletion
+            await deleteUser(user);
+        } else {
+             throw new Error("Contraseña no proporcionada o email no disponible.");
+        }
+    } else {
+        throw error;
+    }
   }
 };
 
