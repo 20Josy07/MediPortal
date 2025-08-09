@@ -15,22 +15,13 @@ import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { updateUserProfile } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
+import { ProfileFormSchema, type ProfileFormValues } from "@/lib/types";
 import { Separator } from "../ui/separator";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
-
-
-const profileSchema = z.object({
-  fullName: z.string().min(1, "El nombre completo es requerido."),
-  email: z.string().email("Correo electrónico inválido."),
-  phone: z.string().optional(),
-  photoURL: z.string().optional(),
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
 
 interface ProfileSettingsFormProps {
   onSuccess?: () => void;
@@ -45,7 +36,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(ProfileFormSchema),
     defaultValues: {
       fullName: "",
       email: "",
@@ -294,3 +285,5 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
     </>
   );
 }
+
+    

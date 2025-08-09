@@ -60,4 +60,12 @@ export const ChatWithNotesOutputSchema = z.object({
 });
 export type ChatWithNotesOutput = z.infer<typeof ChatWithNotesOutputSchema>;
 
+export const ProfileFormSchema = z.object({
+  fullName: z.string().min(1, "El nombre completo es requerido."),
+  email: z.string().email("Correo electrónico inválido."),
+  phone: z.string().optional(),
+  photoURL: z.string().optional(),
+});
+export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
+
     
