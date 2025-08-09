@@ -1,33 +1,11 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
-import { doc, onSnapshot, type Firestore } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
-
-interface AuthContextType {
-  user: User | null;
-  userProfile: UserProfile | null;
-  loading: boolean;
-  logout: () => Promise<void>;
-  auth: typeof auth;
-  db: Firestore | null;
-}
-
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  userProfile: null,
-  loading: true,
-  logout: async () => {},
-  auth: auth,
-  db: db,
-});
-
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
-
+import { AuthContext, type AuthContextType } from "@/context/auth-context";
 
 export function AuthProvider({ children }: {children: React.ReactNode}) {
   const [user, setUser] = useState<User | null>(null);
@@ -52,9 +30,10 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
   }, []);
 
   useEffect(() => {
+    let unsubscribeProfile: () => void = () => {};
     if (user && db) {
       const userDocRef = doc(db, 'users', user.uid);
-      const unsubscribeProfile = onSnapshot(userDocRef, (doc) => {
+      unsubscribeProfile = onSnapshot(userDocRef, (doc) => {
         if (doc.exists()) {
           setUserProfile(doc.data() as UserProfile);
         } else {
@@ -69,9 +48,8 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
         console.error("Error listening to profile changes:", error);
         setLoading(false);
       });
-
-      return () => unsubscribeProfile();
     }
+    return () => unsubscribeProfile();
   }, [user]);
 
   const logout = async () => {
@@ -80,7 +58,7 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
     }
   };
 
-  const value = useMemo(
+  const value = useMemo<AuthContextType>(
     () => ({
       user,
       userProfile,
