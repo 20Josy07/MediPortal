@@ -169,15 +169,6 @@ export function LoginForm() {
             >
               {isGoogleLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <GoogleIcon className="h-6 w-6 text-foreground" />}
            </Button>
-           <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
-              <FacebookIcon className="h-6 w-6 text-foreground" />
-           </Button>
-           <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
-              <LinkedinIcon className="h-6 w-6 text-foreground" />
-           </Button>
-            <Button variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center">
-              <MicrosoftIcon className="h-6 w-6 text-foreground" />
-           </Button>
         </div>
       </div>
     </div>
