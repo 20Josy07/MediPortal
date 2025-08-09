@@ -31,70 +31,80 @@ if (firebaseConfig.apiKey) {
 export const signInWithGoogle = async (auth: Auth, db: Firestore): Promise<User> => {
   console.log("Iniciando proceso de autenticación con Google...");
   const provider = new GoogleAuthProvider();
-  
-  // Añadir scopes para los permisos necesarios
-  provider.addScope('email');
-  provider.addScope('profile');
-  provider.addScope('https://www.googleapis.com/auth/calendar');
-  provider.addScope('https://www.googleapis.com/auth/calendar.events');
-  
-  // Configurar el parámetro de acceso sin conexión para obtener refresh tokens
+
+  // Scopes necesarios
+  provider.addScope("email");
+  provider.addScope("profile");
+  provider.addScope("https://www.googleapis.com/auth/calendar");
+  provider.addScope("https://www.googleapis.com/auth/calendar.events");
+
+  // Nota: access_type=offline + prompt=consent NO garantiza refresh token en cliente
   provider.setCustomParameters({
-    access_type: 'offline',
-    prompt: 'consent'
+    access_type: "offline",
+    prompt: "consent",
   });
 
   try {
     console.log("Abriendo ventana de autenticación...");
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+
     console.log("Usuario autenticado:", {
       uid: user.uid,
       email: user.email,
-      displayName: user.displayName
+      displayName: user.displayName,
     });
 
-    // Obtener el token de acceso de Google
+    // Credenciales de Google (cliente)
     const credential = GoogleAuthProvider.credentialFromResult(result);
-    const accessToken = credential?.accessToken;
-    const refreshToken = credential?.refreshToken; // Correct way to get refresh token is usually server-side
-    
+    const accessToken = credential?.accessToken ?? null;
+    const idToken = credential?.idToken ?? null;
+
+    // Firebase maneja internamente el refresh token del usuario en cliente.
+    // Si lo necesitas (no recomendado), está en user.refreshToken (prop interna/no estable).
+    const refreshToken = result.user?.refreshToken ?? null;
+
     console.log("Tokens obtenidos:", {
-      accessToken: accessToken ? "✅ Token de acceso recibido" : "❌ No se recibió token de acceso",
-      refreshToken: refreshToken ? "✅ Refresh token recibido" : "❌ No se recibió refresh token"
+      accessToken: accessToken ? "✅ Token de acceso recibido" : "❌ Sin accessToken",
+      idToken: idToken ? "✅ ID token recibido" : "❌ Sin idToken",
+      refreshToken: refreshToken ? "⚠️ refreshToken (cliente)" : "—",
     });
 
-    const userDocRef = doc(db, 'users', user.uid);
-    console.log("Buscando usuario en Firestore...");
+    const userDocRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(userDocRef);
+
+    const baseData = {
+      fullName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+    };
 
     if (!docSnap.exists()) {
       console.log("Usuario no existe en Firestore, creando documento...");
       await setDoc(userDocRef, {
-        fullName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
+        ...baseData,
         validated: false,
+        // Guarda tokens SOLO si realmente los usas en cliente (no recomendado persistir tokens sensibles)
         calendarAccessToken: accessToken,
-        calendarRefreshToken: refreshToken,
+        // Evita guardar refresh tokens del cliente; si insistes, entiende el riesgo:
+        // calendarRefreshToken: refreshToken,
         createdAt: serverTimestamp(),
       });
       console.log("Documento de usuario creado en Firestore");
     } else {
       console.log("Usuario encontrado en Firestore, actualizando tokens...");
       await updateDoc(userDocRef, {
+        // Actualiza solo lo necesario
         calendarAccessToken: accessToken,
-        calendarRefreshToken: refreshToken,
+        // calendarRefreshToken: refreshToken,
       });
       console.log("Tokens actualizados en Firestore");
     }
-    
+
     console.log("Proceso de autenticación completado con éxito");
     return user;
   } catch (error) {
-    console.error("❌ Error durante el inicio de sesión con Google:", {
-      errorDetails: error
-    });
+    console.error("❌ Error durante el inicio de sesión con Google:", { errorDetails: error });
     throw error;
   }
 };
