@@ -397,18 +397,27 @@ export default function SmartNotesPage() {
       let text = '';
       if (file.type === 'text/plain') {
         text = await file.text();
-      } else if (file.type === 'application/pdf') {
-        const { default: pdfjs } = await import('pdfjs-dist/build/pdf');
-        const { GlobalWorkerOptions } = await import('pdfjs-dist/build/pdf');
-        GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjs.getDocument(arrayBuffer).promise;
-        let fullText = '';
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
+        } else if (file.type === 'application/pdf') {
+          // Importa la librería principal (no la ruta build/pdf)
+          const pdfjsLib = await import('pdfjs-dist');
+          const { getDocument, GlobalWorkerOptions, version } = pdfjsLib;
+        
+          // Configura el worker (ruta interna del paquete)
+          GlobalWorkerOptions.workerSrc = new URL(
+            'pdfjs-dist/build/pdf.worker.min.mjs',
+            import.meta.url
+          ).toString();
+        
+          // Leer y procesar el PDF
+          const arrayBuffer = await file.arrayBuffer();
+          const loadingTask = getDocument({ data: new Uint8Array(arrayBuffer) });
+          const pdf = await loadingTask.promise;
+        
+          // Ejemplo: leer el texto de la primera página
+          const page = await pdf.getPage(1);
           const textContent = await page.getTextContent();
-          fullText += textContent.items.map((item: any) => item.str).join(' ');
-        }
+          text = textContent.items.map((item: any) => item.str).join(' ');
+        }   
         text = fullText;
       } else if (file.name.endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         const { default: mammoth } = await import('mammoth');
