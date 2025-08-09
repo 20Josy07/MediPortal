@@ -482,7 +482,7 @@
     footer {
         background-color: var(--footer-bg);
         color: var(--footer-text);
-        @apply pt-5 pb-4 px-[5%] text-sm;
+        @apply pt-16 pb-4 px-[5%] text-sm;
     }
 
     .footer-container {
@@ -531,10 +531,6 @@
     .footer-bottom {
         border-color: var(--footer-bottom-border);
         @apply text-center pt-4 border-t text-xs;
-    }
-
-    .footer-bottom p {
-        color: var(--footer-text);
     }
 
     .login-shimmer-button {

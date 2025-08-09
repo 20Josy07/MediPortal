@@ -4,7 +4,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, BarChart, Folder, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays, BarChart2, X } from "lucide-react";
+import { ArrowRight, FileText, BarChart, Folder, Check, UserPlus, Calendar, Sparkles, FilePenLine, Bell, LayoutGrid, CalendarDays, BarChart2, X, Mail, Github, Twitter } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -332,9 +332,9 @@ export default function Home() {
           <div className="footer-column">
             <h3>Contacto</h3>
             <ul>
-              <li><a href="mailto:hola@zenda.ai">✉️ hola@zenda.ai</a></li>
-              <li><a href="#">🐙 GitHub</a></li>
-              <li><a href="#">🐦 Twitter</a></li>
+              <li><a href="mailto:hola@zenda.ai" className="flex items-center gap-2"><Mail className="h-4 w-4" /> hola@zenda.ai</a></li>
+              <li><a href="#" className="flex items-center gap-2"><Github className="h-4 w-4" /> GitHub</a></li>
+              <li><a href="#" className="flex items-center gap-2"><Twitter className="h-4 w-4" /> Twitter</a></li>
             </ul>
           </div>
         </div>
