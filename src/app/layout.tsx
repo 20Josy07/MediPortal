@@ -66,10 +66,10 @@ export default function RootLayout({
           {`
             window.fbAsyncInit = function() {
               FB.init({
-                appId      : '{your-app-id}',
+                appId      : 'your-app-id',
                 cookie     : true,
                 xfbml      : true,
-                version    : '{api-version}'
+                version    : 'v20.0'
               });
               FB.AppEvents.logPageView();
             };
