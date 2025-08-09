@@ -31,20 +31,6 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  async headers() {
-    return [
-      {
-        source: '/:all*(svg|jpg|jpeg|png|gif|ico|webp|avif|js|css)',
-        locale: false,
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ]
-  },
   webpack: (config, options: WebpackConfigContext) => {
     if (!options.isServer) {
       config.resolve.fallback = {
