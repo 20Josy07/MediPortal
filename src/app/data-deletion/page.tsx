@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AuthLogo } from "@/components/auth/auth-logo";
@@ -10,13 +11,14 @@ export default function DataDeletionPage() {
   const dataDeletionInstructions = `
     <p>En Zenda, respetamos tu derecho a controlar tu información. Si deseas eliminar tu cuenta y todos los datos asociados, sigue estos pasos:</p>
     <ol>
-        <li><strong>Envía un correo electrónico:</strong> Redacta un correo electrónico desde la dirección de email con la que te registraste en nuestra plataforma.</li>
-        <li><strong>Destinatario:</strong> Dirige el correo a <a href="mailto:soporte-baja@zenda.ai" style="color: hsl(var(--primary)); text-decoration: underline;">soporte-baja@zenda.ai</a>.</li>
-        <li><strong>Asunto:</strong> Utiliza el asunto "Solicitud de Eliminación de Datos".</li>
-        <li><strong>Contenido del correo:</strong> En el cuerpo del mensaje, por favor, indica claramente tu nombre de usuario y tu deseo de eliminar permanentemente tu cuenta y toda la información asociada.</li>
+        <li><strong>Ve a la Configuración:</strong> Dentro de la aplicación, navega a la sección "Configuración" en tu panel de control.</li>
+        <li><strong>Busca la sección "Seguridad y Privacidad":</strong> Expande esta sección para ver las opciones relacionadas con tu cuenta.</li>
+        <li><strong>Haz clic en "Eliminar mi cuenta":</strong> Encontrarás un botón para iniciar el proceso de eliminación.</li>
+        <li><strong>Confirma la acción:</strong> Se te pedirá que confirmes tu decisión. Lee atentamente las advertencias, ya que esta acción es irreversible.</li>
     </ol>
     <p><strong>Proceso y plazos:</strong></p>
-    <p>Una vez que recibamos tu solicitud, nuestro equipo la verificará. La eliminación de los datos se completará en un plazo máximo de 30 días hábiles. Te enviaremos una confirmación por correo electrónico una vez que el proceso haya finalizado. Esta acción es irreversible.</p>
+    <p>Una vez que confirmes la eliminación, tu cuenta y todos los datos asociados se borrarán de forma inmediata y permanente de nuestros servidores. No podrás recuperar tu información una vez completado el proceso.</p>
+    <p>Si tienes problemas para acceder a tu cuenta, puedes enviar un correo a <a href="mailto:soporte-baja@zenda.ai" style="color: hsl(var(--primary)); text-decoration: underline;">soporte-baja@zenda.ai</a> para solicitar la eliminación manual.</p>
   `;
 
   return (

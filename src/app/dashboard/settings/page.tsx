@@ -8,13 +8,18 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Shield, Settings2, CreditCard, Puzzle, KeyRound, Eye, Smartphone, Calendar, Video, MessageSquare, Mail, Banknote } from "lucide-react";
+import { User, Bell, Shield, Settings2, CreditCard, Puzzle, KeyRound, Eye, Smartphone, Calendar, Video, MessageSquare, Mail, Banknote, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { deleteUserAccount } from "@/lib/firebase";
 
 
 const NotificationSettings = () => (
@@ -136,6 +141,62 @@ const BillingSettings = () => (
     </div>
 );
 
+const SecuritySettings = () => {
+    const { user, logout } = useAuth();
+    const { toast } = useToast();
+    const router = useRouter();
+
+    const handleDeleteAccount = async () => {
+        if (!user) return;
+        try {
+            await deleteUserAccount(user);
+            toast({
+                title: "Cuenta eliminada",
+                description: "Tu cuenta ha sido eliminada permanentemente.",
+            });
+            await logout();
+            router.push('/');
+        } catch (error: any) {
+            console.error(error);
+            toast({
+                variant: "destructive",
+                title: "Error al eliminar la cuenta",
+                description: "Por favor, cierra sesión y vuelve a iniciarla antes de intentar eliminar tu cuenta.",
+            });
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+                La eliminación de tu cuenta es una acción irreversible. Se borrarán todos tus datos, incluyendo perfiles de pacientes, notas y sesiones.
+            </p>
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Eliminar mi cuenta permanentemente
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Todos tus datos serán eliminados de nuestros servidores.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
+                            Sí, eliminar mi cuenta
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
+    );
+};
+
 
 const settingsItems = [
   {
@@ -156,6 +217,12 @@ const settingsItems = [
     description: "Revisa tu plan actual y gestiona tu suscripción.",
     content: <BillingSettings />,
   },
+  {
+    icon: Shield,
+    title: "Seguridad y Privacidad",
+    description: "Gestiona la seguridad de tu cuenta y tus datos.",
+    content: <SecuritySettings />,
+  }
 ];
 
 export default function SettingsPage() {
