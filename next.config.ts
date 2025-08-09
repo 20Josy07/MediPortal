@@ -1,5 +1,6 @@
 
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
+import type { WebpackConfigContext } from 'next/dist/server/config-shared';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -45,8 +46,8 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
+  webpack: (config, options: WebpackConfigContext) => {
+    if (!options.isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         "handlebars": false,
