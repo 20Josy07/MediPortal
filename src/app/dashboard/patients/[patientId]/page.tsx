@@ -1,7 +1,7 @@
 import { PatientDetailPage } from "@/components/dashboard/patient-detail-page";
+import type { PageProps } from "next";
 
-type Props = { params: { patientId: string } };
-
-export default function Page({ params }: Props) {
-  return <PatientDetailPage patientId={params.patientId} />;
+export default async function Page({ params }: PageProps<{ patientId: string }>) {
+  const { patientId } = await params; // 👈 en Next 15, params puede ser Promise
+  return <PatientDetailPage patientId={patientId} />;
 }
