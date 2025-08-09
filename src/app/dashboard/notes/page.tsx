@@ -38,8 +38,9 @@ type ChatMessage = {
 
 type NoteTemplate = "SOAP" | "DAP";
 type GeneratedBlocks = ReformatNoteOutput;
+type OnCommand = (command: string, value?: string) => void;
 
-const RichTextEditorToolbar = ({ onCommand }) => {
+const RichTextEditorToolbar: React.FC<{ onCommand: OnCommand }> = ({ onCommand }) => {
     const colorInputRef = useRef<HTMLInputElement>(null);
 
     const handleColorClick = () => {
@@ -675,7 +676,7 @@ export default function SmartNotesPage() {
     doc.save(`${editableNoteTitle}.pdf`);
   };
 
-  const handleEditorCommand = (command: string, value?: string) => {
+  const handleEditorCommand: OnCommand = (command, value) => {
     document.execCommand(command, false, value);
     editorRef.current?.focus();
   };
