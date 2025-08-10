@@ -26,7 +26,7 @@ export async function GET(request: Request) {
       path: '/',
     });
 
-    return NextResponse.redirect(new URL('/protected', request.url));
+    return NextResponse.redirect(new URL('/dashboard/sessions', request.url));
 
   } catch (error) {
     console.error('Error en el callback de Google:', error);
