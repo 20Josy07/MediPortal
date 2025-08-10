@@ -1,74 +1,82 @@
-# 🌿 Zenda – Tu Asistente Inteligente para Terapia
+# 🌿 Zenda – Tu Asistente Inteligente para Terapia  
 
-**Zenda** es una aplicación web moderna para psicólogos y terapeutas que centraliza la gestión de pacientes, la programación de sesiones y la documentación clínica.  
-Integra herramientas inteligentes impulsadas por IA para ayudarte a dedicar más tiempo a lo que realmente importa: tus pacientes.
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)  
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)  
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)  
+[![Website](https://img.shields.io/badge/Web-Zendapsi.com-green?style=for-the-badge&logo=google-chrome)](https://zendapsi.com)  
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)  
 
----
+<p align="center">
+  <img src="docs/screenshots/mockup-dashboard.png" alt="Vista del dashboard de Zenda" width="800"/>
+</p>
 
-## ✨ Funcionalidades Principales
-
-- **📋 Gestión de Pacientes**: Registra y organiza información de forma centralizada y segura.
-- **📅 Calendario Interactivo**: Agenda sesiones con vistas de mes, semana y día, y gestión por arrastrar/soltar.
-- **🔗 Integración con Google Calendar**: Sincroniza automáticamente tus citas para tener todo en un solo lugar.
-- **📝 Notas Inteligentes con IA**:
-  - **Transcripción Automática**: Convierte audios de tus sesiones en texto preciso.
-  - **Formateo Clínico Instantáneo**: Pasa de notas en bruto a formatos SOAP o DAP en un clic.
-  - **Resúmenes Rápidos**: Obtén resúmenes concisos para revisar casos en segundos.
-- **🤖 Asistente Clínico IA**: Haz preguntas sobre las notas y recibe insights útiles.
-- **📊 Informes Profesionales**: Genera informes de progreso en PDF listos para compartir.
-- **🔒 Autenticación Segura**: Registro e inicio de sesión protegidos con Firebase Authentication.
+**Zenda** es una aplicación web moderna para psicólogos y terapeutas que centraliza la gestión de pacientes, la programación de sesiones y la documentación clínica, integrando herramientas inteligentes impulsadas por IA.
 
 ---
 
-## 🛠️ Stack Tecnológico
+## ✨ Funcionalidades Principales  
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
-- **UI**: [React](https://react.dev/) + [Tailwind CSS](https://tailwindcss.com/) + [ShadCN UI](https://ui.shadcn.com/)
-- **Backend y DB**: [Firebase](https://firebase.google.com/) (Authentication, Firestore)
-- **IA**: [Genkit](https://firebase.google.com/docs/genkit)
-- **Validación y Formularios**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-
----
-
-## 📂 Estructura del Proyecto
-
-```
-/src
-├── app           # Rutas y páginas (Next.js App Router)
-├── components    # Componentes reutilizables por funcionalidad
-├── ai            # Flujos y configuración de IA con Genkit
-├── lib           # Configuración Firebase, utilidades y tipos
-├── context       # Contextos globales (ej. AuthContext)
-└── hooks         # Hooks personalizados
-```
+- **📋 Gestión de Pacientes**: Información centralizada y segura.  
+- **📅 Calendario Interactivo**: Agenda con vistas de mes, semana y día.  
+- **🔗 Integración con Google Calendar**: Sincroniza automáticamente tus citas.  
+- **📝 Notas Inteligentes con IA**: Transcripción, formateo clínico (SOAP/DAP) y resúmenes.  
+- **🤖 Asistente Clínico IA**: Pregunta y recibe insights sobre las notas.  
+- **📊 Informes Profesionales**: Exporta PDF listos para entregar.  
+- **🔒 Autenticación Segura**: Con inicio de sesión social mediante Google.  
 
 ---
 
-## 🆕 Changelog – v1.0 (Lanzamiento Inicial)
+## 🛠️ Stack Tecnológico  
 
-**Funcionalidades:**
-- Gestión integral de pacientes
-- Calendario interactivo con integración a Google Calendar
-- Notas inteligentes (transcripción, formateo, resúmenes y consultas IA)
-- Informes de progreso en PDF
-- Autenticación segura con opciones de inicio de sesión social
-- Proceso de eliminación de cuenta con reautenticación
-
-**Mejoras de UI/UX:**
-- Interfaz refinada y responsiva en dispositivos móviles
-- Menús de navegación optimizados
-- Página de inicio con carrusel automático
-- Términos y condiciones claros y accesibles
+| Categoría      | Herramientas |
+|----------------|--------------|
+| **Framework**  | [Next.js](https://nextjs.org/) |
+| **Lenguaje**   | [TypeScript](https://www.typescriptlang.org/) |
+| **UI**         | [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [ShadCN UI](https://ui.shadcn.com/) |
+| **Backend/DB** | [Firebase](https://firebase.google.com/) |
+| **IA**         | [Genkit](https://firebase.google.com/docs/genkit) |
+| **Formularios**| [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) |
 
 ---
 
-## 👥 Equipo
+## 📸 Vista Previa  
 
-**Zenda es posible gracias a un equipo joven, multidisciplinario y apasionado:**
-- **Josimar Acosta** – Full-Stack Developer  
-- **María De Los Ríos** – Full-Stack Developer  
-- **María Madrigal** – UI Designer  
-- **Juan Gallardo** – FCA Mentor  
+<p align="center">
+  <img src="docs/screenshots/login.png" alt="Zenda Login" width="400"/>  
+  <img src="docs/screenshots/calendar.png" alt="Zenda Calendar" width="400"/>  
+</p>  
 
-💚 *Trabajamos para que cada psicólogo pueda concentrarse en lo más importante: acompañar a sus pacientes.*
+> 💡 Agrega más capturas en `docs/screenshots/` para mostrar otras funciones.
+
+---
+
+## 🆕 Changelog – v1.0  
+
+- **Gestión integral de pacientes**  
+- **Calendario interactivo + Google Calendar**  
+- **Notas inteligentes con IA**  
+- **Informes PDF automáticos**  
+- **UI responsiva y optimizada**  
+
+---
+
+## 👥 Equipo  
+
+💚 *Zenda es posible gracias a un equipo joven y multidisciplinario:*  
+
+- [**Josimar Acosta**](#) – Full-Stack Developer  
+- [**María De Los Ríos**](#) – Full-Stack Developer  
+- [**María Madrigal**](#) – UI Designer  
+- [**Juan Gallardo**](#) – FCA Mentor  
+
+---
+
+## 📲 Conecta con nosotros  
+
+[![Website](https://img.shields.io/badge/Web-Zendapsi.com-green?style=for-the-badge&logo=google-chrome)](https://zendapsi.com)  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Zenda-blue?style=for-the-badge&logo=linkedin)](#)  
+[![Instagram](https://img.shields.io/badge/Instagram-Zenda-purple?style=for-the-badge&logo=instagram)](#)  
+[![Twitter](https://img.shields.io/badge/Twitter-Zenda-blue?style=for-the-badge&logo=twitter)](#)  
+
+---
+
