@@ -267,7 +267,7 @@ export default function Home() {
                 opts={{ loop: true }}
                 plugins={[autoplayPlugin.current]}
                 onMouseEnter={autoplayPlugin.current.stop}
-                onMouseLeave={autoplayPlugin.current.reset}
+                onMouseLeave={autoplayPlugin.current.play}
             >
               <CarouselContent>
                 {advantages.map((advantage, index) => (
