@@ -113,8 +113,8 @@ function HeroImage() {
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const autoplayPlugin = useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
+  const autoplayPlugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
   const toggleMenu = () => {
