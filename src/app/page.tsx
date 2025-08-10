@@ -113,8 +113,8 @@ function HeroImage() {
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const autoplayPlugin = useRef(
-    Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
+  const autoplayPlugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
   const toggleMenu = () => {
@@ -266,9 +266,6 @@ export default function Home() {
                 className="w-full max-w-6xl mx-auto"
                 opts={{ loop: true }}
                 plugins={[autoplayPlugin.current]}
-                onMouseEnter={() => autoplayPlugin.current?.stop()}
-                onMouseLeave={() => autoplayPlugin.current?.play()} // o .play(false) si tu plugin lo requiere
-
             >
               <CarouselContent>
                 {advantages.map((advantage, index) => (
