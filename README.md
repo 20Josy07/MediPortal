@@ -34,7 +34,6 @@ Integra herramientas inteligentes impulsadas por IA para ayudarte a dedicar más
 ## 📂 Estructura del Proyecto
 
 ```
-
 /src
 ├── app           # Rutas y páginas (Next.js App Router)
 ├── components    # Componentes reutilizables por funcionalidad
@@ -42,7 +41,6 @@ Integra herramientas inteligentes impulsadas por IA para ayudarte a dedicar más
 ├── lib           # Configuración Firebase, utilidades y tipos
 ├── context       # Contextos globales (ej. AuthContext)
 └── hooks         # Hooks personalizados
-
 ```
 
 ---
