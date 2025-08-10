@@ -112,7 +112,9 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la 
 
 ¡Zenda es posible gracias a un equipo increíble!
 
-- **[Nombre del Desarrollador/a]**: Rol (Ej: Full-Stack Developer, UI/UX Designer)
-- **[Otro Nombre]**: Rol
+- **Josimar Acosta**: Full-Stack Developer
+- **María De Los Ríos**: Full-Stack Developer
+- **María Madrigal**: UI Designer
+- **Juan Gallardo**: FCA Mentor
 
-*Si quieres contribuir, ¡no dudes en abrir un Pull Request!*
+*En Zenda, trabajamos con 💚 para ofrecerte la mejor experiencia.*
