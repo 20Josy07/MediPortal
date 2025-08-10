@@ -6,6 +6,7 @@ Zenda es una aplicación web moderna diseñada para psicólogos y terapeutas, qu
 
 - **Gestión de Pacientes**: Registra y organiza la información de tus pacientes de forma centralizada.
 - **Calendario de Sesiones**: Agenda y visualiza todas tus citas en un calendario interactivo con vistas de mes, semana y día.
+- **Integración con Google Calendar**: Sincroniza las sesiones de Zenda con tu calendario de Google para una gestión unificada.
 - **Notas Inteligentes**:
     - **Transcripción de Audio**: Graba o sube el audio de tus sesiones y obtén una transcripción automática.
     - **Formateo Automático**: Convierte notas en bruto a formatos estándar como SOAP o DAP con un solo clic.
@@ -48,14 +49,19 @@ Sigue estos pasos para ejecutar el proyecto en tu entorno local.
    ```bash
    npm install
    ```
-4. Configura tus variables de entorno. Crea un archivo `.env` en la raíz del proyecto y añade tus credenciales de Firebase:
+4. Configura tus variables de entorno. Crea un archivo `.env.local` en la raíz del proyecto y añade tus credenciales de Firebase y Google Cloud:
    ```
+   # Firebase Configuration
    NEXT_PUBLIC_FIREBASE_API_KEY=...
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
    NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
    NEXT_PUBLIC_FIREBASE_APP_ID=...
+
+   # Google Calendar API Configuration
+   GOOGLE_CLIENT_ID=...
+   GOOGLE_CLIENT_SECRET=...
    ```
 
 ### Ejecutar la Aplicación
@@ -75,3 +81,24 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la 
 - **`/src/lib`**: Funciones de utilidad, configuración de Firebase, y definiciones de tipos (`types.ts`).
 - **`/src/context`**: Contiene el `AuthContext` para la gestión de la autenticación en toda la aplicación.
 - **`/src/hooks`**: Hooks personalizados como `useToast` y `useMobile`.
+
+---
+
+## Changelog
+
+### v1.0 - Lanzamiento Inicial
+
+¡Estamos emocionados de lanzar la primera versión de Zenda!
+
+**Nuevas Características y Mejoras:**
+- **Integración con Google Calendar**: Ahora puedes vincular tu cuenta de Google para crear y sincronizar sesiones directamente en tu calendario.
+- **Flujo de Eliminación de Cuenta Mejorado**: Se ha implementado un sistema de reautenticación para garantizar que la eliminación de la cuenta sea segura y efectiva.
+- **Páginas Legales Actualizadas**: Se han corregido y actualizado las instrucciones en la página de eliminación de datos.
+- **Interfaz de Usuario Refinada**:
+    - Corregido el problema de visualización del favicon en toda la aplicación.
+    - Se han realizado ajustes de diseño en el pie de página y los menús para mejorar la experiencia visual.
+    - Se ha mejorado la responsividad del menú de navegación en dispositivos móviles.
+- **Experiencia de Usuario Optimizada**:
+    - Se ha simplificado el formulario de inicio de sesión, manteniendo solo la autenticación con Google como opción social principal.
+    - El carrusel de la página de inicio ahora tiene un desplazamiento automático e infinito para una presentación más dinámica.
+    - Se ha limpiado el menú de navegación lateral, eliminando secciones no implementadas.
