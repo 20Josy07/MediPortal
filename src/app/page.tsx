@@ -114,7 +114,7 @@ function HeroImage() {
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const autoplayPlugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: false, stopOnMouseEnter: true })
+    Autoplay({ delay: 5000, stopOnInteraction: false, stopOnMouseEnter: true })
   );
 
   const toggleMenu = () => {
@@ -168,11 +168,11 @@ export default function Home() {
         {/* Mobile Menu */}
         {isMenuOpen && (
         <div 
-          className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-            isMenuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
+          className={`md:hidden bg-[#18441E] dark:bg-background transition-all duration-300 ease-in-out overflow-hidden ${
+            isMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <nav className="flex flex-col space-y-4 py-4">
+          <nav className="flex flex-col items-center space-y-4 py-4">
             <Link 
               href="/" 
               className="text-white dark:text-foreground hover:text-white/80 dark:hover:text-primary py-2 text-base font-medium"
@@ -266,9 +266,8 @@ export default function Home() {
                 className="w-full max-w-6xl mx-auto"
                 opts={{ loop: true }}
                 plugins={[autoplayPlugin.current]}
-                onMouseEnter={() => autoplayPlugin.current?.stop()}
-                onMouseLeave={() => autoplayPlugin.current?.play()} // o .play(false) si tu plugin lo requiere
-
+                onMouseEnter={autoplayPlugin.current.stop}
+                onMouseLeave={autoplayPlugin.current.reset}
             >
               <CarouselContent>
                 {advantages.map((advantage, index) => (
@@ -356,3 +355,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
