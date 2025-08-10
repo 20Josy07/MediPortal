@@ -621,24 +621,16 @@ export function SessionsCalendar() {
         </CardContent>
       </Card>
 
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedSession ? 'Editar Sesión' : 'Agendar Nueva Sesión'}</DialogTitle>
-            <DialogDescription>
-              Completa los detalles para agendar una nueva cita.
-            </DialogDescription>
-          </DialogHeader>
-          <SessionForm
-            session={selectedSession}
-            patients={patients}
-            sessions={sessions}
-            onSubmit={handleFormSubmit}
-            onCancel={() => { setIsFormOpen(false); setSelectedSession(null); }}
-            initialDate={selectedDate}
-          />
-        </DialogContent>
-      </Dialog>
+      {isFormOpen && (
+        <SessionForm
+          session={selectedSession}
+          patients={patients}
+          sessions={sessions}
+          onSubmit={handleFormSubmit}
+          onCancel={() => { setIsFormOpen(false); setSelectedSession(null); }}
+          initialDate={selectedDate}
+        />
+      )}
       
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent>

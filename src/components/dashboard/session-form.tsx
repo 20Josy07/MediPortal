@@ -312,104 +312,92 @@ export function SessionForm({
     
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            {session ? "Editar Sesión" : "Nueva Sesión"}
-          </h2>
-          <button
-            onClick={onCancel}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            X
-          </button>
-        </div>
-          <div className="overflow-y-auto pr-2 -mr-2">
+    <div className="bg-background rounded-lg p-6 w-full max-w-md max-h-[90vh] flex flex-col">
+        <div className="overflow-y-auto pr-2 -mr-2">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
                 <FormField
-                  control={form.control}
-                  name="patientId"
-                  render={({ field }) => (
+                control={form.control}
+                name="patientId"
+                render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Paciente</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel>Paciente</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                        <SelectTrigger>
                             <SelectValue placeholder="Selecciona un paciente" />
-                          </SelectTrigger>
+                        </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {patients.map((patient) => (
+                        {patients.map((patient) => (
                             <SelectItem key={patient.id} value={patient.id}>
-                              {patient.name}
+                            {patient.name}
                             </SelectItem>
-                          ))}
+                        ))}
                         </SelectContent>
-                      </Select>
-                      <FormMessage />
+                    </Select>
+                    <FormMessage />
                     </FormItem>
-                  )}
+                )}
                 />
                 <div className="grid grid-cols-2 gap-2">
-                  <FormField
+                <FormField
                     control={form.control}
                     name="date"
                     render={({ field }) => (
-                      <FormItem className="flex flex-col">
+                    <FormItem className="flex flex-col">
                         <FormLabel>Fecha</FormLabel>
                         <Popover>
-                          <PopoverTrigger asChild>
+                        <PopoverTrigger asChild>
                             <FormControl>
-                              <Button
+                            <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "w-full pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
                                 )}
-                              >
+                            >
                                 {field.value ? (
-                                  format(field.value, "PPP", { locale: es })
+                                format(field.value, "PPP", { locale: es })
                                 ) : (
-                                  <span>Elige una fecha</span>
+                                <span>Elige una fecha</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
+                            </Button>
                             </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => date < new Date("1900-01-01")}
-                              initialFocus
-                              locale={es}
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) => date < new Date("1900-01-01")}
+                            initialFocus
+                            locale={es}
                             />
-                          </PopoverContent>
+                        </PopoverContent>
                         </Popover>
                         <FormMessage />
-                      </FormItem>
+                    </FormItem>
                     )}
-                  />
-                  <FormField
+                />
+                <FormField
                     control={form.control}
                     name="time"
                     render={({ field }) => (
-                      <FormItem>
+                    <FormItem>
                         <FormLabel>Hora de Inicio</FormLabel>
                         <FormControl>
-                          <Input type="time" {...field} />
+                        <Input type="time" {...field} />
                         </FormControl>
                         <FormMessage />
-                      </FormItem>
+                    </FormItem>
                     )}
-                  />
+                />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-2">
-                  <FormField
+                <FormField
                         control={form.control}
                         name="duration"
                         render={({ field }) => (
@@ -434,75 +422,75 @@ export function SessionForm({
                         )}
                     />
                     <div>
-                      <FormLabel>Hora de Fin</FormLabel>
-                      <Input type="text" value={getEndTime()} disabled className="bg-muted" />
+                    <FormLabel>Hora de Fin</FormLabel>
+                    <Input type="text" value={getEndTime()} disabled className="bg-muted" />
                     </div>
                 </div>
                 {durationValue === 'custom' && (
                     <FormField
-                      control={form.control}
-                      name="customDuration"
-                      render={({ field }) => (
+                    control={form.control}
+                    name="customDuration"
+                    render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Duración Personalizada (minutos)</FormLabel>
-                          <FormControl>
+                        <FormLabel>Duración Personalizada (minutos)</FormLabel>
+                        <FormControl>
                             <Input 
                                 type="number"
                                 placeholder="Ej: 50"
                                 {...field}
                                 onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
                             />
-                          </FormControl>
-                          <FormMessage />
+                        </FormControl>
+                        <FormMessage />
                         </FormItem>
-                      )}
+                    )}
                     />
-                  )}
+                )}
 
                 <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
+                control={form.control}
+                name="type"
+                render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Sesión</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel>Tipo de Sesión</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                        <SelectTrigger>
                             <SelectValue placeholder="Selecciona un tipo" />
-                          </SelectTrigger>
+                        </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Individual">Individual</SelectItem>
-                          <SelectItem value="Pareja">Pareja</SelectItem>
-                          <SelectItem value="Familiar">Familiar</SelectItem>
+                        <SelectItem value="Individual">Individual</SelectItem>
+                        <SelectItem value="Pareja">Pareja</SelectItem>
+                        <SelectItem value="Familiar">Familiar</SelectItem>
                         </SelectContent>
-                      </Select>
-                      <FormMessage />
+                    </Select>
+                    <FormMessage />
                     </FormItem>
-                  )}
+                )}
                 />
                 <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
+                control={form.control}
+                name="status"
+                render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estado</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel>Estado</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger>
+                        <SelectTrigger>
                             <SelectValue placeholder="Selecciona un estado" />
-                          </SelectTrigger>
+                        </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Confirmada">Confirmada</SelectItem>
-                          <SelectItem value="Pendiente">Pendiente</SelectItem>
-                          <SelectItem value="Cancelada">Cancelada</SelectItem>
-                          <SelectItem value="No asistió">No asistió</SelectItem>
+                        <SelectItem value="Confirmada">Confirmada</SelectItem>
+                        <SelectItem value="Pendiente">Pendiente</SelectItem>
+                        <SelectItem value="Cancelada">Cancelada</SelectItem>
+                        <SelectItem value="No asistió">No asistió</SelectItem>
                         </SelectContent>
-                      </Select>
-                      <FormMessage />
+                    </Select>
+                    <FormMessage />
                     </FormItem>
-                  )}
+                )}
                 />
 
                 <Separator className="!my-4"/>
@@ -546,15 +534,14 @@ export function SessionForm({
                 </div>
 
                 <div className="flex justify-end gap-2 pt-4">
-                  <Button type="button" variant="outline" onClick={onCancel}>
+                <Button type="button" variant="outline" onClick={onCancel}>
                     Cancelar
-                  </Button>
-                  <Button type="submit">Guardar Sesión</Button>
+                </Button>
+                <Button type="submit">Guardar Sesión</Button>
                 </div>
-              </form>
+            </form>
             </Form>
-          </div>
         </div>
-      </div>
+    </div>
     );
 }
