@@ -266,8 +266,9 @@ export default function Home() {
                 className="w-full max-w-6xl mx-auto"
                 opts={{ loop: true }}
                 plugins={[autoplayPlugin.current]}
-                onMouseEnter={autoplayPlugin.current.stop}
-                onMouseLeave={autoplayPlugin.current.play}
+                onMouseEnter={() => autoplayPlugin.current?.stop()}
+                onMouseLeave={() => autoplayPlugin.current?.play()} // o .play(false) si tu plugin lo requiere
+
             >
               <CarouselContent>
                 {advantages.map((advantage, index) => (
