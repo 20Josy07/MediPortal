@@ -102,3 +102,12 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la 
     - Se ha simplificado el formulario de inicio de sesión, manteniendo solo la autenticación con Google como opción social principal.
     - El carrusel de la página de inicio ahora tiene un desplazamiento automático e infinito para una presentación más dinámica.
     - Se ha limpiado el menú de navegación lateral, eliminando secciones no implementadas.
+
+## 👥 Colaboradores y Desarrolladores
+
+¡Zenda es posible gracias a un equipo increíble!
+
+- **[Nombre del Desarrollador/a]**: Rol (Ej: Full-Stack Developer, UI/UX Designer)
+- **[Otro Nombre]**: Rol
+
+*Si quieres contribuir, ¡no dudes en abrir un Pull Request!*

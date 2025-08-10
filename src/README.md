@@ -107,3 +107,12 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la 
 - **Experiencia Móvil Optimizada**: Se ha mejorado la responsividad del menú de navegación en dispositivos móviles para una experiencia fluida en cualquier pantalla.
 - **Experiencia de Usuario Mejorada**: Se ha simplificado el formulario de inicio de sesión y se ha añadido un carrusel con desplazamiento automático e infinito en la página de inicio para una presentación más dinámica.
 - **Páginas Legales Claras**: Se han actualizado las instrucciones en la página de eliminación de datos y se han clarificado los términos y condiciones.
+
+## 👥 Colaboradores y Desarrolladores
+
+¡Zenda es posible gracias a un equipo increíble!
+
+- **[Nombre del Desarrollador/a]**: Rol (Ej: Full-Stack Developer, UI/UX Designer)
+- **[Otro Nombre]**: Rol
+
+*Si quieres contribuir, ¡no dudes en abrir un Pull Request!*
