@@ -1,10 +1,12 @@
 # 🌿 Zenda – Tu Asistente Inteligente para Terapia  
 
-[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)  
-[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)  
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)  
-[![Website](https://img.shields.io/badge/Web-Zendapsi.com-green?style=for-the-badge&logo=google-chrome)](https://zendapsi.com)  
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)  
+<p align="center">
+  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js"></a>
+  <a href="https://firebase.google.com/"><img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase"></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"></a>
+  <a href="https://zendapsi.com"><img src="https://img.shields.io/badge/Web-Zendapsi.com-brightgreen?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License"></a>
+</p>
 
 <p align="center">
   <img src="docs/screenshots/mockup-dashboard.png" alt="Vista del dashboard de Zenda" width="800"/>
