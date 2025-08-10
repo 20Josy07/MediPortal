@@ -312,236 +312,234 @@ export function SessionForm({
     
 
   return (
-    <div className="bg-background rounded-lg p-6 w-full max-w-md max-h-[90vh] flex flex-col">
-        <div className="overflow-y-auto pr-2 -mr-2">
-            <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
-                <FormField
-                control={form.control}
-                name="patientId"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Paciente</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un paciente" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        {patients.map((patient) => (
-                            <SelectItem key={patient.id} value={patient.id}>
-                            {patient.name}
-                            </SelectItem>
-                        ))}
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <div className="grid grid-cols-2 gap-2">
-                <FormField
-                    control={form.control}
-                    name="date"
-                    render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                        <FormLabel>Fecha</FormLabel>
-                        <Popover>
-                        <PopoverTrigger asChild>
-                            <FormControl>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                                )}
-                            >
-                                {field.value ? (
-                                format(field.value, "PPP", { locale: es })
-                                ) : (
-                                <span>Elige una fecha</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                            </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date < new Date("1900-01-01")}
-                            initialFocus
-                            locale={es}
-                            />
-                        </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="time"
-                    render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Hora de Inicio</FormLabel>
-                        <FormControl>
-                        <Input type="time" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                    )}
-                />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2">
-                <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Duración</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Selecciona duración" />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    <SelectItem value="30">30 minutos</SelectItem>
-                                    <SelectItem value="45">45 minutos</SelectItem>
-                                    <SelectItem value="60">60 minutos</SelectItem>
-                                    <SelectItem value="90">90 minutos</SelectItem>
-                                    <SelectItem value="custom">Personalizado</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <div>
-                    <FormLabel>Hora de Fin</FormLabel>
-                    <Input type="text" value={getEndTime()} disabled className="bg-muted" />
-                    </div>
-                </div>
-                {durationValue === 'custom' && (
-                    <FormField
-                    control={form.control}
-                    name="customDuration"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Duración Personalizada (minutos)</FormLabel>
-                        <FormControl>
-                            <Input 
-                                type="number"
-                                placeholder="Ej: 50"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                )}
+    <div className="max-h-[80vh] overflow-y-auto px-6 py-2">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="patientId"
+            render={({ field }) => (
+              <FormItem>
+              <FormLabel>Paciente</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                  <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un paciente" />
+                  </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                  {patients.map((patient) => (
+                      <SelectItem key={patient.id} value={patient.id}>
+                      {patient.name}
+                      </SelectItem>
+                  ))}
+                  </SelectContent>
+              </Select>
+              <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+              <FormItem className="flex flex-col">
+                  <FormLabel>Fecha</FormLabel>
+                  <Popover>
+                  <PopoverTrigger asChild>
+                      <FormControl>
+                      <Button
+                          variant={"outline"}
+                          className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                          )}
+                      >
+                          {field.value ? (
+                          format(field.value, "PPP", { locale: es })
+                          ) : (
+                          <span>Elige una fecha</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                      </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => date < new Date("1900-01-01")}
+                      initialFocus
+                      locale={es}
+                      />
+                  </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+              </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+              <FormItem>
+                  <FormLabel>Hora de Inicio</FormLabel>
+                  <FormControl>
+                  <Input type="time" {...field} />
+                  </FormControl>
+                  <FormMessage />
+              </FormItem>
+              )}
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+          <FormField
+                  control={form.control}
+                  name="duration"
+                  render={({ field }) => (
+                  <FormItem>
+                      <FormLabel>Duración</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                          <SelectTrigger>
+                              <SelectValue placeholder="Selecciona duración" />
+                          </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                              <SelectItem value="30">30 minutos</SelectItem>
+                              <SelectItem value="45">45 minutos</SelectItem>
+                              <SelectItem value="60">60 minutos</SelectItem>
+                              <SelectItem value="90">90 minutos</SelectItem>
+                              <SelectItem value="custom">Personalizado</SelectItem>
+                          </SelectContent>
+                      </Select>
+                      <FormMessage />
+                  </FormItem>
+                  )}
+              />
+              <div>
+              <FormLabel>Hora de Fin</FormLabel>
+              <Input type="text" value={getEndTime()} disabled className="bg-muted" />
+              </div>
+          </div>
+          {durationValue === 'custom' && (
+              <FormField
+              control={form.control}
+              name="customDuration"
+              render={({ field }) => (
+                  <FormItem>
+                  <FormLabel>Duración Personalizada (minutos)</FormLabel>
+                  <FormControl>
+                      <Input 
+                          type="number"
+                          placeholder="Ej: 50"
+                          {...field}
+                          onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
+                      />
+                  </FormControl>
+                  <FormMessage />
+                  </FormItem>
+              )}
+              />
+          )}
 
-                <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Tipo de Sesión</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un tipo" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        <SelectItem value="Individual">Individual</SelectItem>
-                        <SelectItem value="Pareja">Pareja</SelectItem>
-                        <SelectItem value="Familiar">Familiar</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
-                <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Estado</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Selecciona un estado" />
-                        </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        <SelectItem value="Confirmada">Confirmada</SelectItem>
-                        <SelectItem value="Pendiente">Pendiente</SelectItem>
-                        <SelectItem value="Cancelada">Cancelada</SelectItem>
-                        <SelectItem value="No asistió">No asistió</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
+          <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+              <FormItem>
+              <FormLabel>Tipo de Sesión</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                  <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un tipo" />
+                  </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                  <SelectItem value="Individual">Individual</SelectItem>
+                  <SelectItem value="Pareja">Pareja</SelectItem>
+                  <SelectItem value="Familiar">Familiar</SelectItem>
+                  </SelectContent>
+              </Select>
+              <FormMessage />
+              </FormItem>
+          )}
+          />
+          <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+              <FormItem>
+              <FormLabel>Estado</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                  <SelectTrigger>
+                      <SelectValue placeholder="Selecciona un estado" />
+                  </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                  <SelectItem value="Confirmada">Confirmada</SelectItem>
+                  <SelectItem value="Pendiente">Pendiente</SelectItem>
+                  <SelectItem value="Cancelada">Cancelada</SelectItem>
+                  <SelectItem value="No asistió">No asistió</SelectItem>
+                  </SelectContent>
+              </Select>
+              <FormMessage />
+              </FormItem>
+          )}
+          />
 
-                <Separator className="!my-4"/>
-                
-                <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                        <Bell className="h-5 w-5 text-muted-foreground" />
-                        <h3 className="text-base font-semibold">Recordatorios</h3>
-                    </div>
-                    <FormField
-                        control={form.control}
-                        name="remindPsychologist"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2 shadow-sm">
-                                <div className="space-y-0.5">
-                                    <FormLabel>Recordar a psicólogo</FormLabel>
-                                </div>
-                                <FormControl>
-                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="remindPatient"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2 shadow-sm">
-                                <div className="space-y-0.5">
-                                    <FormLabel>Recordar a paciente</FormLabel>
-                                    <FormDescription className="text-xs">
-                                        Email y SMS 24hs antes.
-                                    </FormDescription>
-                                </div>
-                                <FormControl>
-                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                </div>
+          <Separator className="!my-6"/>
+          
+          <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-muted-foreground" />
+                  <h3 className="text-base font-semibold">Recordatorios</h3>
+              </div>
+              <FormField
+                  control={form.control}
+                  name="remindPsychologist"
+                  render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                              <FormLabel>Recordar a psicólogo</FormLabel>
+                          </div>
+                          <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                      </FormItem>
+                  )}
+              />
+              <FormField
+                  control={form.control}
+                  name="remindPatient"
+                  render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                              <FormLabel>Recordar a paciente</FormLabel>
+                              <FormDescription className="text-xs">
+                                  Email y SMS 24hs antes.
+                              </FormDescription>
+                          </div>
+                          <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} />
+                          </FormControl>
+                      </FormItem>
+                  )}
+              />
+          </div>
 
-                <div className="flex justify-end gap-2 pt-4">
-                <Button type="button" variant="outline" onClick={onCancel}>
-                    Cancelar
-                </Button>
-                <Button type="submit">Guardar Sesión</Button>
-                </div>
-            </form>
-            </Form>
-        </div>
+          <div className="flex justify-end gap-2 pt-6">
+          <Button type="button" variant="outline" onClick={onCancel}>
+              Cancelar
+          </Button>
+          <Button type="submit">Guardar Sesión</Button>
+          </div>
+        </form>
+      </Form>
     </div>
     );
 }
