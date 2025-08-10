@@ -26,7 +26,7 @@ export async function GET(request: Request) {
       path: '/',
     });
 
-    return NextResponse.redirect(new URL('/dashboard/sessions', request.url));
+    return NextResponse.redirect('https://zendapsi.com/dashboard/sessions');
 
   } catch (error) {
     console.error('Error en el callback de Google:', error);
