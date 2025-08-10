@@ -1,3 +1,4 @@
+
 # Zenda - Tu Asistente Inteligente para Terapia
 
 Zenda es una aplicación web moderna diseñada para psicólogos y terapeutas, que simplifica la gestión de pacientes, la programación de sesiones y la documentación clínica a través de herramientas inteligentes impulsadas por IA.
@@ -88,26 +89,33 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver la 
 
 ### v1.0 - Lanzamiento Inicial
 
-¡Estamos emocionados de lanzar la primera versión de Zenda!
+¡Estamos emocionados de lanzar la primera versión de Zenda! Esta versión incluye un conjunto completo de herramientas diseñadas para potenciar la práctica clínica de los psicólogos.
 
-**Nuevas Características y Mejoras:**
-- **Integración con Google Calendar**: Ahora puedes vincular tu cuenta de Google para crear y sincronizar sesiones directamente en tu calendario.
-- **Flujo de Eliminación de Cuenta Mejorado**: Se ha implementado un sistema de reautenticación para garantizar que la eliminación de la cuenta sea segura y efectiva.
-- **Páginas Legales Actualizadas**: Se han corregido y actualizado las instrucciones en la página de eliminación de datos.
-- **Interfaz de Usuario Refinada**:
-    - Corregido el problema de visualización del favicon en toda la aplicación.
-    - Se han realizado ajustes de diseño en el pie de página y los menús para mejorar la experiencia visual.
-    - Se ha mejorado la responsividad del menú de navegación en dispositivos móviles.
-- **Experiencia de Usuario Optimizada**:
-    - Se ha simplificado el formulario de inicio de sesión, manteniendo solo la autenticación con Google como opción social principal.
-    - El carrusel de la página de inicio ahora tiene un desplazamiento automático e infinito para una presentación más dinámica.
-    - Se ha limpiado el menú de navegación lateral, eliminando secciones no implementadas.
+**Funcionalidades Principales:**
+- **Gestión Integral de Pacientes**: Creación y administración de perfiles de pacientes, con seguimiento de su estado e información relevante.
+- **Calendario de Sesiones Interactivo**: Agenda y gestiona citas con vistas de mes, semana y día, y una interfaz de arrastrar y soltar.
+- **Integración con Google Calendar**: Sincroniza las sesiones de Zenda con tu calendario personal de Google para una gestión unificada.
+- **Notas Inteligentes con IA**:
+  - **Transcripción de Audio a Texto**: Graba o sube audios de sesiones y obtén transcripciones automáticas y precisas.
+  - **Reformateo a Estándares Clínicos**: Convierte notas en bruto a formatos como SOAP y DAP con un solo clic.
+  - **Asistente de IA para Consultas**: Chatea con una IA para obtener resúmenes, identificar patrones y extraer información clave de las notas.
+- **Informes de Progreso Automatizados**: Genera informes de evolución terapéutica en formato PDF, listos para ser compartidos.
+- **Autenticación Segura**: Sistema de inicio de sesión y registro protegido con Firebase Authentication, incluyendo opciones de inicio de sesión social con Google.
+- **Flujo de Eliminación de Cuenta Seguro**: Implementación de un sistema de reautenticación para garantizar la eliminación segura y definitiva de la cuenta y los datos del usuario.
+
+**Mejoras de Usabilidad y UI:**
+- **Interfaz de Usuario Refinada**: Se han realizado ajustes de diseño en toda la aplicación, incluyendo la correcta visualización del favicon, mejoras en el pie de página y menús de navegación más intuitivos.
+- **Experiencia Móvil Optimizada**: Se ha mejorado la responsividad del menú de navegación en dispositivos móviles para una experiencia fluida en cualquier pantalla.
+- **Experiencia de Usuario Mejorada**: Se ha simplificado el formulario de inicio de sesión y se ha añadido un carrusel con desplazamiento automático e infinito en la página de inicio para una presentación más dinámica.
+- **Páginas Legales Claras**: Se han actualizado las instrucciones en la página de eliminación de datos y se han clarificado los términos y condiciones.
 
 ## 👥 Colaboradores y Desarrolladores
 
 ¡Zenda es posible gracias a un equipo increíble!
 
-- **[Nombre del Desarrollador/a]**: Rol (Ej: Full-Stack Developer, UI/UX Designer)
-- **[Otro Nombre]**: Rol
+- **Josimar Acosta**: Full-Stack Developer
+- **María De Los Ríos**: Full-Stack Developer
+- **María Madrigal**: UI Designer
+- **Juan Gallardo**: FCA Mentor
 
 *Si quieres contribuir, ¡no dudes en abrir un Pull Request!*
