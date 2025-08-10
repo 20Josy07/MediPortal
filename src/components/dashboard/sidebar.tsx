@@ -90,17 +90,6 @@ export function DashboardSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={pathname.startsWith("/dashboard/analysis")}
-            >
-              <Link href="/dashboard/analysis">
-                <BarChart2 />
-                Análisis
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
        <SidebarFooter className="p-2 flex flex-col gap-2">
