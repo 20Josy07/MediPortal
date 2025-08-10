@@ -8,9 +8,10 @@ import { ArrowRight, FileText, BarChart, Folder, Check, UserPlus, Calendar, Spar
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import Autoplay from "embla-carousel-autoplay";
 
 const advantages = [
   {
@@ -112,6 +113,9 @@ function HeroImage() {
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
+  );
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -258,7 +262,13 @@ export default function Home() {
             <div className="text-center mb-16">
               <h2 className="font-headline text-4xl md:text-5xl font-bold text-foreground">Ventajas que notarás desde el primer día</h2>
             </div>
-            <Carousel className="w-full max-w-6xl mx-auto" opts={{ loop: true }}>
+            <Carousel 
+                className="w-full max-w-6xl mx-auto"
+                opts={{ loop: true }}
+                plugins={[autoplayPlugin.current]}
+                onMouseEnter={autoplayPlugin.current.stop}
+                onMouseLeave={autoplayPlugin.current.reset}
+            >
               <CarouselContent>
                 {advantages.map((advantage, index) => (
                   <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
