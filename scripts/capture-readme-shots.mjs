@@ -2,24 +2,22 @@ import fs from "node:fs";
 import path from "node:path";
 import puppeteer from "puppeteer";
 
-// ======== CONFIGURACIÓN ========
+/** ============ CONFIG ============ **/
 const BASE = process.env.BASE_URL || "https://zendapsi.com"; // o http://localhost:3000
 
-// Credenciales demo (usa un usuario de pruebas; NO subas credenciales reales)
+// ⚠️ Usa credenciales de DEMO, no reales
 const LOGIN_EMAIL = process.env.LOGIN_EMAIL || "josyacosta07@gmail.com";
 const LOGIN_PASSWORD = process.env.LOGIN_PASSWORD || "1130294530";
 
-// Ruta a la pantalla de login y selectores del formulario
 const LOGIN_PATH = "/login";
 const LOGIN_SELECTORS = {
-  email: 'input[name="Correo Electrónico"]',
-  password: 'input[name="Contraseña"]',
-  submit: 'button[type="Iniciar Sesión"]',
-  // selector que indica que ya estás logueado (redirección completa)
-  loggedInGuard: '[data-testid="dashboard"], main:has([data-testid="dashboard"])'
+  email: 'input[name="email"]',
+  password: 'input[name="password"]',
+  submit: 'form button[type="submit"]',
+  // algo que exista al entrar al dashboard (ajusta si hace falta)
+  loggedInGuard: '[data-testid="dashboard"], main:has([data-testid="dashboard"])',
 };
 
-// Rutas públicas y privadas que quieres capturar
 const PAGES_PUBLIC = [
   { slug: "", name: "home", waitFor: "main" },
   { slug: "login", name: "login", waitFor: "form" },
@@ -30,55 +28,37 @@ const PAGES_PRIVATE = [
   { slug: "dashboard/calendar", name: "calendar", waitFor: '[data-testid="calendar"], .fc' },
   { slug: "dashboard/patients", name: "patients", waitFor: '[data-testid="patients-list"]' },
   { slug: "dashboard/notes", name: "notes", waitFor: '[data-testid="notes-page"]' },
-  // agrega más si quieres…
 ];
 
-// Selectores de banners/overlays para ocultar en las capturas
 const HIDE_SELECTORS = [
   "#cookie-banner,.cookie-banner,[aria-label='cookie']",
-  "[aria-label='chat widget'],#hubspot-messages-iframe-container",
-  ".intercom-lightweight-app",
+  "[aria-label='chat widget'],#hubspot-messages-iframe-container,.intercom-lightweight-app",
+  "#facebook-jssdk, #fb-root",
 ];
 
-// Dispositivos
 const VIEWPORTS = {
   desktop: { width: 1440, height: 900, deviceScaleFactor: 1 },
   mobile:  { width: 390,  height: 844, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
 };
 
-// Temas a capturar
-const THEMES = ["light", "dark"]; // quita "dark" si no lo necesitas
-
-// Otras opciones
+const THEMES = ["light", "dark"]; // deja solo "light" si no quieres modo oscuro
 const OUT_DIR = path.resolve("docs/screenshots");
 const COOKIES_FILE = path.resolve(".shots-cookies.json");
 const FULL_PAGE = true;
 const TIMEOUT = 45_000;
 
-// ======== UTILS ========
-async function ensureDir(dir) {
-  await fs.promises.mkdir(dir, { recursive: true });
-}
-
+/** ============ UTILS ============ **/
+async function ensureDir(dir) { await fs.promises.mkdir(dir, { recursive: true }); }
 async function hideAnnoyances(page) {
   for (const sel of HIDE_SELECTORS) {
-    try {
-      await page.$$eval(sel, els => els.forEach(el => (el.style.display = "none")));
-    } catch {/* ignore */}
+    try { await page.$$eval(sel, els => els.forEach(el => (el.style.display = "none"))); } catch {}
   }
 }
-
 async function waitForReady(page, selector) {
   if (!selector) return;
-  try {
-    await page.waitForSelector(selector, { timeout: 15_000, visible: true });
-  } catch {/* si no aparece, seguimos con network idle */}
+  try { await page.waitForSelector(selector, { timeout: 15_000, visible: true }); } catch {}
 }
-
-function outName(name, kind, theme) {
-  return `${name}-${kind}-${theme}.png`; // p.ej. dashboard-desktop-dark.png
-}
-
+function outName(name, kind, theme) { return `${name}-${kind}-${theme}.png`; }
 async function loadCookies(page) {
   if (!fs.existsSync(COOKIES_FILE)) return false;
   const cookies = JSON.parse(await fs.promises.readFile(COOKIES_FILE, "utf8"));
@@ -86,49 +66,45 @@ async function loadCookies(page) {
   await page.setCookie(...cookies);
   return true;
 }
-
 async function saveCookies(page) {
   const cookies = await page.cookies();
   await fs.promises.writeFile(COOKIES_FILE, JSON.stringify(cookies, null, 2));
 }
 
-// ======== LOGIN ========
+/** ============ LOGIN ============ **/
 async function loginIfNeeded(page) {
-  // Intenta cargar cookies
   const hadCookies = await loadCookies(page);
 
-  // Prueba acceso directo al dashboard
+  // prueba acceso directo
   await page.goto(`${BASE}/dashboard`, { waitUntil: ["domcontentloaded", "networkidle0"], timeout: TIMEOUT });
-  const logged = await page.$(LOGIN_SELECTORS.loggedInGuard);
-  if (logged) {
+  if (await page.$(LOGIN_SELECTORS.loggedInGuard)) {
     if (!hadCookies) await saveCookies(page);
     return true;
   }
 
-  // Si no está logueado, ve a login y completa formulario
+  // ir a login y enviar el formulario
   await page.goto(`${BASE}${LOGIN_PATH}`, { waitUntil: ["domcontentloaded", "networkidle0"], timeout: TIMEOUT });
 
   await page.waitForSelector(LOGIN_SELECTORS.email, { timeout: 15_000 });
   await page.click(LOGIN_SELECTORS.email);
-  await page.keyboard.type(LOGIN_EMAIL, { delay: 20 });
+  await page.keyboard.type(LOGIN_EMAIL, { delay: 15 });
 
   await page.waitForSelector(LOGIN_SELECTORS.password, { timeout: 15_000 });
   await page.click(LOGIN_SELECTORS.password);
-  await page.keyboard.type(LOGIN_PASSWORD, { delay: 20 });
+  await page.keyboard.type(LOGIN_PASSWORD, { delay: 15 });
 
   await Promise.all([
     page.click(LOGIN_SELECTORS.submit),
     page.waitForNavigation({ waitUntil: ["domcontentloaded", "networkidle0"], timeout: TIMEOUT }),
   ]);
 
-  // Verifica guard
   await waitForReady(page, LOGIN_SELECTORS.loggedInGuard);
   const ok = !!(await page.$(LOGIN_SELECTORS.loggedInGuard));
   if (ok) await saveCookies(page);
   return ok;
 }
 
-// ======== MAIN ========
+/** ============ MAIN ============ **/
 (async () => {
   await ensureDir(OUT_DIR);
 
@@ -137,10 +113,9 @@ async function loginIfNeeded(page) {
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
     defaultViewport: null,
   });
-
   const page = await browser.newPage();
 
-  // Public
+  // ---------- Públicas ----------
   for (const theme of THEMES) {
     await page.emulateMediaFeatures([{ name: "prefers-color-scheme", value: theme }]);
 
@@ -151,7 +126,7 @@ async function loginIfNeeded(page) {
         await page.goto(url, { waitUntil: ["domcontentloaded", "networkidle0"], timeout: TIMEOUT });
         await waitForReady(page, waitFor);
         await hideAnnoyances(page);
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(250);
         await page.screenshot({
           path: path.join(OUT_DIR, outName(name, kind, theme)),
           fullPage: FULL_PAGE,
@@ -162,13 +137,12 @@ async function loginIfNeeded(page) {
     }
   }
 
-  // Private (requiere login)
+  // ---------- Privadas (requiere login) ----------
   const okLogin = await loginIfNeeded(page);
   if (!okLogin) {
-    console.error("⚠️  No se pudo iniciar sesión. Revisa credenciales/selectores.");
-    process.exitCode = 1;
+    console.error("⚠️  No se pudo iniciar sesión. Revisa credenciales o selectores.");
     await browser.close();
-    return;
+    process.exit(1);
   }
 
   for (const theme of THEMES) {
@@ -181,7 +155,7 @@ async function loginIfNeeded(page) {
         await page.goto(url, { waitUntil: ["domcontentloaded", "networkidle0"], timeout: TIMEOUT });
         await waitForReady(page, waitFor);
         await hideAnnoyances(page);
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(250);
         await page.screenshot({
           path: path.join(OUT_DIR, outName(name, kind, theme)),
           fullPage: FULL_PAGE,
