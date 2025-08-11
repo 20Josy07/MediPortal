@@ -121,12 +121,6 @@ export function DashboardNavbar() {
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Administrar mi Perfil</span>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                 <Link href="/dashboard/settings">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Configuración</span>
-                 </Link>
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
