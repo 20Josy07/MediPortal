@@ -521,7 +521,7 @@ export function SessionForm({
                           <div className="space-y-0.5">
                               <FormLabel>Recordar a paciente</FormLabel>
                               <FormDescription className="text-xs">
-                                  Email y SMS 24hs antes.
+                                  Email
                               </FormDescription>
                           </div>
                           <FormControl>
