@@ -36,6 +36,57 @@ import { useTheme } from "next-themes";
 import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
 
+const rotatingWords = ["estructurada", "organizada", "eficiente"];
+
+const HeroSection = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % rotatingWords.length);
+    }, 3000); // Change word every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section className="flex flex-col items-center justify-center text-center bg-background min-h-[calc(80vh-72px)] px-4">
+      <div className="flex flex-col items-center">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-foreground tracking-tighter">
+          Tu práctica,{" "}
+          <span className="relative inline-block h-[1.2em]">
+            {rotatingWords.map((word, index) => (
+              <span
+                key={word}
+                className={cn(
+                  "absolute left-0 right-0 transition-all duration-1000 ease-in-out motion-reduce:transition-none",
+                  currentIndex === index
+                    ? "opacity-100 transform-none"
+                    : "opacity-0 -rotate-12"
+                )}
+              >
+                <span className="text-primary">{word}</span>.
+              </span>
+            ))}
+          </span>
+        </h1>
+        <p className="mt-6 max-w-2xl text-lg md:text-xl text-muted-foreground">
+          Menos carga administrativa. Más presencia terapéutica.
+        </p>
+        <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <Button asChild size="lg">
+            <Link href="/signup">Crear cuenta</Link>
+          </Button>
+          <Button asChild size="lg" variant="secondary">
+            <Link href="#features">Ver funcionalidades</Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
 const advantages = [
   {
     icon: <FilePenLine className="w-7 h-7 text-primary" />,
@@ -101,58 +152,6 @@ const howItWorksSteps = [
     description: "Deja que Zenda genere notas e insights automáticamente.",
   },
 ];
-
-function HeroImage() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // Evita hidratar con valores distintos por tema
-  useEffect(() => setMounted(true), []);
-
-  // Logo estable en SSR/primer render; cambia tras montar según tema
-  const stableLogo =
-    "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
-  const themedLogo =
-    resolvedTheme === "light"
-      ? "https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png"
-      : "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
-
-  const logoSrc = mounted ? themedLogo : stableLogo;
-
-  return (
-    <div className="relative w-full max-w-lg mx-auto flex flex-col items-center justify-center p-8 space-y-8 min-h-[480px]">
-      <div className="w-32 h-32">
-        <Image
-          src={logoSrc}
-          alt="Zenda Logo"
-          width={128}
-          height={128}
-          loading="eager"
-        />
-      </div>
-      <ul className="space-y-4 w-full max-w-sm">
-        <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
-          <FileText className="h-5 w-5 text-primary" />
-          <span className="text-sm font-medium">
-            Notas automáticas con resúmenes e insights clave
-          </span>
-        </li>
-        <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
-          <BarChart2 className="h-5 w-5 text-primary" />
-          <span className="text-sm font-medium">
-            Visualización de evolución y objetivos terapéuticos
-          </span>
-        </li>
-        <li className="flex items-center gap-3 p-3 rounded-lg bg-card border border-border shadow-sm">
-          <Folder className="h-5 w-5 text-primary" />
-          <span className="text-sm font-medium">
-            Historial organizado y fácil de consultar
-          </span>
-        </li>
-      </ul>
-    </div>
-  );
-}
 
 const LandingHeader = () => {
   const { setTheme, resolvedTheme } = useTheme();
@@ -223,52 +222,10 @@ export default function Home() {
       <LandingHeader />
 
       <main className="flex-grow">
-        <section className="hero-section bg-secondary">
-          <div className="hero-content text-center md:text-left">
-            <div className="tag inline-block bg-accent/20 text-primary font-semibold py-1 px-3 rounded-full mb-4">
-              <span>
-                Análisis Clínico • Notas Instantáneas • Seguimiento Visual
-              </span>
-            </div>
-            <h1 className="leading-tighter text-4xl md:text-6xl font-extrabold text-foreground">
-              Mejora la calidad de tus sesiones con{" "}
-              <span className="text-primary">
-                Zenda
-              </span>
-            </h1>
-            <p className="mt-4 max-w-xl mx-auto md:mx-0 text-muted-foreground text-lg">
-              Zenda te ayuda a simplificar tu práctica para que puedas enfocarte
-              en lo que más importa: tus pacientes
-            </p>
-            <div className="buttons mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-              <Button
-                asChild
-                size="lg"
-                className="group font-bold w-full sm:w-auto shadow-lg shadow-primary/30 transition-all duration-300"
-              >
-                <Link href="/login">
-                  Quiero potenciar mis sesiones
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto"
-                id="how-it-works-button"
-              >
-                <Link href="#how-it-works-steps">Ver cómo funciona</Link>
-              </Button>
-            </div>
-          </div>
+        
+        <HeroSection />
 
-          <div className="hero-image">
-            <HeroImage />
-          </div>
-        </section>
-
-        <section id="features" className="py-20 md:py-28 bg-background">
+        <section id="features" className="py-20 md:py-28 bg-secondary">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="font-headline text-4xl md:text-5xl font-bold text-foreground">
@@ -342,7 +299,7 @@ export default function Home() {
         </section>
       </main>
 
-       <footer className="bg-background border-t border-border">
+      <footer className="bg-background border-t border-border">
         <div className="container mx-auto max-w-[1200px] px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-foreground">
           <div>
             <h3 className="font-bold text-xl mb-4">Zenda</h3>
@@ -410,3 +367,4 @@ export default function Home() {
     </div>
   );
 }
+

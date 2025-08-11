@@ -5,38 +5,39 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 7%;
+    --background: 255 100% 100%;
+    --foreground: 0 0% 7%; /* #111111 */
 
-    --card: 0 0% 100%;
+    --card: 240 4.8% 95.9%; /* #F5F5F5 */
     --card-foreground: 0 0% 7%;
 
-    --popover: 0 0% 100%;
+    --popover: 255 100% 100%;
     --popover-foreground: 0 0% 7%;
     
-    --primary: 165 47% 17%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 165 47% 17%; /* #173F35 */
+    --primary-foreground: 255 100% 100%; /* background color for contrast */
+    --primary-hover: 165 47% 15%; /* Darker for hover */
     
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 7%;
+    --secondary: 240 4.8% 95.9%; /* #F5F5F5 */
+    --secondary-foreground: 0 0% 7%; /* foreground */
 
-    --muted: 0 0% 96%;
+    --muted: 240 4.8% 95.9%;
     --muted-foreground: 0 0% 45%;
     
-    --accent: 165 17% 63%;
+    --accent: 167 19% 63%; /* #91B1A9 */
     --accent-foreground: 0 0% 7%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 90%;
+    --border: 0 0% 90%; /* #E5E5E5 */
     --input: 0 0% 90%;
     --ring: 165 47% 17%;
     
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* 12px */
 
     --chart-1: 165 47% 17%;
-    --chart-2: 165 17% 63%;
+    --chart-2: 167 19% 63%;
     --chart-3: 35.8 91.7% 53.1%;
     --chart-4: 217.2 91.2% 59.8%;
     --chart-5: 0 84.2% 60.2%;
@@ -52,33 +53,34 @@
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 96%;
+    --background: 0 0% 7%; /* #111111 */
+    --foreground: 0 0% 95.7%; /* #F4F4F4 */
 
-    --card: 0 0% 15%;
-    --card-foreground: 0 0% 96%;
+    --card: 0 0% 14.9%; /* #262626 */
+    --card-foreground: 0 0% 95.7%;
 
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 95.7%;
     
-    --primary: 165 17% 63%;
-    --primary-foreground: 0 0% 7%;
+    --primary: 167 19% 63%; /* #91B1A9 */
+    --primary-foreground: 0 0% 7%; /* background for contrast */
+    --primary-hover: 167 19% 69%; /* Lighter for hover */
     
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 96%;
+    --secondary: 0 0% 14.9%; /* #262626 */
+    --secondary-foreground: 0 0% 95.7%;
 
-    --muted: 0 0% 15%;
+    --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 65%;
     
-    --accent: 165 47% 17%;
-    --accent-foreground: 0 0% 96%;
+    --accent: 165 47% 17%; /* #173F35 */
+    --accent-foreground: 0 0% 95.7%;
     
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 165 17% 63%;
+    --border: 0 0% 20%; /* #333333 */
+    --input: 0 0% 14.9%;
+    --ring: 167 19% 63%;
     
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 0 0% 96%;
@@ -98,17 +100,11 @@
   body {
     @apply bg-background text-foreground;
   }
-  .hero-content p {
-    @apply text-black;
-  }
-  .dark .hero-content p {
-    @apply text-white;
-  }
 }
 
 @layer components {
     .comparison-section {
-        background-color: #f5f5f5;
+        background-color: hsl(var(--secondary));
         @apply py-16 px-[5%] text-center;
     }
     .dark .comparison-section {
@@ -128,12 +124,8 @@
     }
 
     .before-card, .after-card {
-        @apply bg-white p-8 rounded-2xl flex-1 min-w-[300px] text-left;
+        @apply bg-card p-8 rounded-2xl flex-1 min-w-[300px] text-left;
     }
-    .dark .before-card, .dark .after-card {
-      @apply bg-card;
-    }
-
 
     .before-card {
         @apply border-2 border-dashed border-gray-300;
@@ -144,10 +136,7 @@
 
 
     .after-card {
-        @apply border border-gray-200 shadow-xl;
-    }
-     .dark .after-card {
-        @apply border-border;
+        @apply border-border shadow-xl;
     }
     
     .before-card h3, .after-card h3 {
@@ -175,7 +164,7 @@
     }
 
     .how-it-works-section {
-      background-color: #f5f5f5;
+      background-color: hsl(var(--secondary));
       @apply py-16 px-4;
     }
 
@@ -202,10 +191,7 @@
     }
 
     .step-card {
-        @apply bg-white rounded-xl p-6 shadow-md border border-gray-200 flex flex-col items-center text-center;
-    }
-     .dark .step-card {
-        @apply bg-card border-border;
+        @apply bg-card rounded-xl p-6 shadow-md border-border flex flex-col items-center text-center;
     }
     
     .step-icon-container {
@@ -213,7 +199,7 @@
     }
 
     .step-icon-background {
-        @apply w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center;
+        @apply w-16 h-16 rounded-full bg-secondary flex items-center justify-center;
     }
      .dark .step-icon-background {
         @apply bg-accent;
