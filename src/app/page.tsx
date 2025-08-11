@@ -322,40 +322,6 @@ export default function Home() {
         </section>
       </main>
       <ThemeToggle />
-      <footer>
-        <div className="footer-container">
-          <div className="footer-column">
-            <h3>Zenda</h3>
-            <p>Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.</p>
-          </div>
-          <div className="footer-column">
-            <h3>Producto</h3>
-            <ul>
-              <li><Link href="#how-it-works-steps">Cómo funciona</Link></li>
-              <li><Link href="#features">Funcionalidades</Link></li>
-              <li><Link href="/dashboard/support/chat">FAQ</Link></li>
-              <li><Link href="/terms">Términos y Condiciones</Link></li>
-              <li><Link href="/privacy">Política de privacidad</Link></li>
-              <li><Link href="/data-deletion">Eliminación de Datos</Link></li>
-            </ul>
-          </div>
-          <div className="footer-column">
-            <h3>Contacto</h3>
-            <ul>
-              <li><a href="mailto:info@zendapsi.com" className="flex items-center gap-2"><Mail className="h-4 w-4" /> info@zendapsi.com</a></li>
-              <li><a href="#" className="flex items-center gap-2"><Github className="h-4 w-4" /> GitHub</a></li>
-              <li><a href="#" className="flex items-center gap-2"><Twitter className="h-4 w-4" /> Twitter</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Zenda.</p>
-        </div>
-      </footer>
     </div>
   );
 }
-
-    
-
-    
