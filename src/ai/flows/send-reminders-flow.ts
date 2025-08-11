@@ -41,13 +41,38 @@ const sendReminderFlow = ai.defineFlow(
     console.log('--- Iniciando flujo de envío de recordatorios ---');
     
     const formattedDate = format(input.sessionDate, "eeee, d 'de' MMMM, yyyy 'a las' p", { locale: es });
+    const webhookUrl = process.env.MAKE_WEBHOOK_URL;
+
+    if (!webhookUrl) {
+      console.error("MAKE_WEBHOOK_URL no está configurada en las variables de entorno.");
+      return { status: "Error: Webhook URL no configurada." };
+    }
 
     if (input.reminderType === 'patient' || input.reminderType === 'both') {
-      console.log(`SIMULACIÓN: Enviando recordatorio por correo electrónico al paciente ${input.patientName} a ${input.patientEmail}`);
-      console.log(`Contenido del Correo: Hola ${input.patientName}, te recordamos tu sesión para el ${formattedDate}.`);
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            patientName: input.patientName,
+            patientEmail: input.patientEmail,
+            patientPhone: input.patientPhone,
+            sessionDate: formattedDate,
+            rawSessionDate: input.sessionDate,
+          }),
+        });
 
-      console.log(`SIMULACIÓN: Enviando recordatorio por SMS al paciente ${input.patientName} al ${input.patientPhone}`);
-      console.log(`Contenido del SMS: Recordatorio de sesión para el ${formattedDate}.`);
+        if (response.ok) {
+          console.log(`Webhook enviado exitosamente para el paciente ${input.patientName}`);
+        } else {
+          const errorText = await response.text();
+          console.error(`Error al enviar webhook para ${input.patientName}: ${response.status} ${errorText}`);
+        }
+      } catch (error) {
+        console.error(`Error de red al enviar webhook para ${input.patientName}:`, error);
+      }
     }
 
     if (input.reminderType === 'psychologist' || input.reminderType === 'both') {
@@ -57,7 +82,7 @@ const sendReminderFlow = ai.defineFlow(
     console.log('--- Flujo de envío de recordatorios completado ---');
     
     return {
-      status: 'Simulación de recordatorios completada.',
+      status: 'Proceso de recordatorios ejecutado.',
     };
   }
 );
