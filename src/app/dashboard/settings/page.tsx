@@ -125,63 +125,6 @@ const IntegrationSettings = () => (
     </div>
 );
 
-const SecuritySettings = () => {
-    const { user, logout } = useAuth();
-    const { toast } = useToast();
-    const router = useRouter();
-
-    const handleDeleteAccount = async () => {
-        if (!user) return;
-        try {
-            await deleteUserAccount(user);
-            toast({
-                title: "Cuenta eliminada",
-                description: "Tu cuenta ha sido eliminada permanentemente.",
-            });
-            await logout();
-            router.push('/');
-        } catch (error: any) {
-            console.error(error);
-            toast({
-                variant: "destructive",
-                title: "Error al eliminar la cuenta",
-                description: "Por favor, cierra sesión y vuelve a iniciarla antes de intentar eliminar tu cuenta.",
-            });
-        }
-    };
-
-    return (
-        <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-                La eliminación de tu cuenta es una acción irreversible. Se borrarán todos tus datos, incluyendo perfiles de pacientes, notas y sesiones.
-            </p>
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button variant="destructive">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Eliminar mi cuenta permanentemente
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Esta acción no se puede deshacer. Todos tus datos serán eliminados de nuestros servidores.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
-                            Sí, eliminar mi cuenta
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
-    );
-};
-
-
 const settingsItems = [
   {
     icon: Bell,
@@ -195,12 +138,6 @@ const settingsItems = [
     description: "Conecta tus herramientas favoritas.",
     content: <IntegrationSettings />,
   },
-  {
-    icon: Shield,
-    title: "Seguridad y Privacidad",
-    description: "Gestiona la seguridad de tu cuenta y tus datos.",
-    content: <SecuritySettings />,
-  }
 ];
 
 export default function SettingsPage() {

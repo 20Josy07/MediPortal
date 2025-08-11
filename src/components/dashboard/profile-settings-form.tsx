@@ -10,10 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Loader2, Upload, Settings, KeyRound, Clock, ShieldCheck, ChevronDown } from "lucide-react";
+import { User, Loader2, Upload, Settings, KeyRound, Clock, ShieldCheck, ChevronDown, Shield, Trash2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import { updateUserProfile } from "@/lib/firebase";
+import { deleteUserAccount, updateUserProfile } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 import { ProfileFormSchema, type ProfileFormValues } from "@/lib/types";
 import { Separator } from "../ui/separator";
@@ -22,10 +22,70 @@ import { Label } from "../ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { useRouter } from "next/navigation";
+
 
 interface ProfileSettingsFormProps {
   onSuccess?: () => void;
 }
+
+const SecuritySettings = () => {
+    const { user, logout } = useAuth();
+    const { toast } = useToast();
+    const router = useRouter();
+
+    const handleDeleteAccount = async () => {
+        if (!user) return;
+        try {
+            await deleteUserAccount(user);
+            toast({
+                title: "Cuenta eliminada",
+                description: "Tu cuenta ha sido eliminada permanentemente.",
+            });
+            await logout();
+            router.push('/');
+        } catch (error: any) {
+            console.error(error);
+            toast({
+                variant: "destructive",
+                title: "Error al eliminar la cuenta",
+                description: "Por favor, cierra sesión y vuelve a iniciarla antes de intentar eliminar tu cuenta.",
+            });
+        }
+    };
+
+    return (
+        <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+                La eliminación de tu cuenta es una acción irreversible. Se borrarán todos tus datos, incluyendo perfiles de pacientes, notas y sesiones.
+            </p>
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Eliminar mi cuenta permanentemente
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción no se puede deshacer. Todos tus datos serán eliminados de nuestros servidores.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAccount} className="bg-destructive hover:bg-destructive/90">
+                            Sí, eliminar mi cuenta
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
+    );
+};
+
 
 export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
   const { user, userProfile, db } = useAuth();
@@ -272,6 +332,24 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
                 </CardContent>
               </div>
 
+              <Separator />
+
+              <div className="space-y-6">
+                <CardHeader className="p-0">
+                  <div className="flex items-center gap-4">
+                    <Shield className="h-6 w-6 text-muted-foreground" />
+                    <div>
+                      <CardTitle className="text-lg">Seguridad</CardTitle>
+                      <CardDescription>Gestiona la seguridad de tu cuenta.</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0 pt-4">
+                    <SecuritySettings />
+                </CardContent>
+              </div>
+
+
               <div className="flex justify-end pt-4">
                 <Button type="button" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -285,5 +363,3 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
     </>
   );
 }
-
-    
