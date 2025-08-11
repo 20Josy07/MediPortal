@@ -197,13 +197,12 @@ export default function DashboardPage() {
                   <TableHead className="hidden md:table-cell text-center font-bold text-base">Hora</TableHead>
                   <TableHead className="hidden sm:table-cell text-center font-bold text-base">Tipo</TableHead>
                   <TableHead className="text-center font-bold text-base">Estado</TableHead>
-                  <TableHead className="text-center font-bold text-base">Acción</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={5} className="h-24 text-center">
                       <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
                     </TableCell>
                   </TableRow>
@@ -227,20 +226,12 @@ export default function DashboardPage() {
                             <span>{statusDetails[session.status].text}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-center">
-                          {session.status === 'Confirmada' ? (
-                            <Button variant="default" size="sm">
-                              <Video className="mr-2 h-4 w-4" />
-                              Unirse
-                            </Button>
-                          ) : null}
-                        </TableCell>
                       </TableRow>
                     );
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center">
+                    <TableCell colSpan={5} className="h-24 text-center">
                       No hay próximas sesiones agendadas para esta vista.
                     </TableCell>
                   </TableRow>
