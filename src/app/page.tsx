@@ -321,6 +321,43 @@ export default function Home() {
             </div>
         </section>
       </main>
+      <footer className="bg-[#18441E] text-white">
+        <div className="container mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <h3 className="font-bold text-xl mb-4">Zenda</h3>
+            <p className="text-white/80">
+              Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos para enfocarte en lo más importante: tus pacientes.
+            </p>
+          </div>
+          <div>
+            <h3 className="font-bold text-xl mb-4">Producto</h3>
+            <ul className="space-y-2 text-white/80">
+              <li><Link href="#how-it-works" className="hover:text-white">Cómo funciona</Link></li>
+              <li><Link href="#features" className="hover:text-white">Funcionalidades</Link></li>
+              <li><Link href="/dashboard/support/chat" className="hover:text-white">FAQ</Link></li>
+              <li><Link href="/terms" className="hover:text-white">Términos y Condiciones</Link></li>
+              <li><Link href="/privacy" className="hover:text-white">Política de privacidad</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-bold text-xl mb-4">Contacto</h3>
+            <ul className="space-y-2 text-white/80">
+              <li className="flex items-center gap-2">
+                <Mail className="w-5 h-5" />
+                <a href="mailto:info@zendapsi.com" className="hover:text-white">info@zendapsi.com</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Github className="w-5 h-5" />
+                <a href="#" className="hover:text-white">GitHub</a>
+              </li>
+              <li className="flex items-center gap-2">
+                <Twitter className="w-5 h-5" />
+                <a href="#" className="hover:text-white">Twitter</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </footer>
       <ThemeToggle />
     </div>
   );
