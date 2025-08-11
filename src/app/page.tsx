@@ -342,7 +342,7 @@ export default function Home() {
           <div className="footer-column">
             <h3>Contacto</h3>
             <ul>
-              <li><a href="mailto:hola@zenda.ai" className="flex items-center gap-2"><Mail className="h-4 w-4" /> hola@zenda.ai</a></li>
+              <li><a href="mailto:info@zendapsi.com" className="flex items-center gap-2"><Mail className="h-4 w-4" /> info@zendapsi.com</a></li>
               <li><a href="#" className="flex items-center gap-2"><Github className="h-4 w-4" /> GitHub</a></li>
               <li><a href="#" className="flex items-center gap-2"><Twitter className="h-4 w-4" /> Twitter</a></li>
             </ul>
@@ -355,5 +355,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
