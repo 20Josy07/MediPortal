@@ -5,22 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
-  ArrowRight,
-  FileText,
-  Folder,
-  UserPlus,
-  Sparkles,
   FilePenLine,
   Bell,
   LayoutGrid,
   CalendarDays,
-  BarChart2,
-  X,
-  Mail,
-  Github,
-  Twitter,
-  Moon,
-  Sun,
+  UserPlus,
+  Sparkles,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -50,38 +40,16 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative flex flex-col items-center justify-center text-center text-white min-h-[calc(100vh_-_72px)] px-4 overflow-hidden">
-      <div className="absolute inset-0 z-0">
-         <Image
-          src="https://placehold.co/1920x1080.png"
-          alt="Psicólogo trabajando en su escritorio"
-          fill
-          className="object-cover"
-          data-ai-hint="therapist desk"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/60"></div>
-      </div>
+    <section className="flex flex-col items-center justify-center text-center bg-[#f1f5f6] dark:bg-background min-h-[80vh] px-4">
       <div className="z-10 flex flex-col items-center">
-        <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter">
-          Tu práctica,
-          <br />
-          <span className="relative inline-block h-[1.2em] text-primary">
-            {rotatingWords.map((word, index) => (
-              <span
-                key={word}
-                className={cn(
-                  "absolute left-0 right-0 transition-opacity duration-1000 ease-in-out",
-                  currentIndex === index ? "opacity-100" : "opacity-0"
-                )}
-              >
-                {word}
-              </span>
-            ))}
-          </span>
+        <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter text-foreground">
+          Tu práctica,{" "}
+           <span key={currentIndex} className="text-primary animate-fade-in">
+             {rotatingWords[currentIndex]}
+           </span>
         </h1>
-        <p className="mt-6 max-w-2xl text-lg md:text-xl text-white/80">
-          Menos carga administrativa. Más presencia terapéutica. Recupera hasta 8 horas a la semana y dedícalas a lo que amas.
+        <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/80">
+          Menos carga administrativa. Más presencia terapéutica.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3">
           <Button asChild size="lg">
@@ -308,72 +276,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
-      <footer className="bg-background border-t border-border">
-        <div className="container mx-auto max-w-[1200px] px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-foreground">
-          <div>
-            <h3 className="font-bold text-xl mb-4">Zenda</h3>
-            <p className="text-muted-foreground">
-              Impulsa tu práctica psicológica. Centraliza notas, seguimientos y
-              patrones clínicos para enfocarte en lo más importante: tus
-              pacientes.
-            </p>
-          </div>
-          <div>
-            <h3 className="font-bold text-xl mb-4">Producto</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li>
-                <Link href="#how-it-works-steps" className="hover:text-primary">
-                  Cómo funciona
-                </Link>
-              </li>
-              <li>
-                <Link href="#features" className="hover:text-primary">
-                  Funcionalidades
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard/support/chat" className="hover:text-primary">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/terms" className="hover:text-primary">
-                  Términos y Condiciones
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="hover:text-primary">
-                  Política de privacidad
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-bold text-xl mb-4">Contacto</h3>
-            <ul className="space-y-2 text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <Mail className="w-5 h-5" />
-                <a href="mailto:info@zendapsi.com" className="hover:text-primary">
-                  info@zendapsi.com
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <Github className="w-5 h-5" />
-                <a href="#" className="hover:text-primary">
-                  GitHub
-                </a>
-              </li>
-              <li className="flex items-center gap-2">
-                <Twitter className="w-5 h-5" />
-                <a href="#" className="hover:text-primary">
-                  Twitter
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
