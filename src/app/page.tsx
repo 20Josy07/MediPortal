@@ -76,27 +76,27 @@ const advantages = [
 const howItWorksSteps = [
   {
     number: 1,
-    icon: <UserPlus className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
+    icon: <UserPlus className="h-8 w-8 text-primary" />,
     title: "Crea tu cuenta en minutos",
     description: "Regístrate de forma rápida y segura. Sin complicaciones.",
   },
   {
     number: 2,
-    icon: <UserPlus className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
+    icon: <UserPlus className="h-8 w-8 text-primary" />,
     title: "Añade tus pacientes",
     description:
       "Crea perfiles con su historial, evolución y notas clínicas centralizadas.",
   },
   {
     number: 3,
-    icon: <FilePenLine className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
+    icon: <FilePenLine className="h-8 w-8 text-primary" />,
     title: "Configura tus plantillas",
     description:
       "Elige entre formatos como SOAP o DAP y personalízalos según tu estilo clínico.",
   },
   {
     number: 4,
-    icon: <Sparkles className="h-8 w-8 text-[#063C0F] dark:text-primary" />,
+    icon: <Sparkles className="h-8 w-8 text-primary" />,
     title: "Inicia tus sesiones",
     description: "Deja que Zenda genere notas e insights automáticamente.",
   },
@@ -155,20 +155,31 @@ function HeroImage() {
 }
 
 const LandingHeader = () => {
-  const { setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  const logoSrc = mounted && resolvedTheme === "light"
+      ? "https://i.postimg.cc/HntBCkhT/Logo-Zenda-Light.png"
+      : "https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png";
+
 
   return (
-    <header className="sticky top-0 z-50 flex h-[72px] w-full items-center border-b border-border bg-background px-6 lg:px-8">
+    <header className="sticky top-0 z-50 flex h-[72px] w-full items-center border-b border-border bg-background/95 backdrop-blur-sm px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between">
         {/* Left Side */}
-        <Link href="/" aria-label="Zenda Home">
+        <Link href="/" aria-label="Zenda Home" className="flex items-center gap-2">
           <Image
             alt="Zenda Logo"
-            loading="lazy"
             width={36}
             height={36}
-            src="https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png"
+            src={logoSrc}
+            key={logoSrc}
           />
+           <span className="font-bold text-xl text-foreground">ZENDA</span>
         </Link>
 
         {/* Right Side */}
@@ -212,33 +223,28 @@ export default function Home() {
       <LandingHeader />
 
       <main className="flex-grow">
-        <section className="hero-section bg-hero dark:bg-background">
-          <div className="hero-content">
-            <div className="tag">
+        <section className="hero-section bg-secondary">
+          <div className="hero-content text-center md:text-left">
+            <div className="tag inline-block bg-accent/20 text-primary font-semibold py-1 px-3 rounded-full mb-4">
               <span>
                 Análisis Clínico • Notas Instantáneas • Seguimiento Visual
               </span>
             </div>
-            <h1 className="leading-tighter">
-              <span className="text-[#063C0F] dark:text-primary">
-                Mejora la<br />
-                calidad de tus<br />
-                sesiones con
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-[#2A7F34] to-[#81D486] bg-clip-text text-transparent">
+            <h1 className="leading-tighter text-4xl md:text-6xl font-extrabold text-foreground">
+              Mejora la calidad de tus sesiones con{" "}
+              <span className="text-primary">
                 Zenda
               </span>
             </h1>
-            <p>
+            <p className="mt-4 max-w-xl mx-auto md:mx-0 text-muted-foreground text-lg">
               Zenda te ayuda a simplificar tu práctica para que puedas enfocarte
               en lo que más importa: tus pacientes
             </p>
-            <div className="buttons mt-8">
+            <div className="buttons mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Button
                 asChild
                 size="lg"
-                className="group font-body font-bold w-full sm:w-auto shadow-lg shadow-primary/30 transition-all duration-300 bg-[#357D3D] text-primary-foreground hover:bg-[#357D3D]/90"
+                className="group font-bold w-full sm:w-auto shadow-lg shadow-primary/30 transition-all duration-300"
               >
                 <Link href="/login">
                   Quiero potenciar mis sesiones
@@ -248,10 +254,11 @@ export default function Home() {
               <Button
                 asChild
                 variant="outline"
-                className="py-4 px-8 rounded-lg text-base font-bold text-[#063C0F] border-[#063C0F] bg-white dark:text-primary dark:border-primary dark:bg-transparent"
+                size="lg"
+                className="w-full sm:w-auto"
                 id="how-it-works-button"
               >
-                <Link href="#how-it-works-steps">Ver como funciona</Link>
+                <Link href="#how-it-works-steps">Ver cómo funciona</Link>
               </Button>
             </div>
           </div>
@@ -261,7 +268,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="features" className="py-20 md:py-28 bg-transparent">
+        <section id="features" className="py-20 md:py-28 bg-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="font-headline text-4xl md:text-5xl font-bold text-foreground">
@@ -269,7 +276,6 @@ export default function Home() {
               </h2>
             </div>
 
-            {/* Carousel: plugin solo después de montar */}
             <Carousel
               className="w-full max-w-6xl mx-auto"
               opts={{ loop: true }}
@@ -295,13 +301,13 @@ export default function Home() {
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                           </div>
-                          <div className="bg-accent/20 text-accent-foreground rounded-lg p-3 inline-block mb-4">
+                          <div className="bg-primary/10 text-primary rounded-lg p-3 inline-block mb-4">
                             {advantage.icon}
                           </div>
                           <h3 className="font-headline text-2xl font-bold text-foreground mb-2">
                             {advantage.title}
                           </h3>
-                          <p className="text-foreground/80 flex-grow">
+                          <p className="text-muted-foreground flex-grow">
                             {advantage.description}
                           </p>
                         </CardContent>
@@ -336,7 +342,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="bg-background border-t border-border">
+       <footer className="bg-background border-t border-border">
         <div className="container mx-auto max-w-[1200px] px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-foreground">
           <div>
             <h3 className="font-bold text-xl mb-4">Zenda</h3>
@@ -404,5 +410,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

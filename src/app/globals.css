@@ -5,80 +5,89 @@
 
 @layer base {
   :root {
-    --background: 220 20% 98%;
-    --foreground: 220 10% 20%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 7%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 10% 20%;
+    --card-foreground: 0 0% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 10% 20%;
+    --popover-foreground: 0 0% 7%;
     
-    --primary: 130 50% 45%; /* #38b284 */
-    --primary-foreground: 0 0% 100%;
+    --primary: 165 47% 17%;
+    --primary-foreground: 0 0% 98%;
     
-    --secondary: 220 10% 90%;
-    --secondary-foreground: 220 10% 20%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 7%;
 
-    --muted: 220 10% 90%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
     
-    --accent: 220 10% 90%;
-    --accent-foreground: 220 10% 20%;
+    --accent: 165 17% 63%;
+    --accent-foreground: 0 0% 7%;
     
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 10% 85%;
-    --input: 220 10% 90%;
-    --ring: 130 50% 45%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 165 47% 17%;
     
     --radius: 0.5rem;
 
-    --chart-1: 130 50% 45%;
-    --chart-2: 142.1 76.2% 36.3%;
+    --chart-1: 165 47% 17%;
+    --chart-2: 165 17% 63%;
     --chart-3: 35.8 91.7% 53.1%;
     --chart-4: 217.2 91.2% 59.8%;
     --chart-5: 0 84.2% 60.2%;
     
-    --sidebar-background: 130 20% 10%;
+    --sidebar-background: 165 47% 12%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 130 50% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 130 20% 15%;
+    --sidebar-primary: 165 17% 73%;
+    --sidebar-primary-foreground: 165 47% 10%;
+    --sidebar-accent: 165 47% 22%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 130 20% 20%;
-    --sidebar-ring: 130 50% 45%;
+    --sidebar-border: 165 47% 27%;
+    --sidebar-ring: 165 17% 73%;
   }
 
   .dark {
-    --background: 130 20% 10%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 96%;
 
-    --card: 130 20% 15%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 130 20% 15%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 96%;
     
-    --primary: 130 50% 55%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 165 17% 63%;
+    --primary-foreground: 0 0% 7%;
     
-    --secondary: 130 20% 20%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 130 20% 20%;
-    --muted-foreground: 130 10% 65%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
     
-    --accent: 130 20% 20%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 165 47% 17%;
+    --accent-foreground: 0 0% 96%;
     
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 130 20% 25%;
-    --input: 130 20% 20%;
-    --ring: 130 50% 55%;
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 165 17% 63%;
+    
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 165 17% 63%;
+    --sidebar-primary-foreground: 0 0% 7%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 165 17% 63%;
   }
 }
 
@@ -98,132 +107,8 @@
 }
 
 @layer components {
-    .navbar {
-        @apply flex justify-between items-center py-4 px-[5%] bg-[#3D224E] border-b border-white/10 relative z-[1000];
-    }
-
-    .navbar-left {
-        @apply flex items-center;
-    }
-
-    .logo {
-        @apply flex items-center gap-2;
-    }
-
-    .logo-image {
-        @apply w-8 h-8 object-contain;
-    }
-
-    .prototype-text {
-        @apply font-bold text-base border border-white/50 py-1 px-2.5 rounded-full opacity-80;
-    }
-
-    .navbar-right ul {
-        @apply list-none m-0 p-0 flex items-center gap-8;
-    }
-
-    .navbar-right ul li a {
-        @apply text-foreground no-underline font-normal text-sm transition-colors duration-300 ease-in-out;
-    }
-
-    .navbar-right ul li a:hover {
-        color: hsl(var(--highlight-yellow));
-    }
-
-    .hero-section {
-        @apply flex justify-center items-center py-8 px-[5%] gap-6 min-h-[calc(100vh-80px)] box-border relative;
-    }
-
-    .hero-content {
-        @apply flex-1 max-w-[750px] text-left;
-    }
-
-    .hero-content .tag {
-        @apply bg-[#E1E1E1] py-2 px-4 rounded-full inline-block mb-4 text-sm font-bold text-gray-800;
-    }
-
-    .hero-content h1 {
-        @apply text-6xl font-extrabold leading-tighter mb-3;
-    }
-
-    .alumbra-highlight {
-        @apply bg-gradient-to-r from-[hsl(var(--highlight-yellow))] to-[hsl(var(--highlight-purple))] bg-clip-text text-transparent;
-    }
-
-    .buttons {
-        @apply flex gap-4 mt-8;
-    }
-
-    .primary-button, .secondary-button {
-        @apply py-4 px-8 rounded-full text-base font-bold cursor-pointer transition-transform duration-200 ease-in-out;
-    }
-
-    .primary-button {
-        @apply bg-gradient-to-r from-[#2A7F34] to-[#81D486] text-white border-none shadow-[0_8px_25px_rgba(42,127,52,0.6)];
-    }
-
-    .primary-button:hover {
-        @apply -translate-y-1 shadow-[0_12px_30px_rgba(42,127,52,0.8)];
-    }
-
-    .secondary-button {
-        @apply bg-transparent text-foreground border-2 border-[hsl(var(--button-secondary-border))] shadow-[0_2px_10px_rgba(160,32,240,0.2)];
-    }
-
-    .secondary-button:hover {
-        @apply -translate-y-px bg-[hsl(var(--button-secondary-border))] bg-opacity-30 shadow-[0_5px_15px_rgba(160,32,240,0.4)];
-    }
-
-    .hero-image {
-        @apply flex-1 flex justify-center items-center relative;
-    }
-
-    .code-window {
-        @apply bg-[hsl(var(--code-window-bg))] border border-[hsl(var(--code-window-border))] rounded-lg w-full max-w-xl shadow-2xl overflow-hidden;
-    }
-
-    .window-header {
-        @apply flex items-center py-3 px-4 bg-[hsl(var(--code-window-border))] border-b border-white/10 relative;
-    }
-
-    .dots {
-        @apply flex gap-2;
-    }
-
-    .dot {
-        @apply w-3 h-3 rounded-full;
-    }
-
-    .dot.red { background-color: var(--dot-red); }
-    .dot.yellow { background-color: var(--dot-yellow); }
-    .dot.green { background-color: var(--dot-green); }
-    
-    .window-title {
-        @apply absolute left-1/2 -translate-x-1/2 text-sm text-white/70 font-bold;
-    }
-
-    .window-body {
-        @apply p-6 font-mono text-sm text-white/90 leading-normal;
-    }
-    
-    .window-body p {
-        @apply m-0 mb-2;
-    }
-
-    .status-box {
-        @apply bg-[hsl(var(--status-negative-bg))] py-3 px-4 rounded-md mt-4 flex justify-between items-center font-bold text-sm;
-    }
-    
-    .status-box span:first-child {
-        @apply text-white/60;
-    }
-
-    .status-box .status-text {
-      color: hsl(var(--status-text));
-    }
-
     .comparison-section {
-        background-color: #DAEFDD;
+        background-color: #f5f5f5;
         @apply py-16 px-[5%] text-center;
     }
     .dark .comparison-section {
@@ -232,7 +117,7 @@
 
 
     .comparison-title {
-        @apply text-5xl font-extrabold mb-12 text-[#063C0F];
+        @apply text-5xl font-extrabold mb-12 text-primary;
     }
     .dark .comparison-title {
       @apply text-primary;
@@ -266,7 +151,7 @@
     }
     
     .before-card h3, .after-card h3 {
-        @apply text-2xl font-bold mb-6 text-[#063C0F];
+        @apply text-2xl font-bold mb-6 text-primary;
     }
     .dark .before-card h3, .dark .after-card h3 {
        @apply text-primary;
@@ -290,7 +175,7 @@
     }
 
     .how-it-works-section {
-      background-color: #DAEFDD;
+      background-color: #f5f5f5;
       @apply py-16 px-4;
     }
 
@@ -299,7 +184,7 @@
     }
 
     .how-it-works-title {
-        @apply text-center text-4xl font-extrabold text-[#063C0F] mb-4;
+        @apply text-center text-4xl font-extrabold text-primary mb-4;
     }
     .dark .how-it-works-title {
         @apply text-primary;
@@ -335,14 +220,14 @@
     }
     
     .step-number {
-        @apply absolute -top-1 -right-1 bg-[#063C0F] text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white;
+        @apply absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center border-2 border-white;
     }
      .dark .step-number {
         @apply bg-primary text-primary-foreground border-card;
     }
     
     .step-title {
-        @apply text-xl font-bold text-[#063C0F] mb-2;
+        @apply text-xl font-bold text-primary mb-2;
     }
     .dark .step-title {
       @apply text-primary;
@@ -356,275 +241,14 @@
     }
 
 
-    .advantages-section {
-        background-color: #f7faf9;
-        @apply py-16 px-[5%] text-center;
-    }
-
-    .advantages-title {
-        @apply text-4xl font-extrabold mb-12 text-[#063C0F];
-    }
-
-    .advantage-card {
-        @apply bg-white rounded-xl shadow-lg transition-transform duration-300 ease-in-out h-full;
-    }
-
-    .advantage-card:hover {
-        @apply -translate-y-2 shadow-2xl;
-    }
-
-    .advantage-image-container {
-        @apply relative w-full h-48 mb-[-40px];
-    }
-    
-    .advantage-icon-wrapper {
-        @apply bg-gray-200/80 backdrop-blur-sm rounded-lg w-16 h-16 flex justify-center items-center mx-auto shadow-md relative z-10 border border-white/50;
-    }
-
-    .features-section {
-        @apply bg-background py-16 px-[5%] text-center;
-    }
-
-    .features-section h2 {
-        @apply text-5xl font-extrabold mb-4 text-foreground;
-    }
-
-    .features-section .subtitle {
-        @apply text-lg text-white/70 mb-12;
-    }
-
-    .features-container {
-        @apply flex justify-center gap-8 flex-wrap;
-    }
-
-    .feature-card {
-        @apply bg-secondary rounded-xl p-8 w-[300px] shadow-lg text-center transition-transform duration-300 ease-in-out;
-    }
-    
-    .feature-card:hover {
-        @apply -translate-y-2 shadow-2xl;
-    }
-    
-    .icon-circle-small {
-        @apply bg-gradient-to-r from-[#FF007F] to-[#A020F0] rounded-full w-16 h-16 flex justify-center items-center mx-auto mb-6 shadow-md;
-    }
-
-    .icon-circle-small img {
-      filter: brightness(0) invert(1);
-    }
-
-    .feature-card h3 {
-        @apply text-xl font-bold mb-3 text-foreground;
-    }
-
-    .feature-card p {
-        @apply text-sm text-white/70 leading-normal;
-    }
-    
-    .testimonials-section {
-        @apply bg-secondary py-16 px-[5%] text-center;
-    }
-
-    .testimonials-section h2 {
-        @apply text-5xl font-extrabold mb-4 text-foreground;
-    }
-
-    .testimonials-section .subtitle {
-        @apply text-lg text-white/70 mb-12;
-    }
-
-    .testimonials-container {
-        @apply flex justify-center gap-8 flex-wrap;
-    }
-
-    .testimonial-card {
-        @apply bg-background rounded-xl p-8 w-[300px] shadow-lg text-left transition-transform duration-300 ease-in-out flex flex-col justify-between;
-    }
-    
-    .testimonial-card:hover {
-        @apply -translate-y-2 shadow-2xl;
-    }
-    
-    .testimonial-card p {
-        @apply text-base text-white/80 leading-relaxed mb-6 flex-grow;
-    }
-
-    .author-info {
-        @apply flex items-center gap-4 mt-auto;
-    }
-    
-    .author-avatar {
-        @apply w-12 h-12 bg-white/20 rounded-full flex-shrink-0;
-    }
-    
-    .author-name {
-        @apply font-bold text-lg text-foreground block;
-    }
-    
-    .author-title {
-        @apply text-sm text-white/60 block;
-    }
-
-    .login-shimmer-button {
-      @apply relative p-4 rounded-lg border border-primary text-lg uppercase font-bold tracking-[2px] bg-transparent text-white overflow-hidden shadow-none transition-all duration-200 ease-in;
-    }
-    .login-shimmer-button:hover {
-      @apply bg-primary shadow-[0_0_30px_5px_rgba(142,45,226,0.815)] transition-all duration-200 ease-out;
-    }
-    .login-shimmer-button:hover::before {
-      animation: shimmer 0.5s 0s linear;
-    }
-    .login-shimmer-button::before {
-      content: '';
-      @apply block w-0 h-[86%] absolute top-[7%] left-0 opacity-0 bg-white shadow-[0_0_50px_30px_white] -skew-x-[20deg];
-    }
-    .login-shimmer-button:active {
-      @apply shadow-none transition-shadow duration-200 ease-in;
-    }
-    @keyframes shimmer {
-      from {
-        opacity: 0;
-        left: 0%;
-      }
-      50% {
-        opacity: 1;
-      }
-      to {
-        opacity: 0;
-        left: 100%;
-      }
-    }
-
-
     @media (max-width: 1024px) {
-      .hero-section { @apply flex-col text-center py-8 px-[5%]; }
-      .hero-content { @apply max-w-full; }
-      .hero-content h1 { @apply text-5xl; }
-      .buttons { @apply justify-center; }
-      .hero-image { @apply mt-6; }
-      .how-it-works-section { @apply py-12 px-[5%]; }
-      .how-it-works-section h2 { @apply text-4xl; }
-      .steps-container { @apply gap-6; }
-      .step-card { @apply w-[250px] p-6; }
-      .features-section { @apply py-12 px-[5%]; }
-      .features-section h2 { @apply text-4xl; }
-      .features-container { @apply gap-6; }
-      .feature-card { @apply w-[280px] p-6; }
-      .testimonials-section { @apply py-12 px-[5%]; }
-      .testimonials-section h2 { @apply text-4xl; }
-      .testimonials-container { @apply gap-6; }
-      .testimonial-card { @apply w-[280px] p-6; }
-      .mission-vision-section { @apply py-12 px-[5%]; }
-      .mission-vision-section h2 { @apply text-4xl; }
-      .mission-vision-container { @apply gap-8; }
-      .mission-card, .vision-card { @apply p-6; }
-      .icon-title h3 { @apply text-2xl; }
       .comparison-title { @apply text-4xl; }
     }
     @media (max-width: 768px) {
-      .navbar { @apply flex-col gap-2 py-4 px-[3%]; }
-      .navbar-right ul { @apply flex-wrap justify-center gap-2; }
-      .hero-content h1 { @apply text-4xl; }
-      .hero-content p { @apply text-base; }
-      .primary-button, .secondary-button { @apply py-3 px-6 text-sm; }
-      .code-window { @apply w-[95%]; }
-      .how-it-works-section { @apply py-8 px-[3%]; }
-      .how-it-works-section h2 { @apply text-3xl; }
-      .how-it-works-section .subtitle { @apply text-base mb-8; }
-      .steps-container { @apply flex-col items-center gap-4; }
-      .step-card { @apply w-[90%] max-w-sm; }
-      .features-section { @apply py-8 px-[3%]; }
-      .features-section h2 { @apply text-3xl; }
-      .features-section .subtitle { @apply text-base mb-8; }
-      .features-container { @apply flex-col items-center gap-4; }
-      .feature-card { @apply w-[90%] max-w-sm; }
-      .testimonials-section { @apply py-8 px-[3%]; }
-      .testimonials-section h2 { @apply text-3xl; }
-      .testimonials-section .subtitle { @apply text-base mb-8; }
-      .testimonials-container { @apply flex-col items-center gap-4; }
-      .testimonial-card { @apply w-[90%] max-w-sm; }
-      .mission-vision-section { @apply py-8 px-[3%]; }
-      .mission-vision-section h2 { @apply text-3xl; }
-      .mission-vision-section .subtitle { @apply text-base mb-8; }
-      .mission-vision-container { @apply flex-col items-center gap-6; }
-      .mission-card, .vision-card { @apply w-[90%] max-w-md; }
-      .footer-container { @apply flex-col items-center text-center gap-8; }
-      .footer-column { @apply min-w-0 w-full max-w-xs; }
-      .footer-badges { @apply justify-center; }
       .comparison-title { @apply text-3xl; }
       .comparison-container { @apply flex-col; }
     }
     @media (max-width: 480px) {
-      .navbar-right ul { @apply flex-col gap-1; }
-      .hero-content h1 { @apply text-3xl; }
-      .buttons { @apply flex-col gap-2; }
-      .primary-button, .secondary-button { @apply w-full; }
-      .window-body { @apply p-4 text-xs; }
-      .how-it-works-section h2 { @apply text-2xl; }
-      .step-card { @apply p-5; }
-      .icon-circle { @apply w-[70px] h-[70px] mb-4; }
-      .icon-circle img { @apply w-[35px] h-[35px]; }
-      .step-card h3 { @apply text-xl; }
-      .step-card p { @apply text-sm; }
-      .features-section h2 { @apply text-2xl; }
-      .feature-card { @apply p-5; }
-      .icon-circle-small { @apply w-12 h-12 mb-4; }
-      .icon-circle-small img { @apply w-6 h-6; }
-      .feature-card h3 { @apply text-lg; }
-      .feature-card p { @apply text-xs; }
-      .testimonials-section h2 { @apply text-2xl; }
-      .testimonial-card { @apply p-5; }
-      .testimonial-card p { @apply text-sm; }
-      .author-avatar { @apply w-10 h-10; }
-      .author-name { @apply text-base; }
-      .author-title { @apply text-xs; }
-      .mission-vision-section h2 { @apply text-2xl; }
-      .mission-card, .vision-card { @apply p-5; }
-      .icon-title img { @apply w-6 h-6; }
-      .icon-title h3 { @apply text-xl; }
-      .mission-card p, .vision-card p { @apply text-sm; }
-      footer { @apply py-4 px-[3%]; }
-      .footer-column h3 { @apply text-lg; }
-      .footer-column p, .footer-column ul li a, .footer-badges span, .footer-bottom p { @apply text-xs; }
       .comparison-title { @apply text-2xl; }
     }
 }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-  
-
-    
-
-    
-
-    
-
