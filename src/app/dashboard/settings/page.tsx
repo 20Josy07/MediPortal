@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Shield, Settings2, CreditCard, Puzzle, KeyRound, Eye, Smartphone, Calendar, Video, MessageSquare, Mail, Banknote, Trash2 } from "lucide-react";
+import { User, Bell, Shield, Settings2, CreditCard, Puzzle, KeyRound, Eye, Smartphone, Calendar, Video, MessageSquare, Mail, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -125,22 +125,6 @@ const IntegrationSettings = () => (
     </div>
 );
 
-
-const BillingSettings = () => (
-    <div className="space-y-4">
-        <p className="text-muted-foreground">Plan Actual: <span className="font-bold text-foreground">Profesional</span></p>
-        <Button variant="outline">Cambiar de Plan</Button>
-        <Separator />
-        <h4 className="text-base font-semibold">Historial de Pagos</h4>
-        <p className="text-sm text-muted-foreground">No hay facturas disponibles.</p>
-        <Button variant="outline">Ver Historial</Button>
-         <Separator />
-        <h4 className="text-base font-semibold">Datos de Facturación</h4>
-        <p className="text-sm text-muted-foreground">Actualiza tu información de pago.</p>
-        <Button variant="outline">Gestionar Datos</Button>
-    </div>
-);
-
 const SecuritySettings = () => {
     const { user, logout } = useAuth();
     const { toast } = useToast();
@@ -210,12 +194,6 @@ const settingsItems = [
     title: "Integraciones",
     description: "Conecta tus herramientas favoritas.",
     content: <IntegrationSettings />,
-  },
-  {
-    icon: Banknote,
-    title: "Plan y Facturación",
-    description: "Revisa tu plan actual y gestiona tu suscripción.",
-    content: <BillingSettings />,
   },
   {
     icon: Shield,
