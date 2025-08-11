@@ -36,7 +36,7 @@ import { useTheme } from "next-themes";
 import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
 
-const rotatingWords = ["estructurada", "organizada", "eficiente"];
+const rotatingWords = ["estructurada.", "organizada.", "eficiente."];
 
 const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,28 +50,38 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="flex flex-col items-center justify-center text-center bg-background min-h-[calc(80vh-72px)] px-4">
-      <div className="flex flex-col items-center">
-        <h1 className="text-4xl md:text-6xl font-extrabold text-foreground tracking-tighter">
-          Tu práctica,{" "}
-          <span className="relative inline-block h-[1.2em]">
+    <section className="relative flex flex-col items-center justify-center text-center text-white min-h-[calc(100vh_-_72px)] px-4 overflow-hidden">
+      <div className="absolute inset-0 z-0">
+         <Image
+          src="https://placehold.co/1920x1080.png"
+          alt="Psicólogo trabajando en su escritorio"
+          fill
+          className="object-cover"
+          data-ai-hint="therapist desk"
+          priority
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
+      </div>
+      <div className="z-10 flex flex-col items-center">
+        <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter">
+          Tu práctica,
+          <br />
+          <span className="relative inline-block h-[1.2em] text-primary">
             {rotatingWords.map((word, index) => (
               <span
                 key={word}
                 className={cn(
-                  "absolute left-0 right-0 transition-all duration-1000 ease-in-out motion-reduce:transition-none",
-                  currentIndex === index
-                    ? "opacity-100 transform-none"
-                    : "opacity-0 -rotate-12"
+                  "absolute left-0 right-0 transition-opacity duration-1000 ease-in-out",
+                  currentIndex === index ? "opacity-100" : "opacity-0"
                 )}
               >
-                <span className="text-primary">{word}</span>.
+                {word}
               </span>
             ))}
           </span>
         </h1>
-        <p className="mt-6 max-w-2xl text-lg md:text-xl text-muted-foreground">
-          Menos carga administrativa. Más presencia terapéutica.
+        <p className="mt-6 max-w-2xl text-lg md:text-xl text-white/80">
+          Menos carga administrativa. Más presencia terapéutica. Recupera hasta 8 horas a la semana y dedícalas a lo que amas.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3">
           <Button asChild size="lg">
@@ -367,4 +377,3 @@ export default function Home() {
     </div>
   );
 }
-
