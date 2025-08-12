@@ -22,28 +22,28 @@ import { cn } from "@/lib/utils";
 const RotatingWords = () => {
     const words = ["eficiente.", "organizada.", "estructurada."];
     const [index, setIndex] = useState(0);
-    const [currentWord, setCurrentWord] = useState(words[0]);
-    const [animation, setAnimation] = useState('fade-in');
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setAnimation('fade-out');
-            setTimeout(() => {
-                setIndex((prevIndex) => (prevIndex + 1) % words.length);
-                setAnimation('fade-in');
-            }, 500); // Duration of fade-out animation
-        }, 3000); // Time each word is displayed
+            setIndex((prevIndex) => (prevIndex + 1) % words.length);
+        }, 3000);
 
         return () => clearInterval(interval);
     }, [words.length]);
     
-    useEffect(() => {
-        setCurrentWord(words[index]);
-    }, [index, words]);
-
     return (
-        <span className={`inline-block ${animation === 'fade-in' ? 'animate-fade-in' : 'animate-fade-out'}`}>
-            {currentWord}
+        <span className="inline-block relative h-20">
+            {words.map((word, i) => (
+                <span 
+                    key={word}
+                    className={cn(
+                        "absolute left-0 right-0 mx-auto transition-all duration-500",
+                        i === index ? 'opacity-100 transform-none' : 'opacity-0 -translate-y-2'
+                    )}
+                >
+                  {word}
+                </span>
+            ))}
         </span>
     );
 };
@@ -53,7 +53,7 @@ const HeroSection = () => {
   return (
     <section className="flex flex-col items-center justify-center text-center bg-secondary min-h-[80vh] px-4 py-16">
       <div className="z-10 flex flex-col w-full max-w-4xl mx-auto items-center">
-        <div className="w-full max-w-2xl text-left">
+        <div className="w-full max-w-2xl text-center">
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tighter">
                 <span className="text-foreground">Tu práctica,</span>
                 <br />
@@ -63,7 +63,7 @@ const HeroSection = () => {
             Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
             </p>
         </div>
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-start w-full max-w-2xl">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center w-full max-w-2xl">
           <Button asChild size="lg">
             <Link href="/signup">Crear cuenta</Link>
           </Button>
@@ -161,7 +161,7 @@ const FeaturesSection = () => (
                     <React.Fragment key={index}>
                         <div className={cn(
                             "flex flex-col items-center text-center md:items-start md:text-left",
-                             index === 2 && "md:order-last"
+                             index === 2 && "md:col-start-1 md:row-start-2"
                         )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
@@ -170,7 +170,8 @@ const FeaturesSection = () => (
                             <p className="feature-description mt-2">{feature.description}</p>
                         </div>
                         <div className={cn(
-                            "flex items-center justify-center"
+                            "flex items-center justify-center",
+                            index === 2 && "md:col-start-2 md:row-start-2"
                         )}>
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
