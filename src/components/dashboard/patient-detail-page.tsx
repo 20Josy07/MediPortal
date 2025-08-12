@@ -202,10 +202,10 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
     const [isSummarizing, setIsSummarizing] = useState(false);
 
     const wordCount = useMemo(() => {
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = note.content;
-      const text = tempDiv.textContent || tempDiv.innerText || "";
-      return text.split(/\s+/).filter(Boolean).length;
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = note.content;
+        const text = tempDiv.textContent || tempDiv.innerText || "";
+        return text.split(/\s+/).filter(Boolean).length;
     }, [note.content]);
 
     const needsSummary = wordCount > 300;
@@ -225,9 +225,10 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
                 }
             }
         };
-
-        generateSummary();
-    }, [needsSummary, note.content, summary, isSummarizing]);
+        if (isExpanded) {
+            generateSummary();
+        }
+    }, [needsSummary, note.content, summary, isSummarizing, isExpanded]);
 
     const getNoteIcon = (type: Note['type']) => {
         switch (type) {
@@ -241,11 +242,11 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
     };
     
     const displayContent = isExpanded 
-        ? <div dangerouslySetInnerHTML={{ __html: note.content }} />
-        : (needsSummary ? (summary || "Generando resumen...") : <div dangerouslySetInnerHTML={{ __html: note.content }} />);
+        ? <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: note.content }} />
+        : (needsSummary ? (summary || "Generando resumen...") : <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: note.content }} />);
 
-    const isLoadingSummary = needsSummary && isSummarizing;
-    const showToggleButton = needsSummary && !isLoadingSummary;
+    const isLoadingSummary = needsSummary && isSummarizing && !isExpanded;
+    const showToggleButton = wordCount > 100;
 
     return (
         <Card 
@@ -267,8 +268,8 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
                 </div>
             </div>
             <div className="relative pl-9">
-                <ScrollArea className="h-32">
-                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
+                 <ScrollArea className={cn("transition-all duration-300", isExpanded ? "h-64" : "h-32")}>
+                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words", isLoadingSummary && "blur-sm")}>
                         {displayContent}
                     </div>
                 </ScrollArea>
@@ -341,6 +342,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
          } as Note;
       });
       setNotes(noteList);
+      setFilteredNotes(noteList);
        if (noteList.length > 0 && !activeNoteId) {
         setActiveNoteId(noteList[0].id);
       }
@@ -639,23 +641,57 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     // Content
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    const tempDiv = document.createElement("div");
+    
+    const tempDiv = document.createElement('div');
     tempDiv.innerHTML = noteToDownload.content;
-    const textContent = tempDiv.textContent || tempDiv.innerText || "";
-    
-    const splitContent = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
-    
-    const textLines = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
-    const pageHeightLimit = pageHeight - 25; // page height - footer margin
 
-    for (let i = 0; i < textLines.length; i++) {
-        const lineHeight = doc.getTextDimensions(textLines[i]).h;
-        if (yPos + lineHeight > pageHeightLimit) {
+    const processNode = async (node: ChildNode, currentY: number): Promise<number> => {
+        let y = currentY;
+        const pageHeightLimit = pageHeight - 25;
+
+        if (y > pageHeightLimit) {
             doc.addPage();
-            yPos = 20; // reset yPos for new page
+            y = 20;
         }
-        doc.text(textLines[i], margin, yPos);
-        yPos += lineHeight;
+
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent || '';
+            const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
+            for (const line of lines) {
+                if (y + 5 > pageHeightLimit) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(line, margin, y);
+                y += 5;
+            }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+            const element = node as HTMLElement;
+            const text = element.innerText || '';
+            const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
+            for (const line of lines) {
+                 if (y + 5 > pageHeightLimit) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(line, margin, y);
+                y += 5;
+            }
+             if (element.tagName === 'P' || element.tagName === 'DIV') {
+                y += 5; // Add space after a block element
+            }
+        }
+
+        for (const childNode of Array.from(node.childNodes)) {
+            y = await processNode(childNode, y);
+        }
+
+        return y;
+    };
+    
+    let finalY = yPos;
+    for (const childNode of Array.from(tempDiv.childNodes)) {
+        finalY = await processNode(childNode, finalY);
     }
     
     doc.save(`${noteToDownload.title.replace(/\s/g, '_')}.pdf`);
@@ -945,15 +981,15 @@ const NoteEntryForm = ({
 
         if (noteType === 'session') {
             title = sessionTopic || `Nota de sesión - ${format(sessionDate || new Date(), "PPP", { locale: es })}`;
-            content = `Fecha: ${format(sessionDate || new Date(), "PPP", { locale: es })}\nTema Central: ${sessionTopic}\n\nObservaciones del Paciente:\n${sessionObservations}\n\nIntervenciones Realizadas:\n${sessionInterventions}\n\nConclusiones o Próximos Pasos:\n${sessionNextSteps}`;
+            content = `<p><strong>Fecha:</strong> ${format(sessionDate || new Date(), "PPP", { locale: es })}</p><p><strong>Tema Central:</strong> ${sessionTopic}</p><h3>Observaciones del Paciente:</h3><p>${sessionObservations}</p><h3>Intervenciones Realizadas:</h3><p>${sessionInterventions}</p><h3>Conclusiones o Próximos Pasos:</h3><p>${sessionNextSteps}</p>`;
         } else if (noteType === 'follow-up') {
             title = followUpTask || `Seguimiento - ${format(followUpDate || new Date(), "PPP", { locale: es })}`;
-            content = `Tarea Asignada: ${followUpTask}\nFecha Asignada: ${format(followUpDate || new Date(), "PPP", { locale: es })}\n\nProgreso Observado:\n${followUpProgress}\n\nRecomendaciones:\n${followUpRecommendations}`;
+            content = `<p><strong>Tarea Asignada:</strong> ${followUpTask}</p><p><strong>Fecha Asignada:</strong> ${format(followUpDate || new Date(), "PPP", { locale: es })}</p><h3>Progreso Observado:</h3><p>${followUpProgress}</p><h3>Recomendaciones:</h3><p>${followUpRecommendations}</p>`;
         } else if (noteType === 'summary') {
             const from = summaryDateRange?.from ? format(summaryDateRange.from, "PPP", { locale: es }) : 'N/A';
             const to = summaryDateRange?.to ? format(summaryDateRange.to, "PPP", { locale: es }) : 'N/A';
             title = `Resumen de evolución (${from} - ${to})`;
-            content = `Rango de Fechas: ${from} al ${to}\nObjetivos Trabajados: ${summaryObjectives}\n\nCambios Observados:\n${summaryChanges}\n\nComentarios del Paciente:\n${summaryPatientComments}\n\nEvaluación del Proceso:\n${summaryEvaluation}`;
+            content = `<p><strong>Rango de Fechas:</strong> ${from} al ${to}</p><p><strong>Objetivos Trabajados:</strong> ${summaryObjectives}</p><h3>Cambios Observados:</h3><p>${summaryChanges}</p><h3>Comentarios del Paciente:</h3><p>${summaryPatientComments}</p><h3>Evaluación del Proceso:</h3><p>${summaryEvaluation}</p>`;
         }
 
         if (title && content) {
@@ -1016,8 +1052,8 @@ const NoteEntryForm = ({
                     Rellena los campos para crear la nueva entrada.
                 </DialogDescription>
             </DialogHeader>
-            <ScrollArea className="max-h-[60vh] px-6">
-                <div className="space-y-4 pb-6">
+            <ScrollArea className="max-h-[60vh]">
+                <div className="space-y-4 pb-6 px-6">
                     {noteType === 'session' && (
                         <>
                             <div className="grid grid-cols-2 gap-4">
@@ -1136,5 +1172,6 @@ const NoteEntryForm = ({
 
 
     
+
 
 
