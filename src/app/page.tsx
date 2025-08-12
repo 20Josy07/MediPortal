@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -15,30 +16,16 @@ import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-const rotatingWords = ["estructurada.", "organizada.", "eficiente."];
 
 const HeroSection = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % rotatingWords.length);
-    }, 3000); // Change word every 3 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <section className="flex flex-col items-center justify-center text-center bg-[#EEF2F1] dark:bg-background min-h-[80vh] px-4">
       <div className="z-10 flex flex-col items-center">
-        <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter text-foreground">
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground">
           Tu práctica,
           <br />
-          <span
-            key={currentIndex}
-            className="inline-block text-primary animate-rotate-fade-in"
-          >
-            {rotatingWords[currentIndex]}
+          <span className="text-primary">
+            organizada.
           </span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/80">
@@ -140,14 +127,14 @@ const FeaturesSection = () => (
             <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center">
                 {features.map((feature, index) => (
                     <React.Fragment key={index}>
-                        <div className={cn("feature-text-container", index === 2 && "md:order-2")}>
+                        <div className="feature-text-container">
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
                             </div>
                             <h3 className="feature-title">{feature.title}</h3>
                             <p className="feature-description">{feature.description}</p>
                         </div>
-                        <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
+                        <div className="flex items-center justify-center">
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
                            </div>
