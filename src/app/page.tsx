@@ -32,7 +32,7 @@ const RotatingWords = () => {
     }, [words.length]);
 
     return (
-        <span className="relative inline-block h-[1.2em] overflow-hidden">
+        <span className="relative inline-block h-[1.2em] w-full text-left">
             {words.map((word, i) => (
                 <span
                     key={word}
@@ -51,7 +51,7 @@ const RotatingWords = () => {
 
 const HeroSection = () => {
   return (
-    <section className="flex flex-col items-center justify-center text-center bg-[#EEF2F1] dark:bg-background min-h-[80vh] px-4">
+    <section className="flex flex-col items-center justify-center text-center bg-secondary min-h-[80vh] px-4">
       <div className="z-10 flex flex-col items-center">
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground leading-tighter">
           Tu práctica,
@@ -161,7 +161,7 @@ const FeaturesSection = () => (
                     <React.Fragment key={index}>
                         <div className={cn(
                             "flex flex-col items-center text-center md:items-start md:text-left",
-                            index === 2 && "md:order-last"
+                             index === 1 && "md:order-2" 
                         )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
@@ -169,8 +169,11 @@ const FeaturesSection = () => (
                             <h3 className="feature-title mt-4">{feature.title}</h3>
                             <p className="feature-description mt-2">{feature.description}</p>
                         </div>
-                        <div className="flex items-center justify-center">
-                           <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
+                        <div className={cn(
+                            "flex items-center justify-center",
+                            index === 1 && "md:order-1"
+                        )}>
+                           <div className="animated-tile aspect-[1/1] w-full max-w-[350px]">
                              {feature.tile}
                            </div>
                         </div>
