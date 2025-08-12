@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 
 
 const RotatingWords = () => {
-    const words = ["organizada.", "simple.", "potente."];
+    const words = ["organizada.", "eficiente.", "estructurada."];
     const [index, setIndex] = useState(0);
 
     useEffect(() => {
@@ -32,14 +32,15 @@ const RotatingWords = () => {
     }, [words.length]);
 
     return (
-        <span className="relative inline-block h-[1.2em] w-full text-left">
+        <span className="relative inline-block h-[1.2em] w-full text-left overflow-hidden">
             {words.map((word, i) => (
                 <span
                     key={word}
                     className={cn(
-                        "absolute left-0 transition-all duration-700 ease-in-out",
-                        i === index ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
+                        "absolute left-0 transition-all duration-1000 ease-in-out animate-fade-in-out",
+                        i === index ? "opacity-100" : "opacity-0"
                     )}
+                     style={{ animationDelay: i === index ? '0s' : '3s' }}
                 >
                     {word}
                 </span>
@@ -152,7 +153,7 @@ const features = [
 ];
 
 const FeaturesSection = () => (
-    <section id="features" className="features-section">
+    <section id="features" className="features-section bg-background">
         <div className="features-section-container">
             <h2 className="features-section-title">Todo lo que necesitas, en un solo lugar</h2>
             <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
@@ -161,7 +162,7 @@ const FeaturesSection = () => (
                     <React.Fragment key={index}>
                         <div className={cn(
                             "flex flex-col items-center text-center md:items-start md:text-left",
-                             index === 1 && "md:order-2" 
+                             index === 2 && "md:order-2"
                         )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
@@ -171,9 +172,9 @@ const FeaturesSection = () => (
                         </div>
                         <div className={cn(
                             "flex items-center justify-center",
-                            index === 1 && "md:order-1"
+                            index === 2 && "md:order-1"
                         )}>
-                           <div className="animated-tile aspect-[1/1] w-full max-w-[350px]">
+                           <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
                            </div>
                         </div>
@@ -283,7 +284,7 @@ const benefits = [
 ];
 
 const BenefitsSection = () => (
-  <section className="py-20 md:py-28 bg-secondary border-t border-border">
+  <section className="py-20 md:py-28 bg-background border-t border-border">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-4xl md:text-5xl font-bold text-foreground">
@@ -295,7 +296,7 @@ const BenefitsSection = () => (
       </div>
       <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
         {benefits.map((benefit, index) => (
-          <div key={index} className="rounded-xl bg-background border border-border p-8 shadow-sm flex flex-col items-center text-center">
+          <div key={index} className="rounded-xl bg-card border border-border p-8 shadow-sm flex flex-col items-center text-center">
             <div className="bg-primary/10 text-primary rounded-lg p-3 inline-block mb-6">
               <benefit.icon className="w-8 h-8" />
             </div>
