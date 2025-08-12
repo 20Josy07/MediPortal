@@ -58,20 +58,6 @@ const HeroSection = () => {
   );
 };
 
-const AgendaInteligente = () => (
-    <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full w-full relative z-10">
-        {Array.from({ length: 35 }).map((_, i) => (
-            <div key={i} className={cn(
-                "rounded-[3px] bg-muted/40",
-                [3, 10, 18, 26].includes(i) && 'bg-muted/80'
-            )}>
-                {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/70"></div>}
-                {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/70"></div>}
-            </div>
-        ))}
-    </div>
-);
-
 const NotasClinicas = () => (
     <div className="w-full h-full flex flex-col justify-center gap-2.5 relative z-10">
         <div className="flex items-center gap-2">
@@ -94,25 +80,21 @@ const NotasClinicas = () => (
     </div>
 );
 
-const AsistenteIA = () => (
-    <div className="w-full h-full flex flex-col justify-end gap-2 relative z-10">
-        <div className="flex items-end justify-between h-full">
-            {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
-                <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
-                    <div className="bg-primary/50 w-full rounded-t-md origin-bottom animate-bar-grow" style={{ height: `${height * 100}%`, animationDelay: `${i * 150}ms` }}></div>
-                </div>
-            ))}
-        </div>
-        <div className="h-1 w-full bg-border rounded-full mt-2"></div>
-    </div>
-);
-
 const features = [
   {
     icon: CalendarDays,
     title: "Agenda inteligente y centralizada",
     description: "Gestiona todas tus citas en un solo lugar. Sincroniza tu calendario de Google y evita conflictos de horarios.",
-    tile: <AgendaInteligente />,
+    tile: (
+       <Image
+        src="https://placehold.co/400x400.png"
+        alt="Agenda Inteligente"
+        width={400}
+        height={400}
+        className="w-full h-full object-cover rounded-lg"
+        data-ai-hint="calendar schedule"
+      />
+    ),
   },
   {
     icon: FilePenLine,
@@ -124,7 +106,16 @@ const features = [
     icon: Bot,
     title: "Tu asistente clínico con IA",
     description: "Obtén insights, detecta patrones y sigue la evolución de tus pacientes. Zenda te ayuda a ver más allá de las notas.",
-    tile: <AsistenteIA />,
+    tile: (
+      <Image
+        src="https://placehold.co/400x400.png"
+        alt="Asistente IA"
+        width={400}
+        height={400}
+        className="w-full h-full object-cover rounded-lg"
+        data-ai-hint="artificial intelligence brain"
+      />
+    ),
   }
 ];
 
@@ -144,7 +135,7 @@ const FeaturesSection = () => (
                             <p className="feature-description">{feature.description}</p>
                         </div>
                         <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
-                           <div className="animated-tile">
+                           <div className="animated-tile aspect-[1/1] w-full max-w-[400px]">
                              {feature.tile}
                            </div>
                         </div>
