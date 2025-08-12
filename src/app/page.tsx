@@ -28,8 +28,8 @@ const RotatingWords = ({ words }: { words: string[] }) => {
       setTimeout(() => {
         setIndex((prevIndex) => (prevIndex + 1) % words.length);
         setIsFadingOut(false);
-      }, 500); // Duration of fade-out animation
-    }, 2500); // Time each word is displayed
+      }, 300); // Duration of fade-out animation
+    }, 2000); // Time each word is displayed
 
     return () => clearInterval(wordInterval);
   }, [words.length]);
@@ -37,8 +37,8 @@ const RotatingWords = ({ words }: { words: string[] }) => {
   return (
     <span
       className={cn(
-        "inline-block transition-opacity duration-500",
-        isFadingOut ? "animate-fade-out" : "animate-fade-in"
+        "inline-block transition-opacity duration-300",
+        isFadingOut ? "opacity-0" : "opacity-100"
       )}
     >
       {words[index]}
@@ -160,7 +160,7 @@ const FeaturesSection = () => (
                     <React.Fragment key={index}>
                         <div className={cn(
                             "flex flex-col items-center text-center md:items-start md:text-left",
-                             index === 2 && "md:order-2" 
+                             index === 2 && "md:col-start-2 md:row-start-3" // This moves the text to the right column on the third row
                         )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
@@ -170,7 +170,7 @@ const FeaturesSection = () => (
                         </div>
                         <div className={cn(
                             "flex items-center justify-center",
-                            index === 2 && "md:order-1"
+                            index === 2 && "md:col-start-1 md:row-start-3" // This moves the tile to the left column on the third row
                         )}>
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
