@@ -19,15 +19,45 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 
+const RotatingWords = () => {
+    const words = ["organizada.", "simple.", "potente."];
+    const [index, setIndex] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIndex((prevIndex) => (prevIndex + 1) % words.length);
+        }, 3000); // Change word every 3 seconds
+
+        return () => clearInterval(interval);
+    }, [words.length]);
+
+    return (
+        <span className="relative inline-block h-[1.2em] overflow-hidden">
+            {words.map((word, i) => (
+                <span
+                    key={word}
+                    className={cn(
+                        "absolute left-0 transition-all duration-700 ease-in-out",
+                        i === index ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
+                    )}
+                >
+                    {word}
+                </span>
+            ))}
+        </span>
+    );
+};
+
+
 const HeroSection = () => {
   return (
     <section className="flex flex-col items-center justify-center text-center bg-[#EEF2F1] dark:bg-background min-h-[80vh] px-4">
       <div className="z-10 flex flex-col items-center">
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground">
+        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground leading-tighter">
           Tu práctica,
           <br />
           <span className="text-primary">
-            organizada.
+            <RotatingWords />
           </span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/80">
