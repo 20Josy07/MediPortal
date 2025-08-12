@@ -10,12 +10,13 @@ import {
   Sparkles,
   CalendarDays,
   Bot,
+  LayoutGrid,
+  FileText,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { BarChartIcon, ShieldIcon, UsersIcon } from "@/components/icons";
 
 
 const HeroSection = () => {
@@ -232,19 +233,19 @@ const LandingHeader = () => {
 
 const benefits = [
   {
-    icon: BarChartIcon,
-    title: "Optimiza tu tiempo",
-    description: "Reduce el tiempo dedicado a tareas repetitivas y enfócate en la calidad de tus sesiones."
+    icon: FileText,
+    title: "Notas listas en minutos",
+    description: "Transcribe tus audios y parte de un borrador (SOAP/DAP) para editar y guardar sin empezar de cero."
   },
   {
-    icon: ShieldIcon,
-    title: "Seguridad y Confianza",
-    description: "Cumple con los estándares de protección de datos. La información de tus pacientes está encriptada y segura."
+    icon: LayoutGrid,
+    title: "Todo centralizado",
+    description: "Pacientes, sesiones y notas en un solo lugar. Encuentra lo que necesitas en segundos."
   },
   {
-    icon: UsersIcon,
-    title: "Mejora la experiencia",
-    description: "Ofrece a tus pacientes una experiencia profesional con recordatorios y un portal seguro (próximamente)."
+    icon: Sparkles,
+    title: "Flujo simple, menos clics",
+    description: "Plantillas, atajos y guardado automático para reducir tareas repetitivas y enfocarte en la sesión."
   }
 ];
 
@@ -253,16 +254,18 @@ const BenefitsSection = () => (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-          Menos carga administrativa. Más presencia terapéutica.
+          Todo en orden, sin esfuerzo.
         </h2>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-          Recupera horas en tu semana y dedícalas a lo que amas.
+          Pacientes, sesiones y notas en un solo lugar.
         </p>
       </div>
       <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
         {benefits.map((benefit, index) => (
           <div key={index} className="rounded-xl bg-background border border-border p-8 shadow-sm flex flex-col items-center text-center">
-            <benefit.icon className="w-8 h-8 text-primary mb-6" />
+            <div className="bg-primary/10 text-primary rounded-lg p-3 inline-block mb-6">
+              <benefit.icon className="w-8 h-8" />
+            </div>
             <h3 className="text-xl font-bold text-foreground mb-3">{benefit.title}</h3>
             <p className="text-base text-muted-foreground flex-grow">{benefit.description}</p>
           </div>
