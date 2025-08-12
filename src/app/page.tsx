@@ -67,10 +67,10 @@ const AgendaInteligente = () => (
                 {Array.from({ length: 35 }).map((_, i) => (
                     <div key={i} className={cn(
                         "rounded-[3px]",
-                        [3, 10, 18, 26].includes(i) ? 'bg-muted' : 'bg-muted/50'
+                        [3, 10, 18, 26].includes(i) ? 'bg-muted/80' : 'bg-muted/40'
                     )}>
-                        {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/80"></div>}
-                        {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/80"></div>}
+                        {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/70"></div>}
+                        {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/70"></div>}
                     </div>
                 ))}
             </div>
@@ -146,14 +146,14 @@ const FeaturesSection = () => (
             <div className="features-grid">
                 {features.map((feature, index) => (
                     <React.Fragment key={index}>
-                        <div className={cn("feature-text-container", index % 2 !== 0 && "md:order-2")}>
+                        <div className={cn("feature-text-container", index === 2 && "md:order-2")}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
                             </div>
                             <h3 className="feature-title">{feature.title}</h3>
                             <p className="feature-description">{feature.description}</p>
                         </div>
-                        <div className={cn("flex items-center justify-center", index % 2 !== 0 && "md:order-1")}>
+                        <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
                             {feature.tile}
                         </div>
                     </React.Fragment>
