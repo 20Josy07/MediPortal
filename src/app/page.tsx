@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -149,7 +148,7 @@ const FeaturesSection = () => (
                             <p className="feature-description">{feature.description}</p>
                         </div>
                         <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
-                           <div className="animated-tile aspect-[1/1] w-full max-w-[350px]">
+                           <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
                            </div>
                         </div>
