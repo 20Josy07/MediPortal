@@ -1,7 +1,8 @@
 
+
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
-import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore";
+import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, writeBatch } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
 const firebaseConfig = {
@@ -61,6 +62,7 @@ export const addNote = async (db: Firestore, userId: string, patientId: string, 
   const docRef = await addDoc(notesCollection, {
     ...noteData,
     createdAt: serverTimestamp(),
+    hasHistory: false,
   });
   return {
     id: docRef.id,
@@ -70,9 +72,37 @@ export const addNote = async (db: Firestore, userId: string, patientId: string, 
 };
 
 export const updateNote = async (db: Firestore, userId: string, patientId: string, noteId: string, data: Partial<Omit<Note, 'id'>>) => {
-  const noteDoc = doc(db, `users/${userId}/patients/${patientId}/notes`, noteId);
-  await updateDoc(noteDoc, data);
+  const batch = writeBatch(db);
+  const noteDocRef = doc(db, `users/${userId}/patients/${patientId}/notes`, noteId);
+
+  // 1. Get current note content before updating
+  const noteSnapshot = await getDoc(noteDocRef);
+  if (noteSnapshot.exists()) {
+      const currentNote = noteSnapshot.data() as Note;
+
+      // 2. Create a new version in the 'versions' subcollection
+      const versionCollectionRef = collection(noteDocRef, 'versions');
+      const newVersionRef = doc(versionCollectionRef); // Auto-generate ID
+      
+      batch.set(newVersionRef, {
+          title: currentNote.title,
+          content: currentNote.content,
+          versionCreatedAt: currentNote.createdAt,
+      });
+
+      // 3. Update the main note document with new data and mark that it has history
+      const updateData = { ...data, hasHistory: true };
+      batch.update(noteDocRef, updateData);
+
+  } else {
+    // If for some reason the note doesn't exist, just update (which will create it if it doesn't exist with set)
+     batch.update(noteDocRef, data);
+  }
+
+  // 4. Commit the batch
+  await batch.commit();
 };
+
 
 export const deleteNote = async (db: Firestore, userId: string, patientId: string, noteId: string) => {
   const noteDoc = doc(db, `users/${userId}/patients/${patientId}/notes`, noteId);

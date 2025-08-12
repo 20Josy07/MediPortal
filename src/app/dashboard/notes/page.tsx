@@ -2,10 +2,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, getDoc, doc } from "firebase/firestore";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import type { Note, Patient } from "@/lib/types";
+import type { Note, Patient, NoteVersion } from "@/lib/types";
 import { format, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import type * as PdfJs from 'pdfjs-dist/types/src/pdf';
@@ -17,7 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -117,6 +117,10 @@ export default function SmartNotesPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>("SOAP");
   const [generatedBlocks, setGeneratedBlocks] = useState<GeneratedBlocks | null>(null);
   const [isEditingTranscription, setIsEditingTranscription] = useState(false);
+
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [noteVersions, setNoteVersions] = useState<NoteVersion[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -222,6 +226,7 @@ export default function SmartNotesPage() {
           content: transcription,
           patientId: selectedPatientId,
           createdAt: new Date(),
+          hasHistory: false,
         };
         const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
         setNotes(prevNotes => [addedNote, ...prevNotes]);
@@ -309,6 +314,7 @@ export default function SmartNotesPage() {
         content: textNoteContent,
         patientId: selectedPatientId,
         createdAt: new Date(),
+        hasHistory: false,
       };
       const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
       setNotes(prevNotes => [addedNote, ...prevNotes]);
@@ -357,7 +363,7 @@ export default function SmartNotesPage() {
 
     try {
       await updateNote(db, user.uid, selectedPatientId, selectedNote.id, updatedData);
-      setNotes(notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData, content: finalContent } : n));
+      setNotes(notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData, content: finalContent, hasHistory: true } : n));
       toast({ title: "Nota actualizada correctamente." });
       setIsDetailViewOpen(false);
       setSelectedNote(null);
@@ -703,6 +709,45 @@ export default function SmartNotesPage() {
     editorRef.current?.focus();
   };
 
+  const handleOpenHistory = async () => {
+    if (!selectedNote || !user || !db || !selectedPatientId) return;
+
+    setIsLoadingHistory(true);
+    setIsHistoryModalOpen(true);
+    try {
+        const noteDocRef = doc(db, `users/${user.uid}/patients/${selectedPatientId}/notes`, selectedNote.id);
+        const versionsCollectionRef = collection(noteDocRef, 'versions');
+        const q = query(versionsCollectionRef, orderBy("versionCreatedAt", "desc"));
+        const versionSnapshot = await getDocs(q);
+
+        const versions = versionSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                versionCreatedAt: (data.versionCreatedAt as any).toDate(),
+            } as NoteVersion
+        });
+        setNoteVersions(versions);
+    } catch (error) {
+        console.error("Error fetching note history:", error);
+        toast({ variant: "destructive", title: "Error al cargar el historial." });
+    } finally {
+        setIsLoadingHistory(false);
+    }
+  };
+
+  const handleRestoreVersion = (version: NoteVersion) => {
+    setEditableNoteTitle(version.title);
+    setEditableNoteContent(version.content);
+    if (editorRef.current) {
+        editorRef.current.innerHTML = version.content;
+    }
+    setIsHistoryModalOpen(false);
+    toast({ title: "Versión restaurada en el editor.", description: "Guarda los cambios para aplicarla." });
+  };
+
+
   return (
     <>
       <div className="flex-1 space-y-6">
@@ -981,6 +1026,9 @@ export default function SmartNotesPage() {
                         </DialogDescription>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+                        <Button variant="outline" size="sm" className="h-9" onClick={handleOpenHistory} disabled={!selectedNote.hasHistory}>
+                            <History className="mr-2 h-4 w-4" /> Historial
+                        </Button>
                         <Select value={selectedTemplate} onValueChange={(value) => setSelectedTemplate(value as NoteTemplate)}>
                             <SelectTrigger className="h-9 w-[120px]">
                                 <SelectValue placeholder="Plantilla" />
@@ -1096,8 +1144,47 @@ export default function SmartNotesPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <Dialog open={isHistoryModalOpen} onOpenChange={setIsHistoryModalOpen}>
+        <DialogContent className="max-w-3xl">
+            <DialogHeader>
+                <DialogTitle>Historial de Versiones de la Nota</DialogTitle>
+                <DialogDescription>
+                    Aquí puedes ver y restaurar versiones anteriores de esta nota.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4">
+                {isLoadingHistory ? (
+                    <div className="flex justify-center items-center h-48">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    </div>
+                ) : noteVersions.length > 0 ? (
+                    <ScrollArea className="h-96">
+                        <div className="space-y-4 pr-4">
+                            {noteVersions.map((version) => (
+                               <Card key={version.id}>
+                                   <CardHeader>
+                                        <CardTitle className="text-base flex justify-between items-center">
+                                            <span>Versión de: {format(version.versionCreatedAt, "PPPp", { locale: es })}</span>
+                                            <Button variant="secondary" size="sm" onClick={() => handleRestoreVersion(version)}>Restaurar esta versión</Button>
+                                        </CardTitle>
+                                   </CardHeader>
+                                   <CardContent>
+                                        <div className="prose prose-sm dark:prose-invert max-w-none bg-muted/50 p-3 rounded-md">
+                                            <h4 className="font-semibold">{version.title}</h4>
+                                            <div dangerouslySetInnerHTML={{ __html: version.content }} />
+                                        </div>
+                                   </CardContent>
+                               </Card>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                ) : (
+                    <p className="text-center text-muted-foreground py-10">No hay historial de versiones para esta nota.</p>
+                )}
+            </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
-
-    

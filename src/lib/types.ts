@@ -38,6 +38,14 @@ export interface Note {
   createdAt: Date;
   content: string;
   sessionId?: string;
+  hasHistory?: boolean;
+}
+
+export interface NoteVersion {
+    id: string;
+    title: string;
+    content: string;
+    versionCreatedAt: Date;
 }
 
 export interface UserProfile {
