@@ -2,12 +2,16 @@ import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import Script from "next/script";
 import ClientLayout from "@/components/providers/client-layout";
 
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const poppins = Poppins({ 
+  subsets: ["latin"], 
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-poppins" 
+});
 
 export const metadata: Metadata = {
   title: "Zenda | Software de Gestión para Psicólogos con IA",
@@ -54,7 +58,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
       </head>
-      <body className={`${inter.variable} font-body antialiased`}>
+      <body className={`${poppins.variable} font-body antialiased`}>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
