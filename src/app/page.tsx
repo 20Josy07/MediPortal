@@ -61,8 +61,8 @@ const HeroSection = () => {
 const AgendaInteligente = () => (
   <div className="z-10 w-full h-full p-4 flex flex-col gap-2.5">
     <div className="grid grid-cols-5 gap-2">
-      {['L', 'M', 'M', 'J', 'V'].map(day => (
-        <div key={day} className="text-center text-xs font-bold text-muted-foreground">{day}</div>
+      {['L', 'M', 'M', 'J', 'V'].map((day, index) => (
+        <div key={index} className="text-center text-xs font-bold text-muted-foreground">{day}</div>
       ))}
     </div>
     <div className="relative flex-grow grid grid-cols-5 grid-rows-4 gap-1.5">
