@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History, ChevronDown } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History, ChevronDown, ChevronsUpDown, Check } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -28,6 +28,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
@@ -89,9 +92,13 @@ const RichTextEditorToolbar: React.FC<{ onCommand: OnCommand }> = ({ onCommand }
 
 const VersionContent = ({ title, content }: { title: string; content: string }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const hasLongContent = content.length > 350;
+    
+    // This check needs to be safe for server-side rendering
+    const hasLongContent = typeof window !== 'undefined' ? content.length > 350 : false;
 
     const truncateHTML = (html: string, length: number) => {
+      if (typeof window === 'undefined') return html; // Don't truncate on SSR
+
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = html;
 
@@ -190,6 +197,7 @@ export default function SmartNotesPage() {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [noteVersions, setNoteVersions] = useState<NoteVersion[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [isPatientSelectorOpen, setIsPatientSelectorOpen] = useState(false);
 
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -199,6 +207,8 @@ export default function SmartNotesPage() {
   const audioFileInputRef = useRef<HTMLInputElement | null>(null);
   const chatScrollAreaRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
+  const textEditorRef = useRef<HTMLDivElement>(null);
+
 
   const subjectiveRef = useRef<HTMLTextAreaElement>(null);
   const dataRef = useRef<HTMLTextAreaElement>(null);
@@ -371,16 +381,20 @@ export default function SmartNotesPage() {
         toast({ variant: "destructive", title: "Selecciona un paciente para guardar la nota." });
         return;
     }
-    if (!textNoteContent.trim() || !user || !db) {
+    const content = textEditorRef.current?.innerHTML || "";
+    if (!content.trim() || !user || !db) {
       toast({ variant: "destructive", title: "La nota no puede estar vacía." });
       return;
     }
 
     try {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = content;
+        const textForTitle = tempDiv.textContent || tempDiv.innerText || "";
       const newNote: Omit<Note, 'id'> = {
-        title: `${textNoteContent.substring(0, 30)}${textNoteContent.length > 30 ? '...' : ''}`,
+        title: `${textForTitle.substring(0, 30)}${textForTitle.length > 30 ? '...' : ''}`,
         type: 'Texto',
-        content: textNoteContent,
+        content: content,
         patientId: selectedPatientId,
         createdAt: new Date(),
         hasHistory: false,
@@ -388,6 +402,7 @@ export default function SmartNotesPage() {
       const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
       setNotes(prevNotes => [addedNote, ...prevNotes]);
       setTextNoteContent("");
+       if(textEditorRef.current) textEditorRef.current.innerHTML = "";
       toast({ title: "Resumen guardado" });
     } catch (error) {
        console.error("Error saving text note:", error);
@@ -517,7 +532,10 @@ export default function SmartNotesPage() {
         setIsFileProcessing(false);
         return;
       }
-      setTextNoteContent(current => current + '\n\n' + text);
+
+      if(textEditorRef.current){
+        textEditorRef.current.innerHTML += `<p>${text}</p>`;
+      }
       toast({ title: "Documento procesado y añadido a la nota." });
     } catch (error) {
       console.error("Error processing file:", error);
@@ -777,6 +795,12 @@ export default function SmartNotesPage() {
     document.execCommand(command, false, value);
     editorRef.current?.focus();
   };
+  
+  const handleTextEditorCommand: OnCommand = (command, value) => {
+    document.execCommand(command, false, value);
+    textEditorRef.current?.focus();
+  };
+
 
   const handleOpenHistory = async () => {
     if (!selectedNote || !user || !db || !selectedPatientId) return;
@@ -829,18 +853,49 @@ export default function SmartNotesPage() {
           </div>
           <div className="w-full max-w-xs">
              <p className="font-bold text-primary mb-1 uppercase">Selecciona el paciente</p>
-             <Select onValueChange={setSelectedPatientId} value={selectedPatientId || ""}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un paciente..." />
-                </SelectTrigger>
-                <SelectContent>
-                    {patients.length > 0 ? patients.map(p => (
-                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                    )) : (
-                        <div className="p-4 text-center text-sm text-muted-foreground">No hay pacientes</div>
-                    )}
-                </SelectContent>
-            </Select>
+            <Popover open={isPatientSelectorOpen} onOpenChange={setIsPatientSelectorOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={isPatientSelectorOpen}
+                        className="w-full justify-between"
+                    >
+                        {selectedPatientId
+                            ? patients.find((patient) => patient.id === selectedPatientId)?.name
+                            : "Selecciona un paciente..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[300px] p-0">
+                    <Command>
+                        <CommandInput placeholder="Buscar paciente..." />
+                        <CommandList>
+                            <CommandEmpty>No se encontró ningún paciente.</CommandEmpty>
+                            <CommandGroup>
+                                {patients.map((patient) => (
+                                    <CommandItem
+                                        key={patient.id}
+                                        value={patient.name}
+                                        onSelect={() => {
+                                            setSelectedPatientId(patient.id);
+                                            setIsPatientSelectorOpen(false);
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                selectedPatientId === patient.id ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                        {patient.name}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
           </div>
         </div>
 
@@ -924,38 +979,43 @@ export default function SmartNotesPage() {
                       </Card>
                   </TabsContent>
                   <TabsContent value="text">
-                      <Card>
-                      <CardHeader>
-                          <CardTitle>Editor de Notas</CardTitle>
-                          <CardDescription>
-                          Escribe tus notas manualmente o pega texto para analizar.
-                          </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                          <Textarea 
-                            placeholder={!selectedPatientId ? "Selecciona un paciente para empezar a escribir..." : "Escribe aquí tus notas..."}
-                            className="min-h-[250px] text-base"
-                            value={textNoteContent}
-                            onChange={(e) => setTextNoteContent(e.target.value)}
-                            disabled={!selectedPatientId}
-                          />
-                          <div className="mt-4 flex justify-between items-center">
-                              <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={!selectedPatientId || isFileProcessing}>
-                                {isFileProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Paperclip className="mr-2 h-4 w-4" />}
-                                Adjuntar Archivo
-                              </Button>
-                              <input 
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                className="hidden"
-                                accept=".txt,.pdf,.docx,.doc"
-                              />
-                              <Button onClick={handleSaveTextNote} disabled={!selectedPatientId}>Guardar Nota</Button>
-                          </div>
-                      </CardContent>
-                      </Card>
-                  </TabsContent>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Editor de Notas</CardTitle>
+                                <CardDescription>Escribe tus notas manualmente o pega texto para analizar.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="border rounded-md">
+                                    <RichTextEditorToolbar onCommand={handleTextEditorCommand} />
+                                    <div
+                                        ref={textEditorRef}
+                                        contentEditable={!!selectedPatientId}
+                                        onBlur={(e) => setTextNoteContent(e.currentTarget.innerHTML)}
+                                        className={cn(
+                                            "text-base whitespace-pre-wrap p-4 focus:outline-none min-h-[250px] bg-background",
+                                            !selectedPatientId && "bg-muted/50 cursor-not-allowed"
+                                        )}
+                                        data-placeholder={!selectedPatientId ? "Selecciona un paciente para empezar a escribir..." : "Escribe aquí tus notas..."}
+                                    />
+                                </div>
+                                <div className="mt-4 flex justify-between items-center">
+                                    <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={!selectedPatientId || isFileProcessing}>
+                                        {isFileProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Paperclip className="mr-2 h-4 w-4" />}
+                                        Adjuntar Archivo
+                                    </Button>
+                                    <input 
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                        accept=".txt,.pdf,.docx,.doc"
+                                    />
+                                    <Button onClick={handleSaveTextNote} disabled={!selectedPatientId}>Guardar Nota</Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
               </Tabs>
               
               <Card>
@@ -1256,3 +1316,4 @@ export default function SmartNotesPage() {
 }
 
     
+
