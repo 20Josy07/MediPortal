@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -921,8 +922,8 @@ const NoteEntryForm = ({
                     Rellena los campos para crear la nueva entrada.
                 </DialogDescription>
             </DialogHeader>
-            <ScrollArea className="max-h-[60vh] -mx-6 px-6">
-                <div className="space-y-4 pb-6">
+            <ScrollArea className="max-h-[60vh] px-6 pb-6">
+                <div className="space-y-4">
                     {noteType === 'session' && (
                         <>
                             <div className="grid grid-cols-2 gap-4">
