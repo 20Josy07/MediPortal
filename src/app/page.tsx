@@ -45,7 +45,7 @@ const HeroSection = () => {
         <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter text-foreground">
           Tu práctica,
           <br />
-          <span key={currentIndex} className="text-primary animate-fade-in">
+          <span key={currentIndex} className="text-primary animate-fade-in-up">
             {rotatingWords[currentIndex]}
           </span>
         </h1>
@@ -313,5 +313,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
