@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History, ChevronDown, ChevronsUpDown, Check } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History, ChevronDown, ChevronsUpDown, Check, Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -147,18 +147,26 @@ const VersionContent = ({ title, content }: { title: string; content: string }) 
     const truncatedContent = hasLongContent ? truncateHTML(content, 350) : content;
 
     return (
-        <div className="prose prose-sm dark:prose-invert max-w-none bg-muted/50 p-3 rounded-md">
-            <h4 className="font-semibold">{title}</h4>
-            <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: isExpanded ? content : truncatedContent }} />
-            {hasLongContent && (
-                <button 
-                    onClick={() => setIsExpanded(!isExpanded)} 
-                    className="text-primary text-xs font-semibold mt-2 hover:underline"
-                >
-                    {isExpanded ? 'Ver menos' : 'Ver más'}
-                </button>
-            )}
-        </div>
+        <Card className="p-4">
+            <CardHeader className="p-0 pb-2">
+                <CardTitle className="text-base flex justify-between items-center">
+                    <span>{title}</span>
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+                <div className="prose prose-sm dark:prose-invert max-w-none bg-muted/50 p-3 rounded-md">
+                    <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: isExpanded ? content : truncatedContent }} />
+                    {hasLongContent && (
+                        <button 
+                            onClick={() => setIsExpanded(!isExpanded)} 
+                            className="text-primary text-xs font-semibold mt-2 hover:underline"
+                        >
+                            {isExpanded ? 'Ver menos' : 'Ver más'}
+                        </button>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
     );
 };
 
@@ -173,6 +181,9 @@ export default function SmartNotesPage() {
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
 
   const [notes, setNotes] = useState<Note[]>([]);
+  const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
+  const [noteSearchTerm, setNoteSearchTerm] = useState('');
+
   const [isLoading, setIsLoading] = useState(true);
   const [recordingTime, setRecordingTime] = useState(0);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -244,6 +255,7 @@ export default function SmartNotesPage() {
     const fetchNotes = async () => {
       if (!selectedPatientId || !user || !db) {
         setNotes([]);
+        setFilteredNotes([]);
         return;
       }
       setIsLoading(true);
@@ -260,6 +272,7 @@ export default function SmartNotesPage() {
            } as Note;
         });
         setNotes(noteList);
+        setFilteredNotes(noteList);
       } catch (error) {
         console.error("Error fetching notes:", error);
         toast({ variant: "destructive", title: "Error al cargar las notas." });
@@ -269,6 +282,14 @@ export default function SmartNotesPage() {
     };
     fetchNotes();
   }, [selectedPatientId, user, db, toast]);
+
+  useEffect(() => {
+      const filtered = notes.filter((note) =>
+          note.title.toLowerCase().includes(noteSearchTerm.toLowerCase())
+      );
+      setFilteredNotes(filtered);
+  }, [noteSearchTerm, notes]);
+
 
   useEffect(() => {
     if (chatScrollAreaRef.current) {
@@ -1091,15 +1112,25 @@ export default function SmartNotesPage() {
                     : "Selecciona un paciente para ver sus notas"}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="p-2 overflow-hidden flex-grow">
-                <ScrollArea className="h-[115vh]">
+              <CardContent className="p-2 overflow-hidden flex-grow flex flex-col gap-2">
+                <div className="relative px-2">
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Buscar por título..."
+                        value={noteSearchTerm}
+                        onChange={(e) => setNoteSearchTerm(e.target.value)}
+                        className="pl-10"
+                        disabled={!selectedPatientId}
+                    />
+                </div>
+                <ScrollArea className="h-full">
                   <div className="space-y-2 p-2 h-full">
                     {isLoading ? (
                       <div className="flex justify-center items-center h-full">
                         <Loader2 className="h-6 w-6 animate-spin text-primary" />
                       </div>
-                    ) : notes.length > 0 ? (
-                      notes.map((note) => (
+                    ) : filteredNotes.length > 0 ? (
+                      filteredNotes.map((note) => (
                         <div
                           key={note.id}
                           onClick={() => handleViewNote(note)}
@@ -1148,11 +1179,11 @@ export default function SmartNotesPage() {
                               onChange={(e) => setEditableNoteTitle(e.target.value)}
                               className={cn(
                                 "text-lg font-semibold",
-                                isEditing 
+                                isEditing || isEditingTranscription
                                   ? "h-auto p-2 border border-input" 
                                   : "border-0 shadow-none focus-visible:ring-0 p-0"
                               )}
-                              disabled={!isEditing}
+                              disabled={!isEditing && !isEditingTranscription}
                            />
                         </DialogTitle>
                         <DialogDescription>
@@ -1321,4 +1352,3 @@ export default function SmartNotesPage() {
 }
 
     
-
