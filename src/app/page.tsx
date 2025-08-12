@@ -107,7 +107,7 @@ const AsistenteIA = () => (
             <div className="flex items-end justify-between h-full">
                 {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
                     <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
-                        <div className="bg-primary/50 w-full rounded-t-md origin-bottom" style={{ height: `${height * 100}%` }}></div>
+                        <div className="bg-primary/50 w-full rounded-t-md origin-bottom animate-bar-grow" style={{ height: `${height * 100}%`, animationDelay: `${i * 150}ms` }}></div>
                     </div>
                 ))}
             </div>
@@ -308,5 +308,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
