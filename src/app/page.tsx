@@ -59,7 +59,7 @@ const HeroSection = () => {
 };
 
 const AgendaInteligente = () => (
-    <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full w-full">
+    <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full w-full relative z-10">
         {Array.from({ length: 35 }).map((_, i) => (
             <div key={i} className={cn(
                 "rounded-[3px] bg-muted/40",
@@ -73,7 +73,7 @@ const AgendaInteligente = () => (
 );
 
 const NotasClinicas = () => (
-    <div className="w-full h-full flex flex-col justify-center gap-2.5">
+    <div className="w-full h-full flex flex-col justify-center gap-2.5 relative z-10">
         <div className="flex items-center gap-2">
             <div className="feature-icon-wrapper p-2">
                 <FilePenLine className="w-5 h-5" />
@@ -95,7 +95,7 @@ const NotasClinicas = () => (
 );
 
 const AsistenteIA = () => (
-    <div className="w-full h-full flex flex-col justify-end gap-2">
+    <div className="w-full h-full flex flex-col justify-end gap-2 relative z-10">
         <div className="flex items-end justify-between h-full">
             {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
                 <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
