@@ -67,7 +67,7 @@ const AgendaInteligente = () => (
                 {Array.from({ length: 35 }).map((_, i) => (
                     <div key={i} className={cn(
                         "rounded-[3px]",
-                        [3, 10, 18, 26].includes(i) ? 'bg-muted/40' : 'bg-muted/80' // Aumentamos opacidad
+                        [3, 10, 18, 26].includes(i) ? 'bg-muted' : 'bg-muted/50'
                     )}>
                         {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/80"></div>}
                         {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/80"></div>}
