@@ -19,53 +19,21 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 
-const RotatingWords = () => {
-    const words = ["organizada.", "eficiente.", "estructurada."];
-    const [index, setIndex] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIndex((prevIndex) => (prevIndex + 1) % words.length);
-        }, 3000); // Change word every 3 seconds
-
-        return () => clearInterval(interval);
-    }, [words.length]);
-
-    return (
-        <span className="relative inline-block h-[1.2em] w-full text-left">
-            {words.map((word, i) => (
-                 <span
-                    key={word}
-                    className={cn(
-                        "absolute left-0 transition-all duration-500 ease-in-out",
-                        i === index ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-                    )}
-                >
-                    {word}
-                </span>
-            ))}
-        </span>
-    );
-};
-
-
 const HeroSection = () => {
   return (
     <section className="flex flex-col items-center justify-center text-center bg-secondary min-h-[80vh] px-4 py-16">
       <div className="z-10 flex flex-col w-full max-w-4xl mx-auto items-center">
-        <div className="w-full max-w-2xl">
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground leading-tighter text-left">
-                Tu práctica,
+        <div className="w-full max-w-2xl text-left">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tighter">
+                <span className="text-foreground">Tu práctica,</span>
                 <br />
-                <span className="text-primary">
-                <RotatingWords />
-                </span>
+                <span className="text-primary">estructurada.</span>
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-foreground/80 text-left">
+            <p className="mt-6 text-lg md:text-xl text-foreground/80">
             Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
             </p>
         </div>
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-start w-full max-w-2xl">
           <Button asChild size="lg">
             <Link href="/signup">Crear cuenta</Link>
           </Button>
