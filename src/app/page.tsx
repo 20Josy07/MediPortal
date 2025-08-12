@@ -38,7 +38,7 @@ const RotatingWords = () => {
                     key={word}
                     className={cn(
                         "absolute left-0 right-0 transition-all duration-500",
-                         i === index ? 'opacity-100' : 'opacity-0'
+                         i === index ? 'opacity-100 animate-fade-in' : 'opacity-0 animate-fade-out'
                     )}
                 >
                   {word}
@@ -376,5 +376,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
