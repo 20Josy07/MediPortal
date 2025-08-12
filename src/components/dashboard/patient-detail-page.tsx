@@ -269,8 +269,8 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
             </div>
             <div className="relative pl-9">
                  <ScrollArea className={cn("transition-all duration-300", isExpanded ? "h-64" : "h-32")}>
-                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words", isLoadingSummary && "blur-sm")}>
-                         <div className="whitespace-pre-wrap text-sm" dangerouslySetInnerHTML={{ __html: isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content.substring(0, 350) + "...") }} />
+                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words overflow-hidden", isLoadingSummary && "blur-sm")}>
+                         <div className="whitespace-pre-wrap text-sm p-4" dangerouslySetInnerHTML={{ __html: isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content.substring(0, 350) + "...") }} />
                     </div>
                 </ScrollArea>
                 {isLoadingSummary && (
@@ -587,73 +587,77 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
       toast({variant: "destructive", title: "Ninguna nota seleccionada"});
       return;
     }
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+        unit: 'pt',
+        format: 'a4'
+    });
     const pageHeight = doc.internal.pageSize.height;
     const pageWidth = doc.internal.pageSize.width;
-    const margin = 15;
-    let y = 20; // Initial Y position
+    const margin = 40;
+    let y = 0;
 
     // Header
     const headerFooterColor = '#141f16';
     doc.setFillColor(headerFooterColor);
-    doc.rect(0, 0, pageWidth, 20, 'F');
+    doc.rect(0, 0, pageWidth, 50, 'F');
     try {
         const logoUrl = 'https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png';
         const logoBase64 = await getBase64FromUrl(logoUrl);
-        doc.addImage(logoBase64, 'PNG', margin, 4, 12, 12);
+        doc.addImage(logoBase64, 'PNG', margin, 10, 30, 30);
     } catch (error) {
         console.error("Error loading logo for PDF:", error);
     }
-    doc.setFontSize(16);
+    doc.setFontSize(18);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('Nota de Sesión', margin + 15, 12);
+    doc.text('Nota de Sesión', margin + 40, 32);
     
     // Footer
     doc.setFillColor(headerFooterColor);
-    doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+    doc.rect(0, pageHeight - 40, pageWidth, 40, 'F');
     doc.setFontSize(8);
     doc.setTextColor(255, 255, 255);
-    doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 6);
+    doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 18);
 
     // Title and patient info
-    y = 35;
+    y = 80;
     doc.setTextColor(0,0,0);
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
+    y += doc.getTextDimensions(noteToDownload.title).h;
     doc.text(noteToDownload.title, margin, y);
-    y += 10;
+    y += 20;
     
     doc.setFontSize(10);
     doc.setTextColor(100);
     const psychologistName = userProfile?.fullName || user?.displayName || 'N/A';
     doc.text(`Psicólogo/a: ${psychologistName}`, margin, y);
-    y += 5;
+    y += 15;
     doc.text(`Paciente: ${patient.name}`, margin, y);
-    y += 5;
+    y += 15;
     doc.text(`Fecha: ${format(noteToDownload.createdAt, "PPP", { locale: es })}`, margin, y);
-    y += 5;
+    y += 15;
     
-    doc.setLineWidth(0.2);
+    doc.setLineWidth(0.5);
     doc.line(margin, y, pageWidth - margin, y);
-    y += 10;
+    y += 20;
     
     // Content
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    
+    doc.setTextColor(0, 0, 0);
+
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = noteToDownload.content;
-    const textContent = tempDiv.innerText; // Get text with newlines respected by block elements
-    const lines = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
-
-    for (const line of lines) {
-        if (y > pageHeight - 25) { // check if new page is needed
+    const textLines = doc.splitTextToSize(tempDiv.innerText, pageWidth - (margin * 2));
+    
+    for(const line of textLines) {
+        if (y + 12 > pageHeight - 50) { // Check if we need a new page
             doc.addPage();
-            y = 20; // reset y position
+            y = 50; // Reset y for new page
         }
         doc.text(line, margin, y);
-        y += 7; // line height
+        y += 12; // Line height
     }
     
     doc.save(`${noteToDownload.title.replace(/\s/g, '_')}.pdf`);
@@ -1134,6 +1138,7 @@ const NoteEntryForm = ({
 
 
     
+
 
 
 
