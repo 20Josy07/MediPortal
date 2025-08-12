@@ -76,7 +76,7 @@ const sendReminderFlow = ai.defineFlow(
     }
 
     if (input.reminderType === 'psychologist' || input.reminderType === 'both') {
-      console.log(`SIMULACIÓN: Enviando recordatorio al psicólogo sobre la sesión con ${input.patientName}.`);
+        // Placeholder for psychologist reminder logic
     }
 
     console.log('--- Flujo de envío de recordatorios completado ---');
