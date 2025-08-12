@@ -196,7 +196,7 @@ const FilterSidebar = ({ onFilter, onReset, onSearch, searchTerm }: { onFilter: 
     );
 }
 
-const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) => void }) => {
+const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, onOpenForm: (note: Note) => void, onSelectNote: (noteId: string) => void, isActive: boolean }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [summary, setSummary] = useState<string | null>(null);
     const [isSummarizing, setIsSummarizing] = useState(false);
@@ -234,12 +234,41 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
         }
     };
 
-    const displayContent = isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content);
+    const renderFormattedContent = (content: string) => {
+        const lines = content.split('\n').filter(line => line.trim() !== '');
+        const formattedLines = lines.map(line => {
+            const parts = line.split(':');
+            if (parts.length > 1 && parts[0].length < 50) { // Simple check for a label
+                return { label: parts[0], value: parts.slice(1).join(':') };
+            }
+            return { label: null, value: line };
+        });
+
+        if (formattedLines.every(line => line.label === null)) {
+            return <p>{content}</p>;
+        }
+
+        return (
+            <div className="space-y-2">
+                {formattedLines.map((line, index) => (
+                    <div key={index}>
+                        {line.label && <p className="font-semibold text-foreground/80">{line.label}:</p>}
+                        <p className={cn(line.label && "pl-2")}>{line.value.trim()}</p>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    const displayContent = isExpanded ? renderFormattedContent(note.content) : (needsSummary ? (summary || "Generando resumen...") : renderFormattedContent(note.content));
     const isLoadingSummary = needsSummary && isSummarizing;
     const showToggleButton = needsSummary && !isLoadingSummary;
 
     return (
-        <Card className="p-6 flex flex-col gap-4">
+        <Card 
+            className={cn("p-6 flex flex-col gap-4 cursor-pointer transition-colors border-2", isActive ? "border-primary bg-primary/5" : "border-transparent hover:border-border")}
+            onClick={() => onSelectNote(note.id)}
+        >
             <div className="flex gap-4">
                 <div className="mt-1">{getNoteIcon(note.type)}</div>
                 <div className="flex-1">
@@ -247,7 +276,7 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
                         <h3 className="text-lg font-semibold flex-1 pr-4">{note.title}</h3>
                         <div className="flex items-center gap-2 flex-shrink-0">
                             <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
-                            <Button variant="outline" size="sm" onClick={() => onOpenForm(note)}>
+                            <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); onOpenForm(note); }}>
                                 Ver detalle
                             </Button>
                         </div>
@@ -256,8 +285,8 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
             </div>
             <div className="relative pl-9">
                 <ScrollArea className="h-32">
-                    <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
-                        <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
+                        {displayContent}
                     </div>
                 </ScrollArea>
                 {isLoadingSummary && (
@@ -289,6 +318,8 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+
 
   const [isEditingPatientDetails, setIsEditingPatientDetails] = useState(false);
   const [editablePatient, setEditablePatient] = useState<Partial<Patient>>({});
@@ -327,13 +358,16 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
          } as Note;
       });
       setNotes(noteList);
+       if (noteList.length > 0 && !activeNoteId) {
+        setActiveNoteId(noteList[0].id);
+      }
     });
 
     return () => {
         unsubscribePatient();
         unsubscribeNotes();
     }
-  }, [patientId, user, db, toast]);
+  }, [patientId, user, db, toast, activeNoteId]);
   
   useEffect(() => {
     let tempNotes = [...notes];
@@ -389,8 +423,8 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                 createdAt: new Date(),
                 hasHistory: false
             };
-            await addNote(db, user.uid, patientId, newNote);
-            toast({ title: "Nueva entrada guardada" });
+            const addedNote = await addNote(db, user.uid, patientId, newNote);
+            setActiveNoteId(addedNote.id);
         }
         setIsFormOpen(false);
         setSelectedNote(null);
@@ -563,7 +597,8 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   };
 
   const handleDownloadCurrentNote = async () => {
-    if (!selectedNote || !patient) {
+    const noteToDownload = notes.find(n => n.id === activeNoteId);
+    if (!noteToDownload || !patient) {
       toast({variant: "destructive", title: "Ninguna nota seleccionada"});
       return;
     }
@@ -601,7 +636,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     doc.setTextColor(0,0,0);
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text(selectedNote.title, margin, yPos);
+    doc.text(noteToDownload.title, margin, yPos);
     yPos += 10;
     
     doc.setFontSize(10);
@@ -611,7 +646,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     yPos += 5;
     doc.text(`Paciente: ${patient.name}`, margin, yPos);
     yPos += 5;
-    doc.text(`Fecha: ${format(selectedNote.createdAt, "PPP", { locale: es })}`, margin, yPos);
+    doc.text(`Fecha: ${format(noteToDownload.createdAt, "PPP", { locale: es })}`, margin, yPos);
     yPos += 5;
     
     doc.setLineWidth(0.2);
@@ -623,13 +658,13 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     doc.setFont('helvetica', 'normal');
     // Basic HTML stripping
     const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = selectedNote.content;
+    tempDiv.innerHTML = noteToDownload.content;
     const textContent = tempDiv.textContent || tempDiv.innerText || "";
     
     const splitContent = doc.splitTextToSize(textContent, pageWidth - margin * 2);
     doc.text(splitContent, margin, yPos);
     
-    doc.save(`${selectedNote.title.replace(/\s/g, '_')}.pdf`);
+    doc.save(`${noteToDownload.title.replace(/\s/g, '_')}.pdf`);
   };
 
 
@@ -674,7 +709,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <Button variant="outline"><FileDown className="mr-2 h-4 w-4" /> Exportar</Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem onClick={handleDownloadCurrentNote} disabled={!selectedNote}>
+                        <DropdownMenuItem onClick={handleDownloadCurrentNote} disabled={!activeNoteId}>
                           Descargar Nota Actual (PDF)
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={handleGenerateReport}>
@@ -781,7 +816,13 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                         <div className="space-y-4">
                         {filteredNotes.length > 0 ? (
                             filteredNotes.map((note) => (
-                                <NoteCard key={note.id} note={note} onOpenForm={handleOpenForm} />
+                                <NoteCard 
+                                    key={note.id} 
+                                    note={note} 
+                                    onOpenForm={handleOpenForm} 
+                                    onSelectNote={setActiveNoteId}
+                                    isActive={note.id === activeNoteId}
+                                />
                             ))
                         ) : (
                             <Card className="p-6 text-center min-h-[200px] flex flex-col justify-center items-center">
@@ -1101,3 +1142,4 @@ const NoteEntryForm = ({
 
 
     
+

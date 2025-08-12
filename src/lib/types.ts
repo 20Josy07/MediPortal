@@ -1,4 +1,5 @@
 
+
 import { z } from 'zod';
 
 export interface Patient {
@@ -34,7 +35,7 @@ export interface Note {
   id: string;
   patientId: string;
   title: string;
-  type: "Voz" | "Texto";
+  type: "Voz" | "Texto" | "Manual";
   createdAt: Date;
   content: string;
   sessionId?: string;
@@ -77,3 +78,4 @@ export const ProfileFormSchema = z.object({
 export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
 
     
+
