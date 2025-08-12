@@ -1142,13 +1142,18 @@ export default function SmartNotesPage() {
               <DialogHeader>
                  <div className="flex justify-between items-start">
                     <div className="flex-grow">
-                       <DialogTitle>
-                        <Input 
-                            value={editableNoteTitle}
-                            onChange={(e) => setEditableNoteTitle(e.target.value)}
-                            className="text-lg font-semibold p-0 border-0 shadow-none focus-visible:ring-0"
-                            disabled={!isEditing}
-                        />
+                        <DialogTitle>
+                           <Input 
+                              value={editableNoteTitle}
+                              onChange={(e) => setEditableNoteTitle(e.target.value)}
+                              className={cn(
+                                "text-lg font-semibold",
+                                isEditing 
+                                  ? "h-auto p-2 border border-input" 
+                                  : "border-0 shadow-none focus-visible:ring-0 p-0"
+                              )}
+                              disabled={!isEditing}
+                           />
                         </DialogTitle>
                         <DialogDescription>
                             {selectedNote.type} - {format(selectedNote.createdAt, "PPPp", { locale: es })}
