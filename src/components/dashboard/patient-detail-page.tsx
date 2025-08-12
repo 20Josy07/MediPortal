@@ -269,7 +269,7 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
             </div>
             <div className="relative pl-9">
                  <ScrollArea className={cn("transition-all duration-300", isExpanded ? "h-64" : "h-32")}>
-                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words overflow-hidden", isLoadingSummary && "blur-sm")}>
+                    <div className={cn("text-muted-foreground bg-secondary/50 rounded-lg block w-full break-words overflow-hidden", isLoadingSummary && "blur-sm")}>
                          <div className="whitespace-pre-wrap text-sm p-4" dangerouslySetInnerHTML={{ __html: isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content.substring(0, 350) + "...") }} />
                     </div>
                 </ScrollArea>
@@ -870,7 +870,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                             </div>
                             <div>
                                 <Label className="font-semibold">Cambios Detectados</Label>
-                                <Textarea value={generatedReport.detectedChanges} onChange={e => handleReportChange('detectedChanges', e.target.value)} rows={4} className="mt-1"/>
+                                <Textarea value={generatedReport.detectChanges} onChange={e => handleReportChange('detectedChanges', e.target.value)} rows={4} className="mt-1"/>
                             </div>
                             <div>
                                 <Label className="font-semibold">Frases Clave (Opcional)</Label>
@@ -1138,6 +1138,7 @@ const NoteEntryForm = ({
 
 
     
+
 
 
 
