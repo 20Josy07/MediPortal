@@ -64,7 +64,7 @@ const AgendaInteligente = () => (
 
 
 const NotasClinicas = () => (
-    <div className="w-full h-full flex flex-col justify-center gap-2.5 relative z-10">
+    <div className="z-10 w-full h-full flex flex-col justify-center gap-2.5 relative">
         <div className="flex items-center gap-2">
             <div className="feature-icon-wrapper p-2">
                 <FilePenLine className="w-5 h-5" />
@@ -134,7 +134,7 @@ const FeaturesSection = () => (
                             <h3 className="feature-title">{feature.title}</h3>
                             <p className="feature-description">{feature.description}</p>
                         </div>
-                        <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
+                        <div className={cn("flex items-center justify-center")}>
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
                            </div>
