@@ -57,7 +57,7 @@ const HeroSection = () => {
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tighter">
                 <span className="text-foreground">Tu práctica,</span>
                 <br />
-                <span className="text-primary pl-4"><RotatingWords/></span>
+                <span className="text-primary"><RotatingWords/></span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-foreground/80">
             Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
@@ -376,3 +376,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
