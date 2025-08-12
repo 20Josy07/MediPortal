@@ -34,11 +34,11 @@ const RotatingWords = () => {
     return (
         <span className="relative inline-block h-[1.2em] w-full text-left">
             {words.map((word, i) => (
-                <span
+                 <span
                     key={word}
                     className={cn(
-                        "absolute left-0 transition-opacity duration-500 ease-in-out",
-                        i === index ? "opacity-100 animate-fade-in" : "opacity-0"
+                        "absolute left-0 transition-all duration-500 ease-in-out",
+                        i === index ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
                     )}
                 >
                     {word}
@@ -51,20 +51,20 @@ const RotatingWords = () => {
 
 const HeroSection = () => {
   return (
-    <section className="flex flex-col items-center justify-center text-left bg-secondary min-h-[80vh] px-4 py-16">
-      <div className="z-10 flex flex-col w-full max-w-4xl mx-auto">
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground leading-tighter">
-          Tu práctica,
-          <br />
-          <div className="text-center">
-            <span className="text-primary">
-              <RotatingWords />
-            </span>
-          </div>
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/80 text-center mx-auto">
-         Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
-        </p>
+    <section className="flex flex-col items-center justify-center text-center bg-secondary min-h-[80vh] px-4 py-16">
+      <div className="z-10 flex flex-col w-full max-w-4xl mx-auto items-center">
+        <div className="w-full max-w-2xl">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-foreground leading-tighter text-left">
+                Tu práctica,
+                <br />
+                <span className="text-primary">
+                <RotatingWords />
+                </span>
+            </h1>
+            <p className="mt-6 text-lg md:text-xl text-foreground/80 text-left">
+            Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
+            </p>
+        </div>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild size="lg">
             <Link href="/signup">Crear cuenta</Link>
