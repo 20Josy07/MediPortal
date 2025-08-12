@@ -9,7 +9,9 @@ import {
   UserPlus,
   Sparkles,
   CalendarDays,
-  Bot
+  Bot,
+  FileText,
+  LayoutGrid
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import React, { useState, useEffect } from "react";
@@ -127,7 +129,10 @@ const FeaturesSection = () => (
             <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
                 {features.map((feature, index) => (
                     <React.Fragment key={index}>
-                        <div className="flex flex-col items-center text-center md:items-start md:text-left">
+                        <div className={cn(
+                            "flex flex-col items-center text-center md:items-start md:text-left",
+                            index === 2 && "md:order-last"
+                        )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
                             </div>
@@ -226,6 +231,50 @@ const LandingHeader = () => {
 };
 
 
+const benefits = [
+  {
+    icon: FileText,
+    title: "Notas listas en minutos",
+    description: "Transcribe tus audios y parte de un borrador (SOAP/DAP) para editar y guardar sin empezar de cero."
+  },
+  {
+    icon: LayoutGrid,
+    title: "Todo centralizado",
+    description: "Pacientes, sesiones y notas en un solo lugar. Encuentra lo que necesitas en segundos."
+  },
+  {
+    icon: Sparkles,
+    title: "Flujo simple, menos clics",
+    description: "Plantillas, atajos y guardado automático para reducir tareas repetitivas y enfocarte en la sesión."
+  }
+];
+
+const BenefitsSection = () => (
+  <section className="py-20 md:py-28 bg-secondary border-t border-border">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+          Todo en orden, sin esfuerzo.
+        </h2>
+        <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
+          Pacientes, sesiones y notas en un solo lugar.
+        </p>
+      </div>
+      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {benefits.map((benefit, index) => (
+          <div key={index} className="rounded-2xl bg-background border border-border p-8 shadow-sm flex flex-col items-start text-left">
+            <div className="bg-primary/10 text-primary rounded-lg p-3 inline-block mb-4">
+              <benefit.icon className="w-6 h-6" />
+            </div>
+            <h3 className="text-xl font-bold text-foreground mb-2">{benefit.title}</h3>
+            <p className="text-base text-muted-foreground flex-grow">{benefit.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -255,6 +304,8 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <BenefitsSection />
 
         <footer className="bg-background border-t border-border">
           <div className="container mx-auto py-12 px-6 lg:px-8">
