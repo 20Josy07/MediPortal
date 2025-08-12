@@ -59,15 +59,23 @@ const HeroSection = () => {
 };
 
 const AgendaInteligente = () => (
-    <div className="w-full h-full p-4 grid grid-cols-7 grid-rows-5 gap-1.5 z-10">
-      {Array.from({ length: 35 }).map((_, i) => (
-        <div key={i} className="bg-muted/50 rounded-sm"></div>
+  <div className="z-10 w-full h-full p-4 flex flex-col gap-2.5">
+    <div className="grid grid-cols-5 gap-2">
+      {['L', 'M', 'M', 'J', 'V'].map(day => (
+        <div key={day} className="text-center text-xs font-bold text-muted-foreground">{day}</div>
       ))}
-      <div className="col-start-2 row-start-2 col-span-3 h-1.5 bg-primary/70 rounded-full self-center"></div>
-      <div className="col-start-4 row-start-3 col-span-2 h-1.5 bg-accent/70 rounded-full self-center"></div>
-      <div className="col-start-3 row-start-4 col-span-3 h-1.5 bg-primary/70 rounded-full self-center"></div>
     </div>
+    <div className="relative flex-grow grid grid-cols-5 grid-rows-4 gap-1.5">
+      {/* Evento 1 */}
+      <div className="absolute top-[10%] left-[2%] w-[38%] h-6 bg-primary/70 rounded-md"></div>
+      {/* Evento 2 */}
+      <div className="absolute top-[35%] left-[42%] w-[56%] h-6 bg-accent/70 rounded-md"></div>
+      {/* Evento 3 */}
+      <div className="absolute top-[60%] left-[22%] w-[36%] h-6 bg-primary/70 rounded-md"></div>
+    </div>
+  </div>
 );
+
 
 const NotasClinicas = () => (
     <div className="w-full h-full flex flex-col justify-center gap-2.5 relative z-10">
@@ -92,15 +100,15 @@ const NotasClinicas = () => (
 );
 
 const AsistenteIA = () => (
-    <div className="w-full h-full flex flex-col justify-end p-4 z-10">
-      <div className="flex items-end justify-around w-full h-4/5">
-        <div className="w-1/5 h-[60%] bg-primary/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '200ms' }}></div>
-        <div className="w-1/5 h-[80%] bg-accent/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '400ms' }}></div>
-        <div className="w-1/5 h-[40%] bg-primary/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '600ms' }}></div>
-        <div className="w-1/5 h-[70%] bg-accent/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '800ms' }}></div>
-      </div>
-      <div className="w-full h-0.5 bg-muted mt-2"></div>
+  <div className="w-full h-full flex flex-col justify-end p-4 z-10">
+    <div className="flex items-end justify-around w-full h-4/5">
+      <div className="w-1/5 h-[60%] bg-primary/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '200ms' }}></div>
+      <div className="w-1/5 h-[80%] bg-accent/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '400ms' }}></div>
+      <div className="w-1/5 h-[40%] bg-primary/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '600ms' }}></div>
+      <div className="w-1/5 h-[70%] bg-accent/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '800ms' }}></div>
     </div>
+    <div className="w-full h-0.5 bg-muted mt-2"></div>
+  </div>
 );
 
 
@@ -141,7 +149,7 @@ const FeaturesSection = () => (
                             <p className="feature-description">{feature.description}</p>
                         </div>
                         <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
-                           <div className="animated-tile aspect-[1/1] w-full max-w-[400px]">
+                           <div className="animated-tile aspect-[1/1] w-full max-w-[350px]">
                              {feature.tile}
                            </div>
                         </div>
