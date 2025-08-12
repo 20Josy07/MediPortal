@@ -60,8 +60,7 @@ const HeroSection = () => {
 };
 
 const AgendaInteligente = () => (
-    <div className="animated-tile animate-floaty">
-        <div className="absolute inset-0 h-full w-full bg-transparent animate-sweep"></div>
+    <div className="animated-tile">
         <div className="relative w-full h-full p-4 bg-card/80 backdrop-blur-sm border rounded-lg shadow-inner">
             <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full">
                 {Array.from({ length: 35 }).map((_, i) => (
@@ -108,7 +107,7 @@ const AsistenteIA = () => (
             <div className="flex items-end justify-between h-full">
                 {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
                     <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
-                        <div className="bg-primary/50 w-full rounded-t-md animate-bar-grow origin-bottom" style={{ height: `${height * 100}%`, animationDelay: `${i * 150}ms` }}></div>
+                        <div className="bg-primary/50 w-full rounded-t-md origin-bottom" style={{ height: `${height * 100}%` }}></div>
                     </div>
                 ))}
             </div>
@@ -309,3 +308,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
