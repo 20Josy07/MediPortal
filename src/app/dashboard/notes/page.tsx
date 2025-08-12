@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -90,18 +91,58 @@ const VersionContent = ({ title, content }: { title: string; content: string }) 
     const [isExpanded, setIsExpanded] = useState(false);
     const hasLongContent = content.length > 350;
 
-    const plainTextContent = (htmlString: string) => {
+    const truncateHTML = (html: string, length: number) => {
         const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = htmlString;
-        return tempDiv.textContent || tempDiv.innerText || "";
+        tempDiv.innerHTML = html;
+
+        let truncated = "";
+        let currentLength = 0;
+
+        function traverse(node: Node) {
+            if (currentLength >= length) return;
+
+            if (node.nodeType === Node.TEXT_NODE) {
+                const remainingLength = length - currentLength;
+                const text = node.textContent || "";
+                if (text.length > remainingLength) {
+                    truncated += text.substring(0, remainingLength);
+                    currentLength = length;
+                } else {
+                    truncated += text;
+                    currentLength += text.length;
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const element = node as HTMLElement;
+                const clonedElement = element.cloneNode(false) as HTMLElement;
+                let openTag = `<${element.tagName.toLowerCase()}`;
+                for (let i = 0; i < element.attributes.length; i++) {
+                    const attr = element.attributes[i];
+                    openTag += ` ${attr.name}="${attr.value}"`;
+                }
+                openTag += ">";
+                truncated += openTag;
+
+                for (let i = 0; i < node.childNodes.length; i++) {
+                    traverse(node.childNodes[i]);
+                }
+                
+                truncated += `</${element.tagName.toLowerCase()}>`;
+            }
+        }
+        
+        for (let i = 0; i < tempDiv.childNodes.length; i++) {
+            traverse(tempDiv.childNodes[i]);
+        }
+
+        return truncated + (hasLongContent ? '...' : '');
     };
 
-    const truncatedContent = hasLongContent ? `${plainTextContent(content).substring(0, 350)}...` : content;
+    const truncatedContent = hasLongContent ? truncateHTML(content, 350) : content;
 
     return (
         <div className="prose prose-sm dark:prose-invert max-w-none bg-muted/50 p-3 rounded-md">
             <h4 className="font-semibold">{title}</h4>
-            <div dangerouslySetInnerHTML={{ __html: isExpanded ? content : truncatedContent }} />
+            <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: isExpanded ? content : truncatedContent }} />
             {hasLongContent && (
                 <button 
                     onClick={() => setIsExpanded(!isExpanded)} 
