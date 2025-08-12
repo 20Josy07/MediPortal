@@ -40,7 +40,7 @@ const noteTypes = [
     { id: 'Manual', label: 'Manual' },
 ];
 
-const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void, onReset: () => void }) => {
+const FilterSidebar = ({ onFilter, onReset, onSearch, searchTerm }: { onFilter: (filters: any) => void, onReset: () => void, onSearch: (term: string) => void, searchTerm: string }) => {
     const [dateRange, setDateRange] = useState<DateRange | undefined>();
     const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
     const [keyword, setKeyword] = useState("");
@@ -70,6 +70,7 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
         setSelectedTypes(new Set());
         setKeyword("");
         setShowStarred(false);
+        onSearch("");
         onReset();
     }
 
@@ -81,8 +82,18 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
                     <BrainCircuit className="w-5 h-5 text-primary" />
                     <h3 className="text-lg font-semibold">Filtrar notas</h3>
                 </div>
-                <Separator />
+                 <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="Buscar en notas..."
+                        value={searchTerm}
+                        onChange={(e) => onSearch(e.target.value)}
+                        className="pl-10"
+                    />
+                </div>
             </div>
+            
+            <Separator />
 
             <div className="space-y-2">
                 <div className="flex items-center gap-2">
@@ -159,23 +170,6 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
                 </div>
             </div>
 
-             <Separator />
-
-            <div className="space-y-2">
-                 <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4 text-muted-foreground" />
-                    <Label htmlFor="keyword-search" className="font-semibold">Contiene palabra</Label>
-                </div>
-                 <div className="flex items-center space-x-2">
-                    <Input 
-                        id="keyword-search"
-                        placeholder="colegio..." 
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                    />
-                 </div>
-            </div>
-
             <Separator />
 
             <div className="flex items-center justify-between">
@@ -190,7 +184,7 @@ const FilterSidebar = ({ onFilter, onReset }: { onFilter: (filters: any) => void
             
              <Button onClick={handleApplyFilters} className="bg-green-600 hover:bg-green-700">
                 <Filter className="w-4 h-4 mr-2" />
-                Filtrar
+                Aplicar Filtros
             </Button>
             
             <Button variant="ghost" onClick={handleReset}>
@@ -247,8 +241,8 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
         <Card className="p-4 flex gap-4">
             <div className="mt-1">{getNoteIcon(note.type)}</div>
             <div className="flex-1">
-                <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-semibold mb-2">{note.title}</h3>
+                <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-lg font-semibold flex-1 pr-4">{note.title}</h3>
                     <div className="flex items-center gap-2 flex-shrink-0">
                         <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
                         <Button variant="outline" size="sm" onClick={() => onOpenForm(note)}>
@@ -288,6 +282,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
   const [patient, setPatient] = useState<Patient | null>(null);
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -329,7 +324,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
          } as Note;
       });
       setNotes(noteList);
-      setFilteredNotes(noteList);
     });
 
     return () => {
@@ -338,6 +332,17 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     }
   }, [patientId, user, db, toast]);
   
+  useEffect(() => {
+    let tempNotes = [...notes];
+    if (searchTerm) {
+        tempNotes = tempNotes.filter(note => 
+            note.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            (note.content && note.content.toLowerCase().includes(searchTerm.toLowerCase()))
+        );
+    }
+    setFilteredNotes(tempNotes);
+  }, [searchTerm, notes]);
+
   const handleFilter = (filters: { dateRange?: DateRange, types: string[], keyword: string, showStarred: boolean }) => {
     let tempNotes = [...notes];
 
@@ -351,13 +356,6 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             end: filters.dateRange.to ? endOfDay(filters.dateRange.to) : endOfDay(filters.dateRange.from)
         };
         tempNotes = tempNotes.filter(note => isWithinInterval(note.createdAt, interval));
-    }
-
-    if (filters.keyword) {
-        tempNotes = tempNotes.filter(note => 
-            note.title.toLowerCase().includes(filters.keyword) || 
-            (note.content && note.content.toLowerCase().includes(filters.keyword))
-        );
     }
     
     setFilteredNotes(tempNotes);
@@ -386,6 +384,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                 patientId,
                 type: 'Texto',
                 createdAt: new Date(),
+                hasHistory: false
             };
             await addNote(db, user.uid, patientId, newNote);
             toast({ title: "Nueva entrada guardada" });
@@ -604,7 +603,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         <div className="flex-1 space-y-6 p-6 h-full flex flex-col">
             <div className="flex justify-between items-start">
                 <div>
-                  <h1 className="text-4xl font-bold tracking-tight">Historial Médico</h1>
+                  <h1 className="text-4xl font-bold tracking-tight">Historial Clínico</h1>
                    <p className="text-muted-foreground mt-1">
                         Revisa y gestiona todas las notas del paciente.
                     </p>
@@ -713,7 +712,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start flex-grow min-h-0">
                 <aside className="md:col-span-1 h-full">
                     <ScrollArea className="h-full pr-4">
-                        <FilterSidebar onFilter={handleFilter} onReset={handleResetFilters} />
+                        <FilterSidebar onFilter={handleFilter} onReset={handleResetFilters} onSearch={setSearchTerm} searchTerm={searchTerm} />
                     </ScrollArea>
                 </aside>
 
@@ -738,7 +737,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
         </div>
 
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <DialogContent className="sm:max-w-4xl">
+            <DialogContent className="sm:max-w-4xl p-0">
                 <NoteEntryForm 
                     note={selectedNote} 
                     onSubmit={handleNoteSubmit} 
@@ -870,13 +869,13 @@ const NoteEntryForm = ({
     if (!noteType) {
         return (
             <>
-                <DialogHeader>
+                <DialogHeader className="p-6 pb-0">
                     <DialogTitle>Elige un tipo de entrada</DialogTitle>
                     <DialogDescription>
                         Selecciona la plantilla que mejor se adapte a tu registro para {patientName}.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4 py-4 px-6">
                     <Button variant="outline" className="justify-start h-14" onClick={() => setNoteType('session')}>
                         <FileText className="mr-3 h-5 w-5" />
                         <div className="text-left">
@@ -899,7 +898,7 @@ const NoteEntryForm = ({
                         </div>
                     </Button>
                 </div>
-                 <DialogFooter>
+                 <DialogFooter className="p-6 pt-0">
                     <Button type="button" variant="ghost" onClick={onCancel}>Cancelar</Button>
                 </DialogFooter>
             </>
@@ -908,7 +907,7 @@ const NoteEntryForm = ({
     
     return (
         <form onSubmit={handleSubmit}>
-            <DialogHeader>
+            <DialogHeader className="p-6 pb-4">
                  <DialogTitle className="flex items-center">
                     <Button variant="ghost" size="icon" className="mr-2 h-7 w-7" onClick={() => setNoteType(null)}>
                         <ChevronLeft className="h-5 w-5"/>
@@ -918,12 +917,12 @@ const NoteEntryForm = ({
                         noteType === 'follow-up' ? 'Nota de Seguimiento' : 'Resumen de Evolución'
                     }
                 </DialogTitle>
-                 <DialogDescription>
+                 <DialogDescription className="pl-9">
                     Rellena los campos para crear la nueva entrada.
                 </DialogDescription>
             </DialogHeader>
-             <ScrollArea className="max-h-[60vh] -mx-6 px-6 pt-4">
-                <div className="space-y-4 pb-4">
+            <ScrollArea className="max-h-[60vh] -mx-6 px-6">
+                <div className="space-y-4 pb-6">
                     {noteType === 'session' && (
                         <>
                             <div className="grid grid-cols-2 gap-4">
@@ -1032,7 +1031,7 @@ const NoteEntryForm = ({
                     )}
                 </div>
              </ScrollArea>
-            <DialogFooter className="mt-4">
+            <DialogFooter className="p-6 pt-0">
                 <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
                 <Button type="submit">Guardar</Button>
             </DialogFooter>
