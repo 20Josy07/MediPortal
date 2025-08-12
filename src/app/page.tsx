@@ -127,17 +127,14 @@ const FeaturesSection = () => (
             <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
                 {features.map((feature, index) => (
                     <React.Fragment key={index}>
-                        <div className={cn(
-                            "flex flex-col items-center text-center md:items-start md:text-left",
-                            index === 2 && "md:order-last md:items-end md:text-right"
-                        )}>
+                        <div className="flex flex-col items-center text-center md:items-start md:text-left">
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
                             </div>
                             <h3 className="feature-title mt-4">{feature.title}</h3>
                             <p className="feature-description mt-2">{feature.description}</p>
                         </div>
-                        <div className={cn("flex items-center justify-center")}>
+                        <div className="flex items-center justify-center">
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
                            </div>
