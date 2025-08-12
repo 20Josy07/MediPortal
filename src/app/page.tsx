@@ -64,7 +64,7 @@ const AgendaInteligente = () => (
 
 
 const NotasClinicas = () => (
-    <div className="z-10 w-full h-full flex flex-col justify-center gap-2.5 relative">
+    <div className="z-10 w-full h-full flex flex-col justify-center gap-2.5 relative p-4">
         <div className="flex items-center gap-2">
             <div className="feature-icon-wrapper p-2">
                 <FilePenLine className="w-5 h-5" />
@@ -124,15 +124,18 @@ const FeaturesSection = () => (
         <div className="features-section-container">
             <h2 className="features-section-title">Todo lo que necesitas, en un solo lugar</h2>
             <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center">
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
                 {features.map((feature, index) => (
                     <React.Fragment key={index}>
-                        <div className={cn("feature-text-container", index === 2 && "md:order-2")}>
+                        <div className={cn(
+                            "flex flex-col items-center text-center md:items-start md:text-left",
+                            index === 2 && "md:order-last md:items-end md:text-right"
+                        )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
                             </div>
-                            <h3 className="feature-title">{feature.title}</h3>
-                            <p className="feature-description">{feature.description}</p>
+                            <h3 className="feature-title mt-4">{feature.title}</h3>
+                            <p className="feature-description mt-2">{feature.description}</p>
                         </div>
                         <div className={cn("flex items-center justify-center")}>
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
