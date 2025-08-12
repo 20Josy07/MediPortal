@@ -157,15 +157,9 @@ const FeaturesSection = () => (
             <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
             <div className="mt-16 space-y-16">
               {features.map((feature, index) => (
-                <div key={index} className={cn(
-                    "grid grid-cols-1 md:grid-cols-2 gap-x-12 items-center",
-                    index === 1 ? "md:grid-flow-row-dense" : "" // Only for the second item
-                )}>
+                <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center">
                     {/* Columna de Texto */}
-                    <div className={cn(
-                        "flex flex-col items-start text-left",
-                        index === 1 ? "md:col-start-2" : ""
-                    )}>
+                    <div className={"flex flex-col items-start text-left"}>
                         <div className="feature-icon-wrapper">
                             <feature.icon className="w-7 h-7" />
                         </div>
@@ -174,10 +168,7 @@ const FeaturesSection = () => (
                     </div>
 
                     {/* Columna de Ilustración */}
-                    <div className={cn(
-                        "flex justify-center",
-                         index === 1 ? "md:col-start-1" : ""
-                    )}>
+                    <div className={"flex justify-center"}>
                         <div className="animated-tile aspect-[4/3] w-full max-w-[400px]">
                            {feature.tile}
                         </div>
@@ -365,7 +356,7 @@ export default function Home() {
               <div>
                 <h3 className="font-bold text-lg mb-4 text-foreground">Contacto</h3>
                 <ul className="space-y-2">
-                  <li><a href="mailto:hola@zenda.ai" className="text-sm text-muted-foreground hover:text-primary">hola@zenda.ai</a></li>
+                  <li><a href="mailto:contacto@zendapsi.com" className="text-sm text-muted-foreground hover:text-primary">contacto@zendapsi.com</a></li>
                   <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-primary">Términos y Condiciones</Link></li>
                   <li><Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary">Política de privacidad</Link></li>
                 </ul>
