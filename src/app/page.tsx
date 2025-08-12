@@ -20,28 +20,28 @@ import { cn } from "@/lib/utils";
 
 const RotatingWords = ({ words }: { words: string[] }) => {
   const [index, setIndex] = useState(0);
-  const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
     const wordInterval = setInterval(() => {
-      setIsFadingOut(true);
-      setTimeout(() => {
-        setIndex((prevIndex) => (prevIndex + 1) % words.length);
-        setIsFadingOut(false);
-      }, 300); // Duration of fade-out animation
+      setIndex((prevIndex) => (prevIndex + 1) % words.length);
     }, 2000); // Time each word is displayed
 
     return () => clearInterval(wordInterval);
   }, [words.length]);
 
   return (
-    <span
-      className={cn(
-        "inline-block transition-opacity duration-300",
-        isFadingOut ? "opacity-0" : "opacity-100"
-      )}
-    >
-      {words[index]}
+    <span className="inline-block relative w-full text-center h-20">
+      {words.map((word, i) => (
+        <span
+          key={word}
+          className={cn(
+            "absolute inset-0 transition-opacity duration-300",
+            i === index ? "opacity-100" : "opacity-0"
+          )}
+        >
+          {word}
+        </span>
+      ))}
     </span>
   );
 };
@@ -50,7 +50,7 @@ const HeroSection = () => {
   return (
     <section className="flex flex-col items-center justify-center text-center bg-secondary min-h-[80vh] px-4 py-16">
       <div className="z-10 flex flex-col max-w-4xl mx-auto items-center">
-        <div className="max-w-3xl w-full text-center">
+        <div className="max-w-md">
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tighter">
                 <span className="text-foreground">Tu práctica,</span>
                 <br />
@@ -62,7 +62,7 @@ const HeroSection = () => {
                 Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
             </p>
         </div>
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center w-full max-w-2xl">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center w-full max-w-md">
           <Button asChild size="lg">
             <Link href="/signup">Crear cuenta</Link>
           </Button>
@@ -155,29 +155,28 @@ const FeaturesSection = () => (
         <div className="features-section-container">
             <h2 className="features-section-title">Todo lo que necesitas, en un solo lugar</h2>
             <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-                {features.map((feature, index) => (
-                    <React.Fragment key={index}>
-                        <div className={cn(
-                            "flex flex-col items-center text-center md:items-start md:text-left",
-                             index === 2 && "md:col-start-2 md:row-start-3" // This moves the text to the right column on the third row
-                        )}>
-                            <div className="feature-icon-wrapper">
-                                <feature.icon className="w-7 h-7" />
-                            </div>
-                            <h3 className="feature-title mt-4">{feature.title}</h3>
-                            <p className="feature-description mt-2">{feature.description}</p>
-                        </div>
-                        <div className={cn(
-                            "flex items-center justify-center",
-                            index === 2 && "md:col-start-1 md:row-start-3" // This moves the tile to the left column on the third row
-                        )}>
-                           <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
-                             {feature.tile}
-                           </div>
-                        </div>
-                    </React.Fragment>
-                ))}
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 items-start">
+                {/* Columna de Texto */}
+                <div className="space-y-12">
+                  {features.map((feature, index) => (
+                      <div key={index} className="flex flex-col items-start text-left">
+                          <div className="feature-icon-wrapper">
+                              <feature.icon className="w-7 h-7" />
+                          </div>
+                          <h3 className="feature-title mt-4">{feature.title}</h3>
+                          <p className="feature-description mt-2">{feature.description}</p>
+                      </div>
+                  ))}
+                </div>
+
+                {/* Columna de Ilustraciones */}
+                <div className="space-y-8 flex flex-col items-center">
+                   {features.map((feature, index) => (
+                     <div key={index} className="animated-tile aspect-[4/3] w-full max-w-[400px]">
+                       {feature.tile}
+                     </div>
+                   ))}
+                </div>
             </div>
         </div>
     </section>
@@ -282,7 +281,7 @@ const benefits = [
 ];
 
 const BenefitsSection = () => (
-  <section className="py-20 md:py-28 bg-secondary border-t border-b border-border">
+  <section className="py-20 md:py-28 bg-background border-t border-b border-border">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-4xl md:text-5xl font-bold text-foreground">
