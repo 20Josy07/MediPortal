@@ -92,9 +92,12 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in-out": {
+        "fade-in": {
           "0%": { opacity: "0" },
-          "25%, 75%": { opacity: "1" },
+          "100%": { opacity: "1" },
+        },
+        "fade-out": {
+          "0%": { opacity: "1" },
           "100%": { opacity: "0" },
         },
         "bar-grow": {
@@ -113,7 +116,8 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in-out": "fade-in-out 3s ease-in-out infinite",
+        "fade-in": "fade-in 0.5s ease-in-out forwards",
+        "fade-out": "fade-out 0.5s ease-in-out forwards",
         "bar-grow": "bar-grow 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both",
         "fill-in": "fill-in 0.8s ease-out forwards",
         "blink": "blink 1s step-end infinite",

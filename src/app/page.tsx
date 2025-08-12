@@ -32,15 +32,14 @@ const RotatingWords = () => {
     }, [words.length]);
 
     return (
-        <span className="relative inline-block h-[1.2em] w-full text-left overflow-hidden">
+        <span className="relative inline-block h-[1.2em] w-full text-left">
             {words.map((word, i) => (
                 <span
                     key={word}
                     className={cn(
-                        "absolute left-0 transition-all duration-1000 ease-in-out animate-fade-in-out",
-                        i === index ? "opacity-100" : "opacity-0"
+                        "absolute left-0 transition-opacity duration-500 ease-in-out",
+                        i === index ? "opacity-100 animate-fade-in" : "opacity-0 animate-fade-out"
                     )}
-                     style={{ animationDelay: i === index ? '0s' : '3s' }}
                 >
                     {word}
                 </span>
@@ -341,7 +340,7 @@ export default function Home() {
 
         <BenefitsSection />
 
-        <footer className="bg-background border-t border-border">
+        <footer className="bg-secondary border-t border-border">
           <div className="container mx-auto py-12 px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
               <div>
