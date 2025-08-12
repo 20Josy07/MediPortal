@@ -10,13 +10,12 @@ import {
   Sparkles,
   CalendarDays,
   Bot,
-  FileText,
-  LayoutGrid
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { BarChartIcon, ShieldIcon, UsersIcon } from "@/components/icons";
 
 
 const HeroSection = () => {
@@ -31,7 +30,7 @@ const HeroSection = () => {
           </span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/80">
-          Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
+         Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3">
           <Button asChild size="lg">
@@ -233,19 +232,19 @@ const LandingHeader = () => {
 
 const benefits = [
   {
-    icon: FileText,
-    title: "Notas listas en minutos",
-    description: "Transcribe tus audios y parte de un borrador (SOAP/DAP) para editar y guardar sin empezar de cero."
+    icon: BarChartIcon,
+    title: "Optimiza tu tiempo",
+    description: "Reduce el tiempo dedicado a tareas repetitivas y enfócate en la calidad de tus sesiones."
   },
   {
-    icon: LayoutGrid,
-    title: "Todo centralizado",
-    description: "Pacientes, sesiones y notas en un solo lugar. Encuentra lo que necesitas en segundos."
+    icon: ShieldIcon,
+    title: "Seguridad y Confianza",
+    description: "Cumple con los estándares de protección de datos. La información de tus pacientes está encriptada y segura."
   },
   {
-    icon: Sparkles,
-    title: "Flujo simple, menos clics",
-    description: "Plantillas, atajos y guardado automático para reducir tareas repetitivas y enfocarte en la sesión."
+    icon: UsersIcon,
+    title: "Mejora la experiencia",
+    description: "Ofrece a tus pacientes una experiencia profesional con recordatorios y un portal seguro (próximamente)."
   }
 ];
 
@@ -253,20 +252,18 @@ const BenefitsSection = () => (
   <section className="py-20 md:py-28 bg-secondary border-t border-border">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-          Todo en orden, sin esfuerzo.
+        <h2 className="text-4xl md:text-5xl font-bold text-foreground">
+          Menos carga administrativa. Más presencia terapéutica.
         </h2>
         <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-          Pacientes, sesiones y notas en un solo lugar.
+          Recupera horas en tu semana y dedícalas a lo que amas.
         </p>
       </div>
       <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
         {benefits.map((benefit, index) => (
-          <div key={index} className="rounded-2xl bg-background border border-border p-8 shadow-sm flex flex-col items-start text-left">
-            <div className="bg-primary/10 text-primary rounded-lg p-3 inline-block mb-4">
-              <benefit.icon className="w-6 h-6" />
-            </div>
-            <h3 className="text-xl font-bold text-foreground mb-2">{benefit.title}</h3>
+          <div key={index} className="rounded-xl bg-background border border-border p-8 shadow-sm flex flex-col items-center text-center">
+            <benefit.icon className="w-8 h-8 text-primary mb-6" />
+            <h3 className="text-xl font-bold text-foreground mb-3">{benefit.title}</h3>
             <p className="text-base text-muted-foreground flex-grow">{benefit.description}</p>
           </div>
         ))}
