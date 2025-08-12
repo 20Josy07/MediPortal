@@ -239,37 +239,39 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
     const showToggleButton = needsSummary && !isLoadingSummary;
 
     return (
-        <Card className="p-4 flex gap-4">
-            <div className="mt-1">{getNoteIcon(note.type)}</div>
-            <div className="flex-1">
-                <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-semibold flex-1 pr-4">{note.title}</h3>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
-                        <Button variant="outline" size="sm" onClick={() => onOpenForm(note)}>
-                            Ver detalle
-                        </Button>
+        <Card className="p-6 flex flex-col gap-4">
+            <div className="flex gap-4">
+                <div className="mt-1">{getNoteIcon(note.type)}</div>
+                <div className="flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-lg font-semibold flex-1 pr-4">{note.title}</h3>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
+                            <Button variant="outline" size="sm" onClick={() => onOpenForm(note)}>
+                                Ver detalle
+                            </Button>
+                        </div>
                     </div>
                 </div>
-                <div className="relative">
-                    <ScrollArea className="h-32">
-                        <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
-                            <div dangerouslySetInnerHTML={{ __html: displayContent }} />
-                        </div>
-                    </ScrollArea>
-                    {isLoadingSummary && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-secondary/50 rounded-lg">
-                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                            <span className="ml-2 text-sm text-primary">Resumiendo...</span>
-                        </div>
-                    )}
-                    {showToggleButton && (
-                        <Button variant="link" size="sm" className="p-0 h-auto mt-2" onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}>
-                            {isExpanded ? "Ver menos" : "Ver más"}
-                            <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", isExpanded && "rotate-180")} />
-                        </Button>
-                    )}
-                </div>
+            </div>
+            <div className="relative pl-9">
+                <ScrollArea className="h-32">
+                    <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
+                        <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+                    </div>
+                </ScrollArea>
+                {isLoadingSummary && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-secondary/50 rounded-lg">
+                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                        <span className="ml-2 text-sm text-primary">Resumiendo...</span>
+                    </div>
+                )}
+                {showToggleButton && (
+                    <Button variant="link" size="sm" className="p-0 h-auto mt-2" onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}>
+                        {isExpanded ? "Ver menos" : "Ver más"}
+                        <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", isExpanded && "rotate-180")} />
+                    </Button>
+                )}
             </div>
         </Card>
     );
@@ -560,18 +562,75 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     doc.save(`Informe_Progreso_${patient.name.replace(/\s/g, '_')}.pdf`);
   };
 
-  const handleDownloadCurrentNote = () => {
+  const handleDownloadCurrentNote = async () => {
     if (!selectedNote || !patient) {
       toast({variant: "destructive", title: "Ninguna nota seleccionada"});
       return;
     }
     const doc = new jsPDF();
-    doc.text(`Nota para ${patient.name}`, 10, 10);
-    doc.text(`Fecha: ${format(selectedNote.createdAt, "PPP", {locale: es})}`, 10, 20);
-    doc.text(selectedNote.title, 10, 30);
-    doc.text(selectedNote.content, 10, 40);
+    const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
+    const margin = 15;
+    let yPos = 0;
+
+    // Header
+    const headerFooterColor = '#141f16';
+    doc.setFillColor(headerFooterColor);
+    doc.rect(0, 0, pageWidth, 20, 'F');
+    try {
+        const logoUrl = 'https://i.postimg.cc/BbB1NZZF/replicate-prediction-h8nxevgngdrge0cr5vb92hqb80.png';
+        const logoBase64 = await getBase64FromUrl(logoUrl);
+        doc.addImage(logoBase64, 'PNG', margin, 4, 12, 12);
+    } catch (error) {
+        console.error("Error loading logo for PDF:", error);
+    }
+    doc.setFontSize(16);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Nota de Sesión', margin + 15, 12);
+    
+    // Footer
+    doc.setFillColor(headerFooterColor);
+    doc.rect(0, pageHeight - 15, pageWidth, 15, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 6);
+
+    // Title and patient info
+    yPos = 35;
+    doc.setTextColor(0,0,0);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text(selectedNote.title, margin, yPos);
+    yPos += 10;
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    const psychologistName = userProfile?.fullName || user?.displayName || 'N/A';
+    doc.text(`Psicólogo/a: ${psychologistName}`, margin, yPos);
+    yPos += 5;
+    doc.text(`Paciente: ${patient.name}`, margin, yPos);
+    yPos += 5;
+    doc.text(`Fecha: ${format(selectedNote.createdAt, "PPP", { locale: es })}`, margin, yPos);
+    yPos += 5;
+    
+    doc.setLineWidth(0.2);
+    doc.line(margin, yPos, pageWidth - margin, yPos);
+    yPos += 10;
+    
+    // Content
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    // Basic HTML stripping
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = selectedNote.content;
+    const textContent = tempDiv.textContent || tempDiv.innerText || "";
+    
+    const splitContent = doc.splitTextToSize(textContent, pageWidth - margin * 2);
+    doc.text(splitContent, margin, yPos);
+    
     doc.save(`${selectedNote.title.replace(/\s/g, '_')}.pdf`);
-  }
+  };
 
 
   if (isLoading) {
@@ -1039,3 +1098,6 @@ const NoteEntryForm = ({
         </form>
     );
 };
+
+
+    
