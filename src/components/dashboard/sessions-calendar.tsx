@@ -286,7 +286,7 @@ export function SessionsCalendar() {
           {days.map((day) => {
              const dayKey = format(day, "yyyy-MM-dd");
              const daySessions = sessionsByDay[dayKey] || [];
-             const remainingSessionsCount = daySessions.length - 3;
+             const remainingSessionsCount = daySessions.length - 2;
             return (
             <div
               key={day.toString()}
@@ -310,7 +310,7 @@ export function SessionsCalendar() {
                 {format(day, "d")}
               </span>
               <div className="absolute top-8 left-1 right-1 flex flex-col gap-1">
-                {daySessions.slice(0, 3).map((session) => (
+                {daySessions.slice(0, 2).map((session) => (
                     <div
                       key={session.id}
                       onClick={(e) => { e.stopPropagation(); handleSessionClick(session); }}
