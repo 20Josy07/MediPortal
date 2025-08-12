@@ -24,7 +24,7 @@ const RotatingWords = ({ words }: { words: string[] }) => {
   useEffect(() => {
     const wordInterval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % words.length);
-    }, 2000); // Time each word is displayed
+    }, 2500); // Time each word is displayed
 
     return () => clearInterval(wordInterval);
   }, [words.length]);
@@ -157,9 +157,15 @@ const FeaturesSection = () => (
             <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
             <div className="mt-16 space-y-16">
               {features.map((feature, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 items-center">
+                <div key={index} className={cn(
+                    "grid grid-cols-1 md:grid-cols-2 gap-x-12 items-center",
+                    index === 1 ? "md:grid-flow-row-dense" : "" // Only for the second item
+                )}>
                     {/* Columna de Texto */}
-                    <div className="flex flex-col items-start text-left">
+                    <div className={cn(
+                        "flex flex-col items-start text-left",
+                        index === 1 ? "md:col-start-2" : ""
+                    )}>
                         <div className="feature-icon-wrapper">
                             <feature.icon className="w-7 h-7" />
                         </div>
@@ -168,7 +174,10 @@ const FeaturesSection = () => (
                     </div>
 
                     {/* Columna de Ilustración */}
-                    <div className="flex justify-center">
+                    <div className={cn(
+                        "flex justify-center",
+                         index === 1 ? "md:col-start-1" : ""
+                    )}>
                         <div className="animated-tile aspect-[4/3] w-full max-w-[400px]">
                            {feature.tile}
                         </div>
