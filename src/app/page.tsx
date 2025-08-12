@@ -45,7 +45,10 @@ const HeroSection = () => {
         <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter text-foreground">
           Tu práctica,
           <br />
-          <span key={currentIndex} className="text-primary animate-fade-in-up">
+          <span
+            key={currentIndex}
+            className="inline-block text-primary animate-rotate-fade-in"
+          >
             {rotatingWords[currentIndex]}
           </span>
         </h1>

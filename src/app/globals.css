@@ -62,9 +62,9 @@
     --popover: 0 0% 7%;
     --popover-foreground: 0 0% 95.7%;
     
-    --primary: 163 39% 48%; /* #4ba38d */
+    --primary: 167 17% 66%; /* #9BB5A9 */
     --primary-foreground: 0 0% 7%; /* background for contrast */
-    --primary-hover: 163 39% 54%; /* Lighter for hover */
+    --primary-hover: 167 17% 72%; /* Lighter for hover */
     
     --secondary: 0 0% 14.9%; /* #262626 */
     --secondary-foreground: 0 0% 95.7%;
@@ -80,7 +80,7 @@
 
     --border: 0 0% 20%; /* #333333 */
     --input: 0 0% 14.9%;
-    --ring: 163 39% 48%;
+    --ring: 167 17% 66%;
     
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 0 0% 96%;
