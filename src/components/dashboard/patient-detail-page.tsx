@@ -242,8 +242,8 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
     };
     
     const displayContent = isExpanded 
-        ? <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: note.content }} />
-        : (needsSummary ? (summary || "Generando resumen...") : <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: note.content }} />);
+        ? <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: note.content }} />
+        : (needsSummary ? (summary || "Generando resumen...") : <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: note.content }} />);
 
     const isLoadingSummary = needsSummary && isSummarizing && !isExpanded;
     const showToggleButton = wordCount > 100;
@@ -269,8 +269,8 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
             </div>
             <div className="relative pl-9">
                  <ScrollArea className={cn("transition-all duration-300", isExpanded ? "h-64" : "h-32")}>
-                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words overflow-hidden", isLoadingSummary && "blur-sm")}>
-                         <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content.substring(0, 350) + "...") }} />
+                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words", isLoadingSummary && "blur-sm")}>
+                         <div className="whitespace-pre-wrap text-sm" dangerouslySetInnerHTML={{ __html: isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content.substring(0, 350) + "...") }} />
                     </div>
                 </ScrollArea>
                 {isLoadingSummary && (
@@ -591,7 +591,7 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     const pageHeight = doc.internal.pageSize.height;
     const pageWidth = doc.internal.pageSize.width;
     const margin = 15;
-    let yPos = 0;
+    let y = 20; // Initial Y position
 
     // Header
     const headerFooterColor = '#141f16';
@@ -617,26 +617,26 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     doc.text(`© ${new Date().getFullYear()} Zenda. Todos los derechos reservados.`, margin, pageHeight - 6);
 
     // Title and patient info
-    yPos = 35;
+    y = 35;
     doc.setTextColor(0,0,0);
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text(noteToDownload.title, margin, yPos);
-    yPos += 10;
+    doc.text(noteToDownload.title, margin, y);
+    y += 10;
     
     doc.setFontSize(10);
     doc.setTextColor(100);
     const psychologistName = userProfile?.fullName || user?.displayName || 'N/A';
-    doc.text(`Psicólogo/a: ${psychologistName}`, margin, yPos);
-    yPos += 5;
-    doc.text(`Paciente: ${patient.name}`, margin, yPos);
-    yPos += 5;
-    doc.text(`Fecha: ${format(noteToDownload.createdAt, "PPP", { locale: es })}`, margin, yPos);
-    yPos += 5;
+    doc.text(`Psicólogo/a: ${psychologistName}`, margin, y);
+    y += 5;
+    doc.text(`Paciente: ${patient.name}`, margin, y);
+    y += 5;
+    doc.text(`Fecha: ${format(noteToDownload.createdAt, "PPP", { locale: es })}`, margin, y);
+    y += 5;
     
     doc.setLineWidth(0.2);
-    doc.line(margin, yPos, pageWidth - margin, yPos);
-    yPos += 10;
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 10;
     
     // Content
     doc.setFontSize(11);
@@ -644,51 +644,16 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = noteToDownload.content;
+    const textContent = tempDiv.innerText; // Get text with newlines respected by block elements
+    const lines = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
 
-    let y = yPos;
-    const pageHeightLimit = pageHeight - 25;
-
-    const processNode = async (node: ChildNode): Promise<void> => {
-
-        if (y > pageHeightLimit) {
+    for (const line of lines) {
+        if (y > pageHeight - 25) { // check if new page is needed
             doc.addPage();
-            y = 20;
+            y = 20; // reset y position
         }
-
-        if (node.nodeType === Node.TEXT_NODE) {
-            const text = node.textContent || '';
-            const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
-            for (const line of lines) {
-                if (y + 5 > pageHeightLimit) {
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.text(line, margin, y);
-                y += 5;
-            }
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-            const element = node as HTMLElement;
-            const text = element.innerText || '';
-            const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
-            for (const line of lines) {
-                 if (y + 5 > pageHeightLimit) {
-                    doc.addPage();
-                    y = 20;
-                }
-                doc.text(line, margin, y);
-                y += 5;
-            }
-             if (element.tagName === 'P' || element.tagName === 'DIV') {
-                y += 5; // Add space after a block element
-            }
-            for (const childNode of Array.from(node.childNodes)) {
-                await processNode(childNode);
-            }
-        }
-    };
-    
-    for (const childNode of Array.from(tempDiv.childNodes)) {
-        await processNode(childNode);
+        doc.text(line, margin, y);
+        y += 7; // line height
     }
     
     doc.save(`${noteToDownload.title.replace(/\s/g, '_')}.pdf`);
@@ -1050,7 +1015,7 @@ const NoteEntryForm = ({
                 </DialogDescription>
             </DialogHeader>
             <ScrollArea className="max-h-[60vh]">
-                <div className="space-y-4 pb-6 px-6">
+                <div className="space-y-4 px-6 pb-6">
                     {noteType === 'session' && (
                         <>
                             <div className="grid grid-cols-2 gap-4">
@@ -1169,6 +1134,7 @@ const NoteEntryForm = ({
 
 
     
+
 
 
 
