@@ -201,7 +201,13 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
     const [summary, setSummary] = useState<string | null>(null);
     const [isSummarizing, setIsSummarizing] = useState(false);
 
-    const wordCount = useMemo(() => note.content.split(/\s+/).filter(Boolean).length, [note.content]);
+    const wordCount = useMemo(() => {
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = note.content;
+      const text = tempDiv.textContent || tempDiv.innerText || "";
+      return text.split(/\s+/).filter(Boolean).length;
+    }, [note.content]);
+
     const needsSummary = wordCount > 300;
 
     useEffect(() => {
@@ -233,34 +239,11 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
                 return <FileText className="w-5 h-5 text-gray-500" />;
         }
     };
+    
+    const displayContent = isExpanded 
+        ? <div dangerouslySetInnerHTML={{ __html: note.content }} />
+        : (needsSummary ? (summary || "Generando resumen...") : <div dangerouslySetInnerHTML={{ __html: note.content }} />);
 
-    const renderFormattedContent = (content: string) => {
-        const lines = content.split('\n').filter(line => line.trim() !== '');
-        const formattedLines = lines.map(line => {
-            const parts = line.split(':');
-            if (parts.length > 1 && parts[0].length < 50) { // Simple check for a label
-                return { label: parts[0], value: parts.slice(1).join(':') };
-            }
-            return { label: null, value: line };
-        });
-
-        if (formattedLines.every(line => line.label === null)) {
-            return <p>{content}</p>;
-        }
-
-        return (
-            <div className="space-y-2">
-                {formattedLines.map((line, index) => (
-                    <div key={index}>
-                        {line.label && <p className="font-semibold text-foreground/80">{line.label}:</p>}
-                        <p className={cn(line.label && "pl-2")}>{line.value.trim()}</p>
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
-    const displayContent = isExpanded ? renderFormattedContent(note.content) : (needsSummary ? (summary || "Generando resumen...") : renderFormattedContent(note.content));
     const isLoadingSummary = needsSummary && isSummarizing;
     const showToggleButton = needsSummary && !isLoadingSummary;
 
@@ -656,13 +639,24 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     // Content
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    // Basic HTML stripping
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = noteToDownload.content;
     const textContent = tempDiv.textContent || tempDiv.innerText || "";
     
-    const splitContent = doc.splitTextToSize(textContent, pageWidth - margin * 2);
-    doc.text(splitContent, margin, yPos);
+    const splitContent = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
+    
+    const textLines = doc.splitTextToSize(textContent, pageWidth - (margin * 2));
+    const pageHeightLimit = pageHeight - 25; // page height - footer margin
+
+    for (let i = 0; i < textLines.length; i++) {
+        const lineHeight = doc.getTextDimensions(textLines[i]).h;
+        if (yPos + lineHeight > pageHeightLimit) {
+            doc.addPage();
+            yPos = 20; // reset yPos for new page
+        }
+        doc.text(textLines[i], margin, yPos);
+        yPos += lineHeight;
+    }
     
     doc.save(`${noteToDownload.title.replace(/\s/g, '_')}.pdf`);
   };
@@ -1022,8 +1016,8 @@ const NoteEntryForm = ({
                     Rellena los campos para crear la nueva entrada.
                 </DialogDescription>
             </DialogHeader>
-            <ScrollArea className="max-h-[60vh] px-6 pb-6">
-                <div className="space-y-4">
+            <ScrollArea className="max-h-[60vh] px-6">
+                <div className="space-y-4 pb-6">
                     {noteType === 'session' && (
                         <>
                             <div className="grid grid-cols-2 gap-4">
@@ -1142,4 +1136,5 @@ const NoteEntryForm = ({
 
 
     
+
 
