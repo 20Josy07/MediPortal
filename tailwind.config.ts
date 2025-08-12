@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -92,14 +93,39 @@ export default {
           to: { height: "0" },
         },
         "rotate-fade-in": {
-            "0%": { opacity: "0" },
-            "100%": { opacity: "1" },
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "floaty": {
+            "0%, 100%": { transform: "translateY(0)" },
+            "50%": { transform: "translateY(-8px)" }
+        },
+        "sweep": {
+            "0%": { transform: "translateX(-100%) translateY(-100%) rotate(-45deg)" },
+            "100%": { transform: "translateX(100%) translateY(100%) rotate(-45deg)" }
+        },
+        "bar-grow": {
+            "0%": { transform: "scaleY(0)" },
+            "100%": { transform: "scaleY(1)" }
+        },
+        "fill-in": {
+            "0%": { transform: "scaleX(0)" },
+            "100%": { transform: "scaleX(1)" }
+        },
+        "blink": {
+            "0%, 100%": { opacity: "1" },
+            "50%": { opacity: "0" }
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "rotate-fade-in": "rotate-fade-in 0.9s ease-out both",
+        "floaty": "floaty 4s ease-in-out infinite",
+        "sweep": "sweep 2.5s ease-in-out infinite",
+        "bar-grow": "bar-grow 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both",
+        "fill-in": "fill-in 0.8s ease-out forwards",
+        "blink": "blink 1s step-end infinite",
       },
     },
   },

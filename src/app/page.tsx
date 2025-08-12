@@ -6,24 +6,15 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   FilePenLine,
-  Bell,
-  LayoutGrid,
-  CalendarDays,
   UserPlus,
   Sparkles,
+  CalendarDays,
+  BrainCircuit,
+  Bot
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import { ThemeToggle } from "@/components/theme-toggle";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import Autoplay from "embla-carousel-autoplay";
 import { cn } from "@/lib/utils";
 
 const rotatingWords = ["estructurada.", "organizada.", "eficiente."];
@@ -68,43 +59,110 @@ const HeroSection = () => {
   );
 };
 
+const AgendaInteligente = () => (
+    <div className="animated-tile animate-floaty">
+        <div className="absolute inset-0 h-full w-full bg-transparent animate-sweep"></div>
+        <div className="relative w-full h-full p-4 bg-card/80 backdrop-blur-sm border rounded-lg shadow-inner">
+            <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full">
+                {Array.from({ length: 35 }).map((_, i) => (
+                    <div key={i} className={cn(
+                        "rounded-[3px]",
+                        [3, 10, 18, 26].includes(i) ? 'bg-primary/20' : 'bg-muted/50'
+                    )}>
+                        {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/80"></div>}
+                        {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/80"></div>}
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
 
-const advantages = [
+const NotasClinicas = () => (
+    <div className="animated-tile">
+        <div className="w-full h-full p-4 bg-card/80 backdrop-blur-sm border rounded-lg shadow-inner flex flex-col justify-center gap-2.5">
+            <div className="flex items-center gap-2">
+                <div className="feature-icon-wrapper p-2">
+                    <FilePenLine className="w-5 h-5" />
+                </div>
+                <span className="text-sm font-semibold text-foreground">Notas de Sesión</span>
+            </div>
+            <div className="space-y-2.5">
+                 {['w-[90%]', 'w-[100%]', 'w-[70%]', 'w-[85%]'].map((width, i) => (
+                    <div key={i} className="h-3 bg-muted rounded-full overflow-hidden">
+                       <div className={cn("h-full bg-primary/60 rounded-full animate-fill-in", width)} style={{ animationDelay: `${i * 250}ms` }} ></div>
+                    </div>
+                ))}
+                <div className="h-3 w-[40%] bg-muted rounded-full overflow-hidden flex items-center">
+                    <div className="h-full w-full bg-primary/60 rounded-full animate-fill-in" style={{ animationDelay: '1000ms' }}></div>
+                    <div className="w-0.5 h-3/5 bg-primary animate-blink ml-0.5"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const AsistenteIA = () => (
+    <div className="animated-tile">
+        <div className="w-full h-full p-4 bg-card/80 backdrop-blur-sm border rounded-lg shadow-inner flex flex-col justify-end gap-2">
+            <div className="flex items-end justify-between h-full">
+                {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
+                    <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
+                        <div className="bg-primary/50 w-full rounded-t-md animate-bar-grow origin-bottom" style={{ height: `${height * 100}%`, animationDelay: `${i * 150}ms` }}></div>
+                    </div>
+                ))}
+            </div>
+            <div className="h-1 w-full bg-border rounded-full mt-2"></div>
+        </div>
+    </div>
+);
+
+const features = [
   {
-    icon: <FilePenLine className="w-7 h-7 text-primary" />,
-    title: "Automatización total de notas",
-    description: "Genera tu documentación clínica mientras tú descansas.",
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/Automatizacion.png?alt=media&token=b6cc67d2-70a1-4df4-a6f8-b10d44c11758",
-    hint: "automated documents",
+    icon: CalendarDays,
+    title: "Agenda inteligente y centralizada",
+    description: "Gestiona todas tus citas en un solo lugar. Sincroniza tu calendario de Google y evita conflictos de horarios.",
+    tile: <AgendaInteligente />,
   },
   {
-    icon: <Bell className="w-7 h-7 text-primary" />,
-    title: "Alertas y recordatorios automáticos",
-    description: "Nunca pierdas una próxima sesión ni una tarea pendiente.",
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/Recordatorios%20(1).png?alt=media&token=8c286b40-2581-4d94-bcf7-993e7feeabb2",
-    hint: "automatic alerts",
+    icon: FilePenLine,
+    title: "Notas clínicas, sin esfuerzo",
+    description: "Transcripción automática, plantillas SOAP/DAP y resúmenes con IA. Documenta tus sesiones en una fracción del tiempo.",
+    tile: <NotasClinicas />,
   },
   {
-    icon: <LayoutGrid className="w-7 h-7 text-primary" />,
-    title: "Dashboard de pacientes",
-    description:
-      "Visualiza estado, próximas citas y puntos clave de un vistazo.",
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/Dashboard%20(2).png?alt=media&token=7233384d-f95b-40e3-89fc-d9be22a0b482",
-    hint: "patient dashboard",
-  },
-  {
-    icon: <CalendarDays className="w-7 h-7 text-primary" />,
-    title: "Integración con calendario",
-    description:
-      "Sincroniza Google Calendar, Outlook u otras herramientas en un clic.",
-    image:
-      "https://firebasestorage.googleapis.com/v0/b/alumbra-landing-page.firebasestorage.app/o/integracion%20calendario%20(1).png?alt=media&token=4e401a92-e2bc-483b-b861-25a2ef993087",
-    hint: "calendar integration",
-  },
+    icon: Bot,
+    title: "Tu asistente clínico con IA",
+    description: "Obtén insights, detecta patrones y sigue la evolución de tus pacientes. Zenda te ayuda a ver más allá de las notas.",
+    tile: <AsistenteIA />,
+  }
 ];
+
+const FeaturesSection = () => (
+    <section id="features" className="features-section">
+        <div className="features-section-container">
+            <h2 className="features-section-title">Todo lo que necesitas, en un solo lugar</h2>
+            <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
+            <div className="features-grid">
+                {features.map((feature, index) => (
+                    <React.Fragment key={index}>
+                        <div className={cn("feature-text-container", index % 2 !== 0 && "md:order-2")}>
+                            <div className="feature-icon-wrapper">
+                                <feature.icon className="w-7 h-7" />
+                            </div>
+                            <h3 className="feature-title">{feature.title}</h3>
+                            <p className="feature-description">{feature.description}</p>
+                        </div>
+                        <div className={cn("flex items-center justify-center", index % 2 !== 0 && "md:order-1")}>
+                            {feature.tile}
+                        </div>
+                    </React.Fragment>
+                ))}
+            </div>
+        </div>
+    </section>
+);
+
 
 const howItWorksSteps = [
   {
@@ -186,19 +244,6 @@ const LandingHeader = () => {
 
 
 export default function Home() {
-  const [mounted, setMounted] = useState(false);
-  const autoplayPlugin = useRef<any>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    // Crea el plugin solo en cliente para evitar diferencias SSR/cliente
-    autoplayPlugin.current = Autoplay({
-      delay: 5000,
-      stopOnInteraction: false,
-      stopOnMouseEnter: true,
-    });
-  }, []);
-
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <LandingHeader />
@@ -207,59 +252,7 @@ export default function Home() {
         
         <HeroSection />
 
-        <section id="features" className="py-20 md:py-28 bg-secondary">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="font-headline text-4xl md:text-5xl font-bold text-foreground">
-                Ventajas que notarás desde el primer día
-              </h2>
-            </div>
-
-            <Carousel
-              className="w-full max-w-6xl mx-auto"
-              opts={{ loop: true }}
-              plugins={
-                mounted && autoplayPlugin.current ? [autoplayPlugin.current] : []
-              }
-              onMouseEnter={() => autoplayPlugin.current?.stop()}
-              onMouseLeave={() => autoplayPlugin.current?.reset()}
-            >
-              <CarouselContent>
-                {advantages.map((advantage, index) => (
-                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                    <div className="p-1 h-full">
-                      <Card className="h-full flex flex-col group overflow-hidden bg-card border shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                        <CardContent className="flex flex-col items-center text-center p-6 flex-grow">
-                          <div className="relative aspect-[16/10] w-full mb-6">
-                            <Image
-                              src={advantage.image}
-                              alt={advantage.title}
-                              fill
-                              className="relative rounded-lg shadow-inner object-cover"
-                              data-ai-hint={advantage.hint}
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            />
-                          </div>
-                          <div className="bg-primary/10 text-primary rounded-lg p-3 inline-block mb-4">
-                            {advantage.icon}
-                          </div>
-                          <h3 className="font-headline text-2xl font-bold text-foreground mb-2">
-                            {advantage.title}
-                          </h3>
-                          <p className="text-muted-foreground flex-grow">
-                            {advantage.description}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="hidden sm:flex h-12 w-12 -left-16 bg-card hover:bg-card/90 border-2" />
-              <CarouselNext className="hidden sm:flex h-12 w-12 -right-16 bg-card hover:bg-card/90 border-2" />
-            </Carousel>
-          </div>
-        </section>
+        <FeaturesSection />
 
         <section className="how-it-works-section" id="how-it-works-steps">
           <h2 className="how-it-works-title">¿Cómo funciona?</h2>
@@ -316,5 +309,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

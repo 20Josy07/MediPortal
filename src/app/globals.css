@@ -62,9 +62,9 @@
     --popover: 0 0% 7%;
     --popover-foreground: 0 0% 95.7%;
     
-    --primary: 157 56% 41%; /* #2FA37A */
+    --primary: 164 43% 40%; /* #2F6F66 */
     --primary-foreground: 0 0% 98%; /* background for contrast */
-    --primary-hover: 157 56% 47%; /* Lighter for hover */
+    --primary-hover: 164 43% 46%; /* Lighter for hover */
     
     --secondary: 0 0% 14.9%; /* #262626 */
     --secondary-foreground: 0 0% 95.7%;
@@ -80,16 +80,16 @@
 
     --border: 0 0% 20%; /* #333333 */
     --input: 0 0% 14.9%;
-    --ring: 157 56% 41%;
+    --ring: 164 43% 40%;
     
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 0 0% 96%;
-    --sidebar-primary: 157 56% 41%;
+    --sidebar-primary: 164 43% 40%;
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 0 0% 15%;
     --sidebar-accent-foreground: 0 0% 96%;
     --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 157 56% 41%;
+    --sidebar-ring: 164 43% 40%;
   }
 }
 
@@ -103,64 +103,39 @@
 }
 
 @layer components {
-    .comparison-section {
-        background-color: hsl(var(--secondary));
-        @apply py-16 px-[5%] text-center;
+    .features-section {
+        @apply py-20 md:py-28;
     }
-    .dark .comparison-section {
-      background-color: hsl(var(--background));
+    .features-section-container {
+        @apply container mx-auto px-4 sm:px-6 lg:px-8;
     }
-
-
-    .comparison-title {
-        @apply text-5xl font-extrabold mb-12 text-primary;
+    .features-section-title {
+        @apply font-headline text-4xl md:text-5xl font-bold text-foreground text-center;
     }
-    .dark .comparison-title {
-      @apply text-primary;
+    .features-section-subtitle {
+        @apply mt-4 max-w-2xl mx-auto text-lg text-muted-foreground text-center;
     }
-    
-    .comparison-container {
-        @apply flex justify-center gap-8 flex-wrap max-w-5xl mx-auto;
+    .features-grid {
+        @apply mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center;
     }
-
-    .before-card, .after-card {
-        @apply bg-card p-8 rounded-2xl flex-1 min-w-[300px] text-left;
+    .feature-text-container {
+        @apply flex flex-col items-start gap-4;
     }
-
-    .before-card {
-        @apply border-2 border-dashed border-gray-300;
+    .feature-icon-wrapper {
+        @apply bg-primary/10 text-primary rounded-lg p-3 inline-block;
     }
-     .dark .before-card {
-        @apply border-border;
+    .feature-title {
+        @apply font-headline text-3xl font-bold text-foreground;
     }
-
-
-    .after-card {
-        @apply border-border shadow-xl;
+    .feature-description {
+        @apply text-lg text-muted-foreground;
     }
-    
-    .before-card h3, .after-card h3 {
-        @apply text-2xl font-bold mb-6 text-primary;
+    .animated-tile {
+        @apply relative aspect-square rounded-2xl border p-6 overflow-hidden;
+        background-image: linear-gradient(to bottom right, hsl(var(--primary) / 0.05), hsl(var(--accent) / 0.05));
     }
-    .dark .before-card h3, .dark .after-card h3 {
-       @apply text-primary;
-    }
-
-    .before-card ul, .after-card ul {
-        @apply list-none p-0 m-0 space-y-4;
-    }
-    
-    .before-card ul li, .after-card ul li {
-        @apply flex items-center gap-3 text-base text-gray-700;
-    }
-
-    .dark .before-card ul li, .dark .after-card ul li {
-      @apply text-card-foreground;
-    }
-    
-    
-    .before-card ul li svg, .after-card ul li svg {
-        @apply w-5 h-5 flex-shrink-0;
+    .dark .animated-tile {
+         background-image: linear-gradient(to bottom right, hsl(var(--primary) / 0.15), hsl(var(--accent) / 0.1));
     }
 
     .how-it-works-section {
@@ -224,17 +199,5 @@
     }
      .dark .step-description {
         @apply text-muted-foreground;
-    }
-
-
-    @media (max-width: 1024px) {
-      .comparison-title { @apply text-4xl; }
-    }
-    @media (max-width: 768px) {
-      .comparison-title { @apply text-3xl; }
-      .comparison-container { @apply flex-col; }
-    }
-    @media (max-width: 480px) {
-      .comparison-title { @apply text-2xl; }
     }
 }
