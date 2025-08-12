@@ -17,7 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -82,6 +82,34 @@ const RichTextEditorToolbar: React.FC<{ onCommand: OnCommand }> = ({ onCommand }
                 onChange={handleColorChange}
                 className="opacity-0 w-0 h-0 absolute"
             />
+        </div>
+    );
+};
+
+const VersionContent = ({ title, content }: { title: string; content: string }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const hasLongContent = content.length > 350;
+
+    const plainTextContent = (htmlString: string) => {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = htmlString;
+        return tempDiv.textContent || tempDiv.innerText || "";
+    };
+
+    const truncatedContent = hasLongContent ? `${plainTextContent(content).substring(0, 350)}...` : content;
+
+    return (
+        <div className="prose prose-sm dark:prose-invert max-w-none bg-muted/50 p-3 rounded-md">
+            <h4 className="font-semibold">{title}</h4>
+            <div dangerouslySetInnerHTML={{ __html: isExpanded ? content : truncatedContent }} />
+            {hasLongContent && (
+                <button 
+                    onClick={() => setIsExpanded(!isExpanded)} 
+                    className="text-primary text-xs font-semibold mt-2 hover:underline"
+                >
+                    {isExpanded ? 'Ver menos' : 'Ver más'}
+                </button>
+            )}
         </div>
     );
 };
@@ -1170,10 +1198,7 @@ export default function SmartNotesPage() {
                                         </CardTitle>
                                    </CardHeader>
                                    <CardContent>
-                                        <div className="prose prose-sm dark:prose-invert max-w-none bg-muted/50 p-3 rounded-md">
-                                            <h4 className="font-semibold">{version.title}</h4>
-                                            <div dangerouslySetInnerHTML={{ __html: version.content }} />
-                                        </div>
+                                        <VersionContent title={version.title} content={version.content} />
                                    </CardContent>
                                </Card>
                             ))}
@@ -1188,3 +1213,5 @@ export default function SmartNotesPage() {
     </>
   );
 }
+
+    
