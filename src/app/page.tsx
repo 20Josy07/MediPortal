@@ -43,10 +43,11 @@ const HeroSection = () => {
     <section className="flex flex-col items-center justify-center text-center bg-[#f1f5f6] dark:bg-background min-h-[80vh] px-4">
       <div className="z-10 flex flex-col items-center">
         <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter text-foreground">
-          Tu práctica,{" "}
-           <span key={currentIndex} className="text-primary animate-fade-in">
-             {rotatingWords[currentIndex]}
-           </span>
+          Tu práctica,
+          <br />
+          <span key={currentIndex} className="text-primary animate-fade-in">
+            {rotatingWords[currentIndex]}
+          </span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/80">
           Menos carga administrativa. Más presencia terapéutica.
@@ -275,7 +276,42 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <footer className="bg-background border-t border-border">
+          <div className="container mx-auto py-12 px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+              <div>
+                <h3 className="font-bold text-lg mb-4 text-foreground">ZENDA</h3>
+                <p className="text-muted-foreground text-sm max-w-xs mx-auto md:mx-0">
+                  Impulsa tu práctica psicológica. Centraliza notas, seguimientos y patrones clínicos.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-bold text-lg mb-4 text-foreground">Producto</h3>
+                <ul className="space-y-2">
+                  <li><Link href="#how-it-works-steps" className="text-sm text-muted-foreground hover:text-primary">¿Cómo funciona?</Link></li>
+                  <li><Link href="#features" className="text-sm text-muted-foreground hover:text-primary">Funcionalidades</Link></li>
+                  <li><Link href="/dashboard/support/chat" className="text-sm text-muted-foreground hover:text-primary">FAQ</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-bold text-lg mb-4 text-foreground">Contacto</h3>
+                <ul className="space-y-2">
+                  <li><a href="mailto:hola@zenda.ai" className="text-sm text-muted-foreground hover:text-primary">hola@zenda.ai</a></li>
+                  <li><a href="/terms" className="text-sm text-muted-foreground hover:text-primary">Términos y Condiciones</a></li>
+                  <li><a href="/privacy" className="text-sm text-muted-foreground hover:text-primary">Política de privacidad</a></li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-12 text-center text-xs text-muted-foreground">
+              <p>&copy; {new Date().getFullYear()} Zenda. Todos los derechos reservados.</p>
+            </div>
+          </div>
+        </footer>
+
       </main>
     </div>
   );
 }
+
+    
