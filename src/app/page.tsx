@@ -60,26 +60,24 @@ const HeroSection = () => {
 };
 
 const AgendaInteligente = () => (
-    <div className="animated-tile">
-        <div className="relative w-full h-full p-4 bg-card/80 backdrop-blur-sm border rounded-lg shadow-inner">
-            <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full">
-                {Array.from({ length: 35 }).map((_, i) => (
-                    <div key={i} className={cn(
-                        "rounded-[3px]",
-                        [3, 10, 18, 26].includes(i) ? 'bg-muted/80' : 'bg-muted/40'
-                    )}>
-                        {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/70"></div>}
-                        {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/70"></div>}
-                    </div>
-                ))}
-            </div>
+    <div className="animated-tile p-4">
+        <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full w-full">
+            {Array.from({ length: 35 }).map((_, i) => (
+                <div key={i} className={cn(
+                    "rounded-[3px] bg-muted/40",
+                    [3, 10, 18, 26].includes(i) && 'bg-muted/80'
+                )}>
+                    {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/70"></div>}
+                    {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/70"></div>}
+                </div>
+            ))}
         </div>
     </div>
 );
 
 const NotasClinicas = () => (
-    <div className="animated-tile">
-        <div className="w-full h-full p-4 bg-card/80 backdrop-blur-sm border rounded-lg shadow-inner flex flex-col justify-center gap-2.5">
+    <div className="animated-tile p-4">
+        <div className="w-full h-full flex flex-col justify-center gap-2.5">
             <div className="flex items-center gap-2">
                 <div className="feature-icon-wrapper p-2">
                     <FilePenLine className="w-5 h-5" />
@@ -102,8 +100,8 @@ const NotasClinicas = () => (
 );
 
 const AsistenteIA = () => (
-    <div className="animated-tile">
-        <div className="w-full h-full p-4 bg-card/80 backdrop-blur-sm border rounded-lg shadow-inner flex flex-col justify-end gap-2">
+    <div className="animated-tile p-4">
+        <div className="w-full h-full flex flex-col justify-end gap-2">
             <div className="flex items-end justify-between h-full">
                 {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
                     <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
