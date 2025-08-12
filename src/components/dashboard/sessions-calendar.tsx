@@ -203,12 +203,9 @@ export function SessionsCalendar() {
   };
 
   const handleViewMoreClick = (day: Date) => {
-    const dayKey = format(day, "yyyy-MM-dd");
-    const daySessions = sessionsByDay[dayKey] || [];
-    setDayDetailSessions(daySessions);
-    setSelectedDate(day);
-    setIsDayDetailModalOpen(true);
-  }
+    setCurrentDate(day);
+    setView("day");
+  };
 
 
   const start = startOfWeek(startOfMonth(currentDate), { locale: es });
@@ -331,16 +328,8 @@ export function SessionsCalendar() {
                       onClick={(e) => { e.stopPropagation(); handleViewMoreClick(day); }}
                       className="text-primary/80 text-xs text-left font-bold px-1 py-0.5 mt-1 hover:underline"
                     >
-                      ...y {remainingSessionsCount} más
+                      + {remainingSessionsCount} más...
                     </button>
-                 )}
-                 {daySessions.length > 0 && remainingSessionsCount <= 0 && (
-                   <button 
-                     onClick={(e) => { e.stopPropagation(); handleViewMoreClick(day); }}
-                     className="text-primary/80 text-xs text-left font-bold px-1 py-0.5 mt-1 opacity-0 group-hover/day:opacity-100 transition-opacity"
-                   >
-                     Ver más
-                   </button>
                  )}
               </div>
             </div>
