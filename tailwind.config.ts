@@ -92,8 +92,8 @@ export default {
           to: { height: "0" },
         },
         "rotate-fade-in": {
-            "0%":   { opacity:"0", transform:"rotate(-8deg) translateY(10px)" },
-            "100%": { opacity:"1", transform:"rotate(0deg) translateY(0)" }
+            "0%": { opacity: "0" },
+            "100%": { opacity: "1" },
         },
       },
       animation: {
