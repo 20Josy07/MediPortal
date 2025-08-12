@@ -29,7 +29,7 @@ const HeroSection = () => {
           </span>
         </h1>
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-foreground/80">
-          Menos carga administrativa. Más presencia terapéutica. Recupera hasta 8 horas a la semana y dedícalas a lo que amas.
+          Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3">
           <Button asChild size="lg">
@@ -48,7 +48,7 @@ const AgendaInteligente = () => (
   <div className="z-10 w-full h-full p-4 flex flex-col gap-2.5">
     <div className="grid grid-cols-5 gap-2">
       {['L', 'M', 'M', 'J', 'V'].map((day, index) => (
-        <div key={index} className="text-center text-xs font-bold text-muted-foreground">{day}</div>
+        <div key={`${day}-${index}`} className="text-center text-xs font-bold text-muted-foreground">{day}</div>
       ))}
     </div>
     <div className="relative flex-grow grid grid-cols-5 grid-rows-4 gap-1.5">
@@ -86,7 +86,7 @@ const NotasClinicas = () => (
 );
 
 const AsistenteIA = () => (
-  <div className="w-full h-full flex flex-col justify-end p-4 z-10">
+  <div className="z-10 w-full h-full flex flex-col justify-end p-4">
     <div className="flex items-end justify-around w-full h-4/5">
       <div className="w-1/5 h-[60%] bg-primary/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '200ms' }}></div>
       <div className="w-1/5 h-[80%] bg-accent/50 rounded-t-lg animate-bar-grow" style={{ animationDelay: '400ms' }}></div>
@@ -127,14 +127,14 @@ const FeaturesSection = () => (
             <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center">
                 {features.map((feature, index) => (
                     <React.Fragment key={index}>
-                        <div className="feature-text-container">
+                        <div className={cn("feature-text-container", index === 2 && "md:order-2")}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
                             </div>
                             <h3 className="feature-title">{feature.title}</h3>
                             <p className="feature-description">{feature.description}</p>
                         </div>
-                        <div className="flex items-center justify-center">
+                        <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
                            </div>
