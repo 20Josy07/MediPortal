@@ -69,6 +69,9 @@ import { SessionForm } from "./session-form";
 import AddEventForm from "@/components/AddEventForm";
 import GoogleAuthButton from "@/components/googleauthbutton";
 import { CalendarIcon } from "@heroicons/react/24/outline";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ScrollArea } from "../ui/scroll-area";
+
 
 export function SessionsCalendar() {
   const { user, db, loading: authLoading } = useAuth();
@@ -83,6 +86,9 @@ export function SessionsCalendar() {
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
   const [view, setView] = React.useState<"month" | "week" | "day">("month");
   const [showEventForm, setShowEventForm] = React.useState(false);
+  
+  const [isDayDetailModalOpen, setIsDayDetailModalOpen] = React.useState(false);
+  const [dayDetailSessions, setDayDetailSessions] = React.useState<Session[]>([]);
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -196,6 +202,14 @@ export function SessionsCalendar() {
     }
   };
 
+  const handleViewMoreClick = (day: Date) => {
+    const dayKey = format(day, "yyyy-MM-dd");
+    const daySessions = sessionsByDay[dayKey] || [];
+    setDayDetailSessions(daySessions);
+    setSelectedDate(day);
+    setIsDayDetailModalOpen(true);
+  }
+
 
   const start = startOfWeek(startOfMonth(currentDate), { locale: es });
   const end = endOfWeek(endOfMonth(currentDate), { locale: es });
@@ -272,12 +286,16 @@ export function SessionsCalendar() {
       {/* Vista de cuadrícula para pantallas medianas y grandes */}
       <div className="hidden md:block">
         <div className="grid grid-cols-7 grid-rows-5 gap-1 mt-2">
-          {days.map((day) => (
+          {days.map((day) => {
+             const dayKey = format(day, "yyyy-MM-dd");
+             const daySessions = sessionsByDay[dayKey] || [];
+             const remainingSessionsCount = daySessions.length - 3;
+            return (
             <div
               key={day.toString()}
               onClick={() => setSelectedDate(day)}
               className={cn(
-                "relative p-2 h-28 rounded-md cursor-pointer transition-colors overflow-hidden",
+                "relative p-2 h-28 rounded-md cursor-pointer transition-colors overflow-hidden group/day",
                 !isSameMonth(day, currentDate) &&
                   "text-muted-foreground/50 bg-card/50",
                 isSameMonth(day, currentDate) &&
@@ -295,7 +313,7 @@ export function SessionsCalendar() {
                 {format(day, "d")}
               </span>
               <div className="absolute top-8 left-1 right-1 flex flex-col gap-1">
-                {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).slice(0, 3).map((session) => (
+                {daySessions.slice(0, 3).map((session) => (
                     <div
                       key={session.id}
                       onClick={(e) => { e.stopPropagation(); handleSessionClick(session); }}
@@ -308,14 +326,25 @@ export function SessionsCalendar() {
                       {session.patientName}
                     </div>
                   ))}
-                 {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length > 3 && (
-                    <div className="text-primary/80 text-xs font-bold px-1 py-0.5 mt-1">
-                      ...y {(sessionsByDay[format(day, "yyyy-MM-dd")] || []).length - 3} más
-                    </div>
+                 {remainingSessionsCount > 0 && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleViewMoreClick(day); }}
+                      className="text-primary/80 text-xs text-left font-bold px-1 py-0.5 mt-1 hover:underline"
+                    >
+                      ...y {remainingSessionsCount} más
+                    </button>
+                 )}
+                 {daySessions.length > 0 && remainingSessionsCount <= 0 && (
+                   <button 
+                     onClick={(e) => { e.stopPropagation(); handleViewMoreClick(day); }}
+                     className="text-primary/80 text-xs text-left font-bold px-1 py-0.5 mt-1 opacity-0 group-hover/day:opacity-100 transition-opacity"
+                   >
+                     Ver más
+                   </button>
                  )}
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
 
@@ -697,6 +726,58 @@ export function SessionsCalendar() {
 
             </AlertDialog>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isDayDetailModalOpen} onOpenChange={setIsDayDetailModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Sesiones del {format(selectedDate, "d 'de' MMMM", { locale: es })}</DialogTitle>
+            <DialogDescription>
+              Listado completo de sesiones para este día.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] -mx-6 px-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Paciente</TableHead>
+                  <TableHead>Hora</TableHead>
+                  <TableHead>Tipo</TableHead>
+                  <TableHead>Estado</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {dayDetailSessions
+                  .sort((a,b) => a.date.getTime() - b.date.getTime())
+                  .map((session) => (
+                  <TableRow 
+                    key={session.id} 
+                    className="cursor-pointer hover:bg-muted/50" 
+                    onClick={() => {
+                        handleSessionClick(session);
+                        setIsDayDetailModalOpen(false);
+                    }}
+                   >
+                    <TableCell className="font-medium">{session.patientName}</TableCell>
+                    <TableCell>{format(session.date, 'p', { locale: es })}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{session.type}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className={cn("flex items-center gap-2", statusDetails[session.status].color)}>
+                        <div className={cn("w-2 h-2 rounded-full", getStatusColor(session.status).split(' ')[0])} />
+                        <span>{statusDetails[session.status].text}</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </ScrollArea>
+           <div className="flex justify-end pt-4">
+              <Button variant="outline" onClick={() => setIsDayDetailModalOpen(false)}>Cerrar</Button>
+            </div>
         </DialogContent>
       </Dialog>
     </>
