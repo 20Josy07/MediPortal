@@ -231,11 +231,11 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
     const getNoteIcon = (type: Note['type']) => {
         switch (type) {
             case 'Voz':
-                return <MessageSquare className="w-6 h-6 text-purple-500" />;
+                return <MessageSquare className="w-5 h-5 text-purple-500" />;
             case 'Texto':
-                return <NotebookPen className="w-6 h-6 text-blue-500" />;
+                return <NotebookPen className="w-5 h-5 text-blue-500" />;
             default:
-                return <FileText className="w-6 h-6 text-gray-500" />;
+                return <FileText className="w-5 h-5 text-gray-500" />;
         }
     };
 
@@ -244,35 +244,37 @@ const NoteCard = ({ note, onOpenForm }: { note: Note, onOpenForm: (note: Note) =
     const showToggleButton = needsSummary && !isLoadingSummary;
 
     return (
-        <Card className="p-4" >
-            <div className="flex justify-between items-start">
-                <div className="flex items-center gap-4 mb-2">
-                    {getNoteIcon(note.type)}
-                    <h3 className="text-lg font-semibold">{note.title}</h3>
-                </div>
-                 <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
-                     <Button variant="outline" size="sm" onClick={() => onOpenForm(note)}>
-                        Ver detalle
-                     </Button>
-                 </div>
-            </div>
-            <div className="pl-10 relative">
-                <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
-                     <div dangerouslySetInnerHTML={{ __html: displayContent }} />
-                </div>
-                {isLoadingSummary && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-secondary/50 rounded-lg">
-                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                        <span className="ml-2 text-sm text-primary">Resumiendo...</span>
+        <Card className="p-4 flex gap-4">
+            <div className="mt-1">{getNoteIcon(note.type)}</div>
+            <div className="flex-1">
+                <div className="flex justify-between items-start">
+                    <h3 className="text-lg font-semibold mb-2">{note.title}</h3>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="text-xs text-muted-foreground">{format(note.createdAt, "dd MMM yyyy", { locale: es })}</span>
+                        <Button variant="outline" size="sm" onClick={() => onOpenForm(note)}>
+                            Ver detalle
+                        </Button>
                     </div>
-                )}
-                {showToggleButton && (
-                    <Button variant="link" size="sm" className="p-0 h-auto mt-2" onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}>
-                        {isExpanded ? "Ver menos" : "Ver más"}
-                        <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", isExpanded && "rotate-180")} />
-                    </Button>
-                )}
+                </div>
+                <div className="relative">
+                    <ScrollArea className="h-32">
+                        <div className={cn("text-muted-foreground bg-secondary p-3 rounded-lg block w-full break-words prose prose-sm dark:prose-invert max-w-none", isLoadingSummary && "blur-sm")}>
+                            <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+                        </div>
+                    </ScrollArea>
+                    {isLoadingSummary && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-secondary/50 rounded-lg">
+                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                            <span className="ml-2 text-sm text-primary">Resumiendo...</span>
+                        </div>
+                    )}
+                    {showToggleButton && (
+                        <Button variant="link" size="sm" className="p-0 h-auto mt-2" onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}>
+                            {isExpanded ? "Ver menos" : "Ver más"}
+                            <ChevronDown className={cn("h-4 w-4 ml-1 transition-transform", isExpanded && "rotate-180")} />
+                        </Button>
+                    )}
+                </div>
             </div>
         </Card>
     );
