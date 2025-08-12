@@ -155,28 +155,26 @@ const FeaturesSection = () => (
         <div className="features-section-container">
             <h2 className="features-section-title">Todo lo que necesitas, en un solo lugar</h2>
             <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 items-start">
-                {/* Columna de Texto */}
-                <div className="space-y-12">
-                  {features.map((feature, index) => (
-                      <div key={index} className="flex flex-col items-start text-left">
-                          <div className="feature-icon-wrapper">
-                              <feature.icon className="w-7 h-7" />
-                          </div>
-                          <h3 className="feature-title mt-4">{feature.title}</h3>
-                          <p className="feature-description mt-2">{feature.description}</p>
-                      </div>
-                  ))}
-                </div>
+            <div className="mt-16 space-y-16">
+              {features.map((feature, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-x-12 items-center">
+                    {/* Columna de Texto */}
+                    <div className="flex flex-col items-start text-left">
+                        <div className="feature-icon-wrapper">
+                            <feature.icon className="w-7 h-7" />
+                        </div>
+                        <h3 className="feature-title mt-4">{feature.title}</h3>
+                        <p className="feature-description mt-2">{feature.description}</p>
+                    </div>
 
-                {/* Columna de Ilustraciones */}
-                <div className="space-y-8 flex flex-col items-center">
-                   {features.map((feature, index) => (
-                     <div key={index} className="animated-tile aspect-[4/3] w-full max-w-[400px]">
-                       {feature.tile}
-                     </div>
-                   ))}
+                    {/* Columna de Ilustración */}
+                    <div className="flex justify-center">
+                        <div className="animated-tile aspect-[4/3] w-full max-w-[400px]">
+                           {feature.tile}
+                        </div>
+                    </div>
                 </div>
+              ))}
             </div>
         </div>
     </section>
