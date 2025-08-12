@@ -269,8 +269,8 @@ const NoteCard = ({ note, onOpenForm, onSelectNote, isActive }: { note: Note, on
             </div>
             <div className="relative pl-9">
                  <ScrollArea className={cn("transition-all duration-300", isExpanded ? "h-64" : "h-32")}>
-                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words", isLoadingSummary && "blur-sm")}>
-                        {displayContent}
+                    <div className={cn("text-muted-foreground bg-secondary/50 p-4 rounded-lg block w-full break-words overflow-hidden", isLoadingSummary && "blur-sm")}>
+                         <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: isExpanded ? note.content : (needsSummary ? (summary || "Generando resumen...") : note.content.substring(0, 350) + "...") }} />
                     </div>
                 </ScrollArea>
                 {isLoadingSummary && (
@@ -645,9 +645,10 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = noteToDownload.content;
 
-    const processNode = async (node: ChildNode, currentY: number): Promise<number> => {
-        let y = currentY;
-        const pageHeightLimit = pageHeight - 25;
+    let y = yPos;
+    const pageHeightLimit = pageHeight - 25;
+
+    const processNode = async (node: ChildNode): Promise<void> => {
 
         if (y > pageHeightLimit) {
             doc.addPage();
@@ -680,18 +681,14 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
              if (element.tagName === 'P' || element.tagName === 'DIV') {
                 y += 5; // Add space after a block element
             }
+            for (const childNode of Array.from(node.childNodes)) {
+                await processNode(childNode);
+            }
         }
-
-        for (const childNode of Array.from(node.childNodes)) {
-            y = await processNode(childNode, y);
-        }
-
-        return y;
     };
     
-    let finalY = yPos;
     for (const childNode of Array.from(tempDiv.childNodes)) {
-        finalY = await processNode(childNode, finalY);
+        await processNode(childNode);
     }
     
     doc.save(`${noteToDownload.title.replace(/\s/g, '_')}.pdf`);
@@ -1172,6 +1169,7 @@ const NoteEntryForm = ({
 
 
     
+
 
 
 
