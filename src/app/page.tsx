@@ -18,52 +18,21 @@ import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
-
-const RotatingWords = () => {
-    const words = ["eficiente.", "organizada.", "estructurada."];
-    const [index, setIndex] = useState(0);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIndex((prevIndex) => (prevIndex + 1) % words.length);
-        }, 3000);
-
-        return () => clearInterval(interval);
-    }, [words.length]);
-    
-    return (
-        <span className="relative inline-block h-20 text-left">
-            {words.map((word, i) => (
-                <span 
-                    key={word}
-                    className={cn(
-                        "absolute left-0 right-0 transition-all duration-500",
-                         i === index ? 'opacity-100 animate-fade-in' : 'opacity-0 animate-fade-out pointer-events-none'
-                    )}
-                >
-                  {word}
-                </span>
-            ))}
-        </span>
-    );
-};
-
-
 const HeroSection = () => {
   return (
     <section className="flex flex-col items-center justify-center text-center bg-secondary min-h-[80vh] px-4 py-16">
       <div className="z-10 flex flex-col max-w-4xl mx-auto items-center">
-        <div className="max-w-2xl text-center">
+        <div className="max-w-2xl w-full text-left">
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tighter">
                 <span className="text-foreground">Tu práctica,</span>
                 <br />
-                <span className="text-primary"><RotatingWords/></span>
+                <span className="text-primary">eficiente.</span>
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-foreground/80">
-            Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
+            <p className="mt-6 text-lg md:text-xl text-foreground/80 max-w-lg">
+                Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
             </p>
         </div>
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center w-full max-w-2xl">
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-start w-full max-w-2xl">
           <Button asChild size="lg">
             <Link href="/signup">Crear cuenta</Link>
           </Button>
@@ -161,7 +130,7 @@ const FeaturesSection = () => (
                     <React.Fragment key={index}>
                         <div className={cn(
                             "flex flex-col items-center text-center md:items-start md:text-left",
-                             index % 2 !== 0 && "md:order-2" 
+                             index === 2 && "md:order-2" 
                         )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
@@ -171,7 +140,7 @@ const FeaturesSection = () => (
                         </div>
                         <div className={cn(
                             "flex items-center justify-center",
-                            index % 2 !== 0 && "md:order-1"
+                            index === 2 && "md:order-1"
                         )}>
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
@@ -283,7 +252,7 @@ const benefits = [
 ];
 
 const BenefitsSection = () => (
-  <section className="py-20 md:py-28 bg-background border-t border-border">
+  <section className="py-20 md:py-28 bg-secondary border-t border-b border-border">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center">
         <h2 className="text-4xl md:text-5xl font-bold text-foreground">
@@ -340,7 +309,7 @@ export default function Home() {
 
         <BenefitsSection />
 
-        <footer className="bg-secondary border-t border-border">
+        <footer className="bg-background">
           <div className="container mx-auto py-12 px-6 lg:px-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
               <div>
@@ -376,7 +345,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
