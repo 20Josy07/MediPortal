@@ -9,7 +9,6 @@ import {
   UserPlus,
   Sparkles,
   CalendarDays,
-  BrainCircuit,
   Bot
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -60,57 +59,51 @@ const HeroSection = () => {
 };
 
 const AgendaInteligente = () => (
-    <div className="animated-tile p-4">
-        <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full w-full">
-            {Array.from({ length: 35 }).map((_, i) => (
-                <div key={i} className={cn(
-                    "rounded-[3px] bg-muted/40",
-                    [3, 10, 18, 26].includes(i) && 'bg-muted/80'
-                )}>
-                    {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/70"></div>}
-                    {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/70"></div>}
-                </div>
-            ))}
-        </div>
+    <div className="grid grid-cols-7 grid-rows-5 gap-1.5 h-full w-full">
+        {Array.from({ length: 35 }).map((_, i) => (
+            <div key={i} className={cn(
+                "rounded-[3px] bg-muted/40",
+                [3, 10, 18, 26].includes(i) && 'bg-muted/80'
+            )}>
+                {[10, 26].includes(i) && <div className="h-1.5 w-full rounded-full bg-primary/70"></div>}
+                {[3, 18].includes(i) && <div className="h-1.5 w-[60%] rounded-full bg-accent/70"></div>}
+            </div>
+        ))}
     </div>
 );
 
 const NotasClinicas = () => (
-    <div className="animated-tile p-4">
-        <div className="w-full h-full flex flex-col justify-center gap-2.5">
-            <div className="flex items-center gap-2">
-                <div className="feature-icon-wrapper p-2">
-                    <FilePenLine className="w-5 h-5" />
-                </div>
-                <span className="text-sm font-semibold text-foreground">Notas de Sesión</span>
+    <div className="w-full h-full flex flex-col justify-center gap-2.5">
+        <div className="flex items-center gap-2">
+            <div className="feature-icon-wrapper p-2">
+                <FilePenLine className="w-5 h-5" />
             </div>
-            <div className="space-y-2.5">
-                 {['w-[90%]', 'w-[100%]', 'w-[70%]', 'w-[85%]'].map((width, i) => (
-                    <div key={i} className="h-3 bg-muted rounded-full overflow-hidden">
-                       <div className={cn("h-full bg-primary/60 rounded-full animate-fill-in", width)} style={{ animationDelay: `${i * 250}ms` }} ></div>
-                    </div>
-                ))}
-                <div className="h-3 w-[40%] bg-muted rounded-full overflow-hidden flex items-center">
-                    <div className="h-full w-full bg-primary/60 rounded-full animate-fill-in" style={{ animationDelay: '1000ms' }}></div>
-                    <div className="w-0.5 h-3/5 bg-primary animate-blink ml-0.5"></div>
+            <span className="text-sm font-semibold text-foreground">Notas de Sesión</span>
+        </div>
+        <div className="space-y-2.5">
+             {['w-[90%]', 'w-[100%]', 'w-[70%]', 'w-[85%]'].map((width, i) => (
+                <div key={i} className="h-3 bg-muted rounded-full overflow-hidden">
+                   <div className={cn("h-full bg-primary/60 rounded-full animate-fill-in", width)} style={{ animationDelay: `${i * 250}ms` }} ></div>
                 </div>
+            ))}
+            <div className="h-3 w-[40%] bg-muted rounded-full overflow-hidden flex items-center">
+                <div className="h-full w-full bg-primary/60 rounded-full animate-fill-in" style={{ animationDelay: '1000ms' }}></div>
+                <div className="w-0.5 h-3/5 bg-primary animate-blink ml-0.5"></div>
             </div>
         </div>
     </div>
 );
 
 const AsistenteIA = () => (
-    <div className="animated-tile p-4">
-        <div className="w-full h-full flex flex-col justify-end gap-2">
-            <div className="flex items-end justify-between h-full">
-                {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
-                    <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
-                        <div className="bg-primary/50 w-full rounded-t-md origin-bottom animate-bar-grow" style={{ height: `${height * 100}%`, animationDelay: `${i * 150}ms` }}></div>
-                    </div>
-                ))}
-            </div>
-            <div className="h-1 w-full bg-border rounded-full mt-2"></div>
+    <div className="w-full h-full flex flex-col justify-end gap-2">
+        <div className="flex items-end justify-between h-full">
+            {[0.4, 0.7, 0.5, 0.85].map((height, i) => (
+                <div key={i} className="w-1/5 bg-muted rounded-t-md h-full flex flex-col justify-end">
+                    <div className="bg-primary/50 w-full rounded-t-md origin-bottom animate-bar-grow" style={{ height: `${height * 100}%`, animationDelay: `${i * 150}ms` }}></div>
+                </div>
+            ))}
         </div>
+        <div className="h-1 w-full bg-border rounded-full mt-2"></div>
     </div>
 );
 
@@ -140,7 +133,7 @@ const FeaturesSection = () => (
         <div className="features-section-container">
             <h2 className="features-section-title">Todo lo que necesitas, en un solo lugar</h2>
             <p className="features-section-subtitle">Zenda centraliza tus herramientas para que te enfoques en tus pacientes.</p>
-            <div className="features-grid">
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 items-center">
                 {features.map((feature, index) => (
                     <React.Fragment key={index}>
                         <div className={cn("feature-text-container", index === 2 && "md:order-2")}>
@@ -151,7 +144,9 @@ const FeaturesSection = () => (
                             <p className="feature-description">{feature.description}</p>
                         </div>
                         <div className={cn("flex items-center justify-center", index === 2 && "md:order-1")}>
-                            {feature.tile}
+                           <div className="animated-tile">
+                             {feature.tile}
+                           </div>
                         </div>
                     </React.Fragment>
                 ))}
