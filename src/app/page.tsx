@@ -32,13 +32,13 @@ const RotatingWords = () => {
     }, [words.length]);
     
     return (
-        <span className="inline-block relative h-20">
+        <span className="relative inline-block h-20 text-left">
             {words.map((word, i) => (
                 <span 
                     key={word}
                     className={cn(
-                        "absolute left-0 right-0 mx-auto transition-all duration-500",
-                        i === index ? 'opacity-100 transform-none' : 'opacity-0 -translate-y-2'
+                        "absolute left-0 right-0 transition-all duration-500",
+                         i === index ? 'opacity-100' : 'opacity-0'
                     )}
                 >
                   {word}
@@ -57,7 +57,7 @@ const HeroSection = () => {
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tighter">
                 <span className="text-foreground">Tu práctica,</span>
                 <br />
-                <span className="text-primary"><RotatingWords/></span>
+                <span className="text-primary pl-4"><RotatingWords/></span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-foreground/80">
             Menos carga administrativa. Más presencia terapéutica. Recupera horas en tu semana y dedícalas a lo que amas.
@@ -161,7 +161,7 @@ const FeaturesSection = () => (
                     <React.Fragment key={index}>
                         <div className={cn(
                             "flex flex-col items-center text-center md:items-start md:text-left",
-                             index === 2 && "md:col-start-1 md:row-start-2"
+                             index % 2 !== 0 && "md:order-2" 
                         )}>
                             <div className="feature-icon-wrapper">
                                 <feature.icon className="w-7 h-7" />
@@ -171,7 +171,7 @@ const FeaturesSection = () => (
                         </div>
                         <div className={cn(
                             "flex items-center justify-center",
-                            index === 2 && "md:col-start-2 md:row-start-2"
+                            index % 2 !== 0 && "md:order-1"
                         )}>
                            <div className="animated-tile aspect-[1/1] w-full max-w-[300px]">
                              {feature.tile}
@@ -361,8 +361,8 @@ export default function Home() {
                 <h3 className="font-bold text-lg mb-4 text-foreground">Contacto</h3>
                 <ul className="space-y-2">
                   <li><a href="mailto:hola@zenda.ai" className="text-sm text-muted-foreground hover:text-primary">hola@zenda.ai</a></li>
-                  <li><a href="/terms" className="text-sm text-muted-foreground hover:text-primary">Términos y Condiciones</a></li>
-                  <li><a href="/privacy" className="text-sm text-muted-foreground hover:text-primary">Política de privacidad</a></li>
+                  <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-primary">Términos y Condiciones</Link></li>
+                  <li><Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary">Política de privacidad</Link></li>
                 </ul>
               </div>
             </div>
