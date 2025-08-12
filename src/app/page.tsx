@@ -38,7 +38,7 @@ const RotatingWords = () => {
                     key={word}
                     className={cn(
                         "absolute left-0 right-0 transition-all duration-500",
-                         i === index ? 'opacity-100 animate-fade-in' : 'opacity-0 animate-fade-out'
+                         i === index ? 'opacity-100 animate-fade-in' : 'opacity-0 animate-fade-out pointer-events-none'
                     )}
                 >
                   {word}
@@ -52,8 +52,8 @@ const RotatingWords = () => {
 const HeroSection = () => {
   return (
     <section className="flex flex-col items-center justify-center text-center bg-secondary min-h-[80vh] px-4 py-16">
-      <div className="z-10 flex flex-col w-full max-w-4xl mx-auto items-center">
-        <div className="w-full max-w-2xl text-center">
+      <div className="z-10 flex flex-col max-w-4xl mx-auto items-center">
+        <div className="max-w-2xl text-center">
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tighter">
                 <span className="text-foreground">Tu práctica,</span>
                 <br />
