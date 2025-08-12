@@ -40,7 +40,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="flex flex-col items-center justify-center text-center bg-[#f1f5f6] dark:bg-background min-h-[80vh] px-4">
+    <section className="flex flex-col items-center justify-center text-center bg-[#EEF2F1] dark:bg-background min-h-[80vh] px-4">
       <div className="z-10 flex flex-col items-center">
         <h1 className="text-4xl md:text-7xl font-extrabold tracking-tighter text-foreground">
           Tu práctica,
