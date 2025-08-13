@@ -410,141 +410,151 @@ export function SessionsCalendar() {
     </>
   );
 
-  const renderWeekView = () => {
-    const weekDays = eachDayOfInterval({
-      start: startOfWeek(currentDate, { locale: es }),
-      end: endOfWeek(currentDate, { locale: es }),
+  const getDayOrWeekSessions = (viewDate: Date, viewType: "day" | "week") => {
+    return sessions
+      .filter(session =>
+        viewType === "day"
+          ? isSameDay(session.date, viewDate)
+          : isSameWeek(session.date, viewDate, { locale: es })
+      )
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+  };
+
+  const calculateLayout = (daySessions: Session[]) => {
+    const layout: (Session & { left: number; width: number })[] = [];
+    const columns: Session[][] = [];
+
+    daySessions.forEach(session => {
+        let placed = false;
+        for (let i = 0; i < columns.length; i++) {
+            const lastEventInColumn = columns[i][columns[i].length - 1];
+            if (!areIntervalsOverlapping(
+                { start: session.date, end: session.endDate },
+                { start: lastEventInColumn.date, end: lastEventInColumn.endDate }
+            )) {
+                columns[i].push(session);
+                placed = true;
+                break;
+            }
+        }
+        if (!placed) {
+            columns.push([session]);
+        }
     });
 
-    const timeSlots = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM
+    const maxColumns = columns.length;
 
-    const weekSessions = sessions.filter(session => isSameWeek(session.date, currentDate, { locale: es }));
+    columns.forEach((col, colIndex) => {
+        col.forEach(session => {
+            layout.push({
+                ...session,
+                left: (colIndex / maxColumns) * 100,
+                width: (1 / maxColumns) * 100,
+            });
+        });
+    });
+
+    return layout;
+  };
+  
+  const renderWeekOrDayView = (viewType: 'week' | 'day') => {
+    const weekDays =
+      viewType === 'week'
+        ? eachDayOfInterval({
+            start: startOfWeek(currentDate, { locale: es }),
+            end: endOfWeek(currentDate, { locale: es }),
+          })
+        : [currentDate];
+  
+    const timeSlots = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM
   
     return (
       <div className="grid grid-cols-[auto,1fr] h-full overflow-y-auto">
         {/* Time column */}
         <div className="grid-rows-[auto,1fr]">
-            <div className="h-10"></div> {/* Spacer for header */}
-            <div className="relative">
-                {timeSlots.map((hour) => (
-                    <div key={hour} className="h-16 flex items-start justify-end pr-2 text-xs text-muted-foreground relative -top-2">
-                        <span>{format(new Date(0,0,0,hour), 'h a')}</span>
-                    </div>
-                ))}
-            </div>
+          <div className="h-10"></div> {/* Spacer for header */}
+          <div className="relative">
+            {timeSlots.map(hour => (
+              <div
+                key={hour}
+                className="h-16 flex items-start justify-end pr-2 text-xs text-muted-foreground relative -top-2"
+              >
+                <span>{format(new Date(0, 0, 0, hour), 'p', { locale: es })}</span>
+              </div>
+            ))}
+          </div>
         </div>
-
+  
         {/* Days columns */}
-        <div className="grid grid-cols-7">
-          {weekDays.map((day, dayIndex) => (
-            <div key={day.toString()} className="border-l border-border relative">
-              <div className="sticky top-0 bg-background z-10 h-10 flex flex-col items-center justify-center border-b border-border">
-                <span className="text-xs text-muted-foreground uppercase">{format(day, 'E', { locale: es })}</span>
-                <span className={cn("text-lg font-bold", isSameDay(day, new Date()) && "text-primary")}>{format(day, 'd')}</span>
+        <div className={cn('grid', viewType === 'week' ? 'grid-cols-7' : 'grid-cols-1')}>
+          {weekDays.map(day => {
+            const daySessions = getDayOrWeekSessions(day, 'day');
+            const layout = calculateLayout(daySessions);
+  
+            return (
+              <div key={day.toString()} className="border-l border-border relative">
+                <div className="sticky top-0 bg-background z-10 h-10 flex flex-col items-center justify-center border-b border-border">
+                  {viewType === 'week' && (
+                    <span className="text-xs text-muted-foreground uppercase">
+                      {format(day, 'E', { locale: es })}
+                    </span>
+                  )}
+                  <span
+                    className={cn(
+                      'text-lg font-bold',
+                      isSameDay(day, new Date()) && 'text-primary'
+                    )}
+                  >
+                    {format(day, 'd')}
+                  </span>
+                </div>
+                <div className="relative">
+                  {/* Grid lines */}
+                  {timeSlots.map(hour => (
+                    <div key={hour} className="h-16 border-b border-border"></div>
+                  ))}
+  
+                  {/* Sessions */}
+                  {layout.map(session => {
+                    const startHour = getHours(session.date);
+                    const startMinute = getMinutes(session.date);
+                    const top = (startHour - 7) * 64 + (startMinute / 60) * 64;
+                    const height = (session.duration / 60) * 64;
+                    const isShortSession = session.duration <= 45;
+  
+                    return (
+                      <div
+                        key={session.id}
+                        onClick={() => handleSessionClick(session)}
+                        className={cn(
+                          'absolute rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex overflow-hidden',
+                          getStatusColor(session.status)
+                        )}
+                        style={{
+                          top: `${top}px`,
+                          height: `${height}px`,
+                          left: `${session.left}%`,
+                          width: `calc(${session.width}% - 4px)`,
+                        }}
+                      >
+                        <div className={cn("flex flex-col w-full", isShortSession && "justify-center")}>
+                          <span className="font-bold truncate">{session.patientName}</span>
+                          <span className="truncate">{session.type}</span>
+                           {!isShortSession && (
+                            <span className="truncate">{format(session.date, 'p', { locale: es })} - {format(session.endDate, 'p', { locale: es })}</span>
+                           )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="relative">
-                {/* Grid lines */}
-                {timeSlots.map((hour) => (
-                  <div key={hour} className="h-16 border-b border-border"></div>
-                ))}
-
-                {/* Sessions */}
-                {weekSessions
-                  .filter(session => isSameDay(session.date, day))
-                  .map(session => {
-                      const startHour = getHours(session.date);
-                      const startMinute = getMinutes(session.date);
-                      const top = ((startHour - 7) * 64) + (startMinute / 60 * 64);
-                      const height = (session.duration / 60) * 64; // Duration in hours * height per hour
-                      const isShortSession = session.duration <= 45;
-
-                      return (
-                          <div
-                            key={session.id}
-                            onClick={() => handleSessionClick(session)}
-                            className={cn(
-                                "absolute w-[calc(100%-4px)] left-[2px] rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex overflow-hidden",
-                                getStatusColor(session.status),
-                                isShortSession ? "flex-row items-center gap-2" : "flex-col"
-                            )}
-                            style={{ top: `${top}px`, height: `${height}px` }}
-                          >
-                            <span className="font-bold truncate">{session.patientName}</span>
-                            <span className="truncate">{session.type}</span>
-                          </div>
-                      )
-                  })
-                }
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );
   };
-  
-
-  const renderDayView = () => {
-    const timeSlots = Array.from({ length: 24 }, (_, i) => i); // 0 (12 AM) to 23 (11 PM)
-    const daySessions = sessions.filter(session => isSameDay(session.date, currentDate));
-
-    return (
-        <div className="grid grid-cols-[auto,1fr] h-full overflow-y-auto">
-            {/* Time column */}
-            <div className="grid-rows-[auto,1fr]">
-                <div className="h-10"></div> {/* Spacer for day header */}
-                <div className="relative">
-                    {timeSlots.map((hour) => (
-                        <div key={hour} className="h-16 flex items-start justify-end pr-2 text-xs text-muted-foreground relative -top-2">
-                            <span>{format(new Date(0, 0, 0, hour), 'h a')}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Day column */}
-            <div className="border-l border-border relative">
-                <div className="sticky top-0 bg-background z-10 h-10 flex flex-col items-center justify-center border-b border-border">
-                    <span className={cn("text-lg font-bold", isSameDay(currentDate, new Date()) && "text-primary")}>
-                        {format(currentDate, 'd')}
-                    </span>
-                </div>
-                <div className="relative">
-                    {/* Grid lines */}
-                    {timeSlots.map((hour) => (
-                        <div key={hour} className="h-16 border-b border-border"></div>
-                    ))}
-
-                    {/* Sessions */}
-                    {daySessions.map(session => {
-                        const startHour = getHours(session.date);
-                        const startMinute = getMinutes(session.date);
-                        const top = (startHour * 64) + (startMinute / 60 * 64);
-                        const height = (session.duration / 60) * 64;
-                        const isShortSession = session.duration <= 45;
-
-                        return (
-                            <div
-                                key={session.id}
-                                onClick={() => handleSessionClick(session)}
-                                className={cn(
-                                    "absolute w-[calc(100%-8px)] left-[4px] rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex",
-                                    getStatusColor(session.status),
-                                    isShortSession ? "flex-row items-center gap-2" : "flex-col items-start",
-                                    session.duration >= 90 && "justify-center"
-                                )}
-                                style={{ top: `${top}px`, height: `${height}px` }}
-                            >
-                                <span className="font-bold truncate">{session.patientName}</span>
-                                <span className="truncate">{session.type} ({format(session.date, 'p', { locale: es })} - {format(session.endDate, 'p', { locale: es })})</span>
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-        </div>
-    );
-};
   
   return (
     <>
@@ -632,8 +642,8 @@ export function SessionsCalendar() {
                         </div>
                     </div>
                   )}
-                  {view === 'week' && renderWeekView()}
-                  {view === 'day' && renderDayView()}
+                  {view === 'week' && renderWeekOrDayView('week')}
+                  {view === 'day' && renderWeekOrDayView('day')}
                 </>
             )}
         </CardContent>
