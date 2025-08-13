@@ -537,13 +537,15 @@ export function SessionsCalendar() {
                           width: `calc(${session.width}% - 4px)`,
                         }}
                       >
-                        <div className={cn("flex flex-col w-full", isShortSession && "justify-center")}>
-                          <span className="font-bold truncate">{session.patientName}</span>
-                          <span className="truncate">{session.type}</span>
-                           {!isShortSession && (
-                            <span className="truncate">{format(session.date, 'p', { locale: es })} - {format(session.endDate, 'p', { locale: es })}</span>
-                           )}
-                        </div>
+                         <div className={cn("flex flex-col w-full", isShortSession && "justify-center")}>
+                            <span className="font-bold truncate">{session.patientName}</span>
+                            {!isShortSession && (
+                              <>
+                                <span className="truncate">{session.type}</span>
+                                <span className="truncate">{format(session.date, 'p', { locale: es })} - {format(session.endDate, 'p', { locale: es })}</span>
+                              </>
+                            )}
+                          </div>
                       </div>
                     );
                   })}
@@ -558,7 +560,7 @@ export function SessionsCalendar() {
   
   return (
     <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center mb-4">
+      <header className="flex justify-between items-center mb-4">
          <div className="flex items-center gap-4">
              <span className="text-xl font-bold capitalize">
                  {formatHeader()}
@@ -599,7 +601,7 @@ export function SessionsCalendar() {
             </button>
             {showEventForm && <AddEventForm onClose={() => setShowEventForm(false)} />} */}
          </div>
-      </div>
+      </header>
 
       <Card className="h-full flex-grow flex flex-col overflow-hidden">
         <CardContent className="p-0 h-full flex-grow">
