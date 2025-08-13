@@ -493,7 +493,7 @@ export function SessionsCalendar() {
   
             return (
               <div key={day.toString()} className="border-l border-border relative">
-                <div className="sticky top-0 bg-background z-10 h-10 flex flex-col items-center justify-center border-b border-border">
+                <div className="sticky top-0 bg-background z-30 h-10 flex flex-col items-center justify-center border-b border-border">
                   {viewType === 'week' && (
                     <span className="text-xs text-muted-foreground uppercase">
                       {format(day, 'E', { locale: es })}
