@@ -469,90 +469,88 @@ export function SessionsCalendar() {
     const timeSlots = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM
   
     return (
-      <div className="h-full overflow-y-auto">
-        <div className="grid grid-cols-[auto,1fr] h-full">
-          {/* Time column */}
-          <div className="grid-rows-[auto,1fr]">
-            <div className="h-10"></div> {/* Spacer for header */}
-            <div className="relative">
-              {timeSlots.map(hour => (
-                <div
-                  key={hour}
-                  className="h-16 flex items-start justify-end pr-2 text-xs text-muted-foreground relative -top-2"
-                >
-                  <span>{format(new Date(0, 0, 0, hour), 'p', { locale: es })}</span>
-                </div>
-              ))}
-            </div>
+      <div className="grid grid-cols-[auto,1fr] h-full">
+        {/* Time column */}
+        <div className="grid-rows-[auto,1fr]">
+          <div className="h-10"></div> {/* Spacer for header */}
+          <div className="relative">
+            {timeSlots.map(hour => (
+              <div
+                key={hour}
+                className="h-16 flex items-start justify-end pr-2 text-xs text-muted-foreground relative -top-2"
+              >
+                <span>{format(new Date(0, 0, 0, hour), 'p', { locale: es })}</span>
+              </div>
+            ))}
           </div>
-    
-          {/* Days columns */}
-          <div className={cn('grid', viewType === 'week' ? 'grid-cols-7' : 'grid-cols-1')}>
-            {weekDays.map(day => {
-              const daySessions = getDayOrWeekSessions(day, 'day');
-              const layout = calculateLayout(daySessions);
-    
-              return (
-                <div key={day.toString()} className="border-l border-border relative">
-                  <div className="sticky top-0 bg-background z-30 h-10 flex flex-col items-center justify-center border-b border-border">
-                    {viewType === 'week' && (
-                      <span className="text-xs text-muted-foreground uppercase">
-                        {format(day, 'E', { locale: es })}
-                      </span>
-                    )}
-                    <span
-                      className={cn(
-                        'text-lg font-bold',
-                        isSameDay(day, new Date()) && 'text-primary'
-                      )}
-                    >
-                      {format(day, 'd')}
+        </div>
+  
+        {/* Days columns */}
+        <div className={cn('grid', viewType === 'week' ? 'grid-cols-7' : 'grid-cols-1')}>
+          {weekDays.map(day => {
+            const daySessions = getDayOrWeekSessions(day, 'day');
+            const layout = calculateLayout(daySessions);
+  
+            return (
+              <div key={day.toString()} className="border-l border-border relative">
+                <div className="sticky top-0 bg-background z-30 h-10 flex flex-col items-center justify-center border-b border-border">
+                  {viewType === 'week' && (
+                    <span className="text-xs text-muted-foreground uppercase">
+                      {format(day, 'E', { locale: es })}
                     </span>
-                  </div>
-                  <div className="relative">
-                    {/* Grid lines */}
-                    {timeSlots.map(hour => (
-                      <div key={hour} className="h-16 border-b border-border"></div>
-                    ))}
-    
-                    {/* Sessions */}
-                    {layout.map(session => {
-                      const startHour = getHours(session.date);
-                      const startMinute = getMinutes(session.date);
-                      const top = (startHour - 7) * 64 + (startMinute / 60) * 64;
-                      const height = (session.duration / 60) * 64;
-                      const isShortSession = session.duration <= 45;
-    
-                      return (
-                        <div
-                          key={session.id}
-                          onClick={() => handleSessionClick(session)}
-                          className={cn(
-                            'absolute rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex overflow-hidden',
-                            getStatusColor(session.status)
-                          )}
-                          style={{
-                            top: `${top}px`,
-                            height: `${height}px`,
-                            left: `${session.left}%`,
-                            width: `calc(${session.width}% - 4px)`,
-                          }}
-                        >
-                          <div className={cn("flex flex-col w-full", isShortSession && "justify-center")}>
-                            <span className="font-bold truncate">{session.patientName}</span>
-                            <span className="truncate">{session.type}</span>
-                             {!isShortSession && (
-                              <span className="truncate">{format(session.date, 'p', { locale: es })} - {format(session.endDate, 'p', { locale: es })}</span>
-                             )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  )}
+                  <span
+                    className={cn(
+                      'text-lg font-bold',
+                      isSameDay(day, new Date()) && 'text-primary'
+                    )}
+                  >
+                    {format(day, 'd')}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+                <div className="relative">
+                  {/* Grid lines */}
+                  {timeSlots.map(hour => (
+                    <div key={hour} className="h-16 border-b border-border"></div>
+                  ))}
+  
+                  {/* Sessions */}
+                  {layout.map(session => {
+                    const startHour = getHours(session.date);
+                    const startMinute = getMinutes(session.date);
+                    const top = (startHour - 7) * 64 + (startMinute / 60) * 64;
+                    const height = (session.duration / 60) * 64;
+                    const isShortSession = session.duration <= 45;
+  
+                    return (
+                      <div
+                        key={session.id}
+                        onClick={() => handleSessionClick(session)}
+                        className={cn(
+                          'absolute rounded-lg p-2 text-white text-xs cursor-pointer z-20 flex overflow-hidden',
+                          getStatusColor(session.status)
+                        )}
+                        style={{
+                          top: `${top}px`,
+                          height: `${height}px`,
+                          left: `${session.left}%`,
+                          width: `calc(${session.width}% - 4px)`,
+                        }}
+                      >
+                        <div className={cn("flex flex-col w-full", isShortSession && "justify-center")}>
+                          <span className="font-bold truncate">{session.patientName}</span>
+                          <span className="truncate">{session.type}</span>
+                           {!isShortSession && (
+                            <span className="truncate">{format(session.date, 'p', { locale: es })} - {format(session.endDate, 'p', { locale: es })}</span>
+                           )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -644,8 +642,11 @@ export function SessionsCalendar() {
                         </div>
                     </div>
                   )}
-                  {view === 'week' && renderWeekOrDayView('week')}
-                  {view === 'day' && renderWeekOrDayView('day')}
+                  {view !== 'month' && (
+                    <div className="h-full overflow-y-auto">
+                      {renderWeekOrDayView(view)}
+                    </div>
+                  )}
                 </>
             )}
         </CardContent>
