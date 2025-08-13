@@ -559,7 +559,7 @@ export function SessionsCalendar() {
   };
   
   return (
-    <>
+    <div className="flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
          <div className="flex items-center gap-4">
              <span className="text-xl font-bold capitalize">
@@ -603,8 +603,8 @@ export function SessionsCalendar() {
          </div>
       </div>
 
-      <Card className="h-full flex-grow overflow-hidden">
-        <CardContent className="p-0 h-full">
+      <Card className="h-full flex-grow flex flex-col overflow-hidden">
+        <CardContent className="p-0 h-full flex-grow">
             {isLoading ? (
               <div className="flex justify-center items-center h-[560px]">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -781,6 +781,6 @@ export function SessionsCalendar() {
             </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }
