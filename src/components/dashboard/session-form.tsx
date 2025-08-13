@@ -30,10 +30,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, Bell } from "lucide-react";
+import { CalendarIcon, Bell, Loader2 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
 import { Separator } from "../ui/separator";
 import { sendReminder } from "@/ai/flows/send-reminders-flow";
@@ -99,6 +99,7 @@ export function SessionForm({
   initialDate,
 }: SessionFormProps) {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<SessionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -191,122 +192,125 @@ export function SessionForm({
   };
 
   async function handleSubmit(values: SessionFormValues) {
-    const [hours, minutes] = values.time.split(":").map(Number);
-    const combinedDateTime = new Date(values.date);
-    combinedDateTime.setHours(hours, minutes, 0, 0);
-
-    const durationInMinutes = values.duration === "custom" ? (values.customDuration || 0) : parseInt(values.duration, 10);
-    const endDate = addMinutes(combinedDateTime, durationInMinutes);
-    
-    const newSessionInterval = { start: combinedDateTime, end: endDate };
-
-    // Check for overlaps
-    const hasOverlap = sessions.some(existingSession => {
-      // If we are editing a session, we should not compare it with itself
-      if (session && existingSession.id === session.id) {
-        return false;
-      }
-      const existingSessionInterval = { start: existingSession.date, end: existingSession.endDate };
-      return areIntervalsOverlapping(newSessionInterval, existingSessionInterval, { inclusive: false });
-    });
-
-    if (hasOverlap) {
-      form.setError("time", {
-        type: "manual",
-        message: "Esta cita se solapa con otra. Ajusta duración o cambia la hora."
-      });
-      return;
-    }
-
-
-    const selectedPatient = patients.find((p) => p.id === values.patientId);
-
-    if (!selectedPatient) {
-      form.setError("patientId", { message: "Paciente no encontrado." });
-      return;
-    }
-
+    setIsSubmitting(true);
     try {
-      const googleEvent = convertToGoogleCalendarEvent(values, selectedPatient);
-      console.log("Evento para Google Calendar:", JSON.stringify(googleEvent, null, 2));
+        const [hours, minutes] = values.time.split(":").map(Number);
+        const combinedDateTime = new Date(values.date);
+        combinedDateTime.setHours(hours, minutes, 0, 0);
 
-      try {
-        const response = await fetch('/api/calendar/events', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            summary: googleEvent.summary,
-            description: googleEvent.description,
-            startDateTime: googleEvent.start.dateTime,
-            endDateTime: googleEvent.end.dateTime,
-          }),
-        });
-      
-        if (!response.ok) {
-          throw new Error('Error al crear el evento en Google Calendar');
+        const durationInMinutes = values.duration === "custom" ? (values.customDuration || 0) : parseInt(values.duration, 10);
+        const endDate = addMinutes(combinedDateTime, durationInMinutes);
+        
+        const newSessionInterval = { start: combinedDateTime, end: endDate };
+
+        // Check for overlaps
+        const hasOverlap = sessions.some(existingSession => {
+        // If we are editing a session, we should not compare it with itself
+        if (session && existingSession.id === session.id) {
+            return false;
         }
-      
-        const eventData = await response.json();
-        console.log('Evento creado en Google Calendar:', eventData);
-      } catch (googleError) {
-        console.error('Error al sincronizar con Google Calendar:', googleError);
-        toast({
-          variant: "destructive",
-          title: "Error al sincronizar con Google Calendar",
-          description: "La sesión se guardará localmente pero no se pudo sincronizar con el calendario."
+        const existingSessionInterval = { start: existingSession.date, end: existingSession.endDate };
+        return areIntervalsOverlapping(newSessionInterval, existingSessionInterval, { inclusive: false });
         });
-      }
-    
-      // 3. Crear el objeto de sesión
-      const sessionData: Omit<Session, "id"> = {
-        patientId: values.patientId,
-        patientName: selectedPatient.name,
-        date: combinedDateTime,
-        endDate: endDate,
-        duration: durationInMinutes,
-        type: values.type,
-        status: values.status,
-        remindPatient: values.remindPatient,
-        remindPsychologist: values.remindPsychologist,
-      };
-    
-      // 4. Enviar recordatorios si están habilitados
-      if (values.remindPatient || values.remindPsychologist) {
+
+        if (hasOverlap) {
+        form.setError("time", {
+            type: "manual",
+            message: "Esta cita se solapa con otra. Ajusta duración o cambia la hora."
+        });
+        return;
+        }
+
+
+        const selectedPatient = patients.find((p) => p.id === values.patientId);
+
+        if (!selectedPatient) {
+        form.setError("patientId", { message: "Paciente no encontrado." });
+        return;
+        }
+
+        const googleEvent = convertToGoogleCalendarEvent(values, selectedPatient);
+        console.log("Evento para Google Calendar:", JSON.stringify(googleEvent, null, 2));
+
         try {
-          await sendReminder({
-            patientName: selectedPatient.name,
-            patientEmail: selectedPatient.email,
-            patientPhone: selectedPatient.phone,
-            sessionDate: combinedDateTime.toISOString(),
-            reminderType: values.remindPatient && values.remindPsychologist 
-              ? 'both' 
-              : values.remindPatient 
-                ? 'patient' 
-                : 'psychologist',
-          });
-          toast({ title: "Recordatorios programados." });
-        } catch (e) {
-          console.error(e);
-          toast({ 
-            variant: "destructive", 
-            title: "Error al programar recordatorios",
-            description: "La sesión se guardará pero los recordatorios no se pudieron programar."
-          });
+            const response = await fetch('/api/calendar/events', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                summary: googleEvent.summary,
+                description: googleEvent.description,
+                startDateTime: googleEvent.start.dateTime,
+                endDateTime: googleEvent.end.dateTime,
+            }),
+            });
+        
+            if (!response.ok) {
+            throw new Error('Error al crear el evento en Google Calendar');
+            }
+        
+            const eventData = await response.json();
+            console.log('Evento creado en Google Calendar:', eventData);
+        } catch (googleError) {
+            console.error('Error al sincronizar con Google Calendar:', googleError);
+            toast({
+            variant: "destructive",
+            title: "Error al sincronizar con Google Calendar",
+            description: "La sesión se guardará localmente pero no se pudo sincronizar con el calendario."
+            });
         }
-      }
-    
-      // 5. Guardar la sesión
-      onSubmit(sessionData);
-    
+        
+        // 3. Crear el objeto de sesión
+        const sessionData: Omit<Session, "id"> = {
+            patientId: values.patientId,
+            patientName: selectedPatient.name,
+            date: combinedDateTime,
+            endDate: endDate,
+            duration: durationInMinutes,
+            type: values.type,
+            status: values.status,
+            remindPatient: values.remindPatient,
+            remindPsychologist: values.remindPsychologist,
+        };
+        
+        // 4. Enviar recordatorios si están habilitados
+        if (values.remindPatient || values.remindPsychologist) {
+            try {
+            await sendReminder({
+                patientName: selectedPatient.name,
+                patientEmail: selectedPatient.email,
+                patientPhone: selectedPatient.phone,
+                sessionDate: combinedDateTime.toISOString(),
+                reminderType: values.remindPatient && values.remindPsychologist 
+                ? 'both' 
+                : values.remindPatient 
+                    ? 'patient' 
+                    : 'psychologist',
+            });
+            toast({ title: "Recordatorios programados." });
+            } catch (e) {
+            console.error(e);
+            toast({ 
+                variant: "destructive", 
+                title: "Error al programar recordatorios",
+                description: "La sesión se guardará pero los recordatorios no se pudieron programar."
+            });
+            }
+        }
+        
+        // 5. Guardar la sesión
+        onSubmit(sessionData);
+        
     } catch (error) {
-      console.error('Error al procesar la solicitud:', error);
-      toast({
-        variant: "destructive",
-        title: "Error al procesar la solicitud",
-        description: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
-      });
+        console.error('Error al procesar la solicitud:', error);
+        toast({
+            variant: "destructive",
+            title: "Error al procesar la solicitud",
+            description: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo."
+        });
+    } finally {
+        setIsSubmitting(false);
     }
   }
     
@@ -522,10 +526,14 @@ export function SessionForm({
           <Button type="button" variant="outline" onClick={onCancel}>
               Cancelar
           </Button>
-          <Button type="submit">Guardar Sesión</Button>
+          <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting ? 'Guardando...' : 'Guardar Sesión'}
+          </Button>
           </div>
         </form>
       </Form>
     </div>
     );
 }
+
