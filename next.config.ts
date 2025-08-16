@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
     return config;
   },
   serverActions: {
-    bodySizeLimit: '2mb',
+    bodySizeLimit: '4mb',
   },
 };
 
