@@ -75,10 +75,18 @@ export function LoginForm() {
       router.push("/dashboard");
     } catch (error: any) {
       console.error("Login Error:", error);
+      let description = "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.";
+      if (
+        error.code === 'auth/user-not-found' ||
+        error.code === 'auth/wrong-password' ||
+        error.code === 'auth/invalid-credential'
+      ) {
+        description = "Credenciales inválidas. Por favor, verifica tu correo y contraseña.";
+      }
       toast({
         variant: "destructive",
         title: "Error al iniciar sesión",
-        description: "Credenciales inválidas, por favor verifica tus datos.",
+        description: description,
       });
     } finally {
       setIsLoading(false);
