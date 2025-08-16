@@ -20,14 +20,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
 import { FacebookIcon, GoogleIcon, LinkedinIcon, MicrosoftIcon } from "../icons";
-import { signInWithGoogle } from "@/lib/firebase";
+import { signInWithGoogle, sendPasswordResetEmail } from "@/lib/firebase";
 import { getDoc, doc } from "firebase/firestore";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+
 
 const formSchema = z.object({
   email: z.string().email({ message: "Por favor, introduce un correo válido." }),
   password: z.string().min(1, { message: "La contraseña es obligatoria." }),
+});
+
+const passwordResetSchema = z.object({
+  email: z.string().email({ message: "Por favor, introduce un correo válido para restablecer tu contraseña." }),
 });
 
 export function LoginForm() {
@@ -36,12 +41,22 @@ export function LoginForm() {
   const { auth, db } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
+    },
+  });
+
+   const passwordResetForm = useForm<z.infer<typeof passwordResetSchema>>({
+    resolver: zodResolver(passwordResetSchema),
+    defaultValues: {
+      email: "",
     },
   });
 
@@ -67,6 +82,36 @@ export function LoginForm() {
       });
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  const handlePasswordReset = async (values: z.infer<typeof passwordResetSchema>) => {
+    if (!auth) {
+       toast({
+        variant: "destructive",
+        title: "Error de configuración",
+        description: "Firebase no está configurado.",
+      });
+      return;
+    }
+    setIsResetting(true);
+    try {
+        await sendPasswordResetEmail(auth, values.email);
+        toast({
+            title: "Correo enviado",
+            description: "Revisa tu bandeja de entrada para restablecer tu contraseña.",
+        });
+        setIsResetDialogOpen(false);
+        passwordResetForm.reset();
+    } catch (error: any) {
+        console.error("Password Reset Error:", error);
+        toast({
+            variant: "destructive",
+            title: "Error al enviar correo",
+            description: "No se pudo enviar el correo de restablecimiento. Verifica la dirección e inténtalo de nuevo.",
+        });
+    } finally {
+        setIsResetting(false);
     }
   }
 
@@ -147,9 +192,51 @@ export function LoginForm() {
             )}
           />
            <div className="text-right">
-              <Link href="#" className="text-sm font-medium text-primary hover:underline">
-                ¿Olvidaste tu contraseña?
-              </Link>
+               <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
+                    <DialogTrigger asChild>
+                        <button type="button" className="text-sm font-medium text-primary hover:underline">
+                            ¿Olvidaste tu contraseña?
+                        </button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Restablecer contraseña</DialogTitle>
+                            <DialogDescription>
+                                Introduce tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <Form {...passwordResetForm}>
+                            <form onSubmit={passwordResetForm.handleSubmit(handlePasswordReset)} className="space-y-4">
+                                <FormField
+                                    control={passwordResetForm.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Correo Electrónico</FormLabel>
+                                        <FormControl>
+                                        <Input 
+                                            placeholder="tu@ejemplo.com"
+                                            {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                                <DialogFooter>
+                                    <DialogClose asChild>
+                                        <Button type="button" variant="outline" disabled={isResetting}>
+                                            Cancelar
+                                        </Button>
+                                    </DialogClose>
+                                    <Button type="submit" disabled={isResetting}>
+                                        {isResetting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Enviar enlace
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </Form>
+                    </DialogContent>
+                </Dialog>
             </div>
           <Button type="submit" className="w-full text-base font-bold" size="lg" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
