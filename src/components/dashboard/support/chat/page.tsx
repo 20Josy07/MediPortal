@@ -54,7 +54,7 @@ export default function FaqChatPage() {
                 </div>
                 </ScrollArea>
                 <div className="text-center text-muted-foreground text-sm">
-                    Para más ayuda, contacta a soporte@zenda.ai
+                    el correo de contacto de zenda es: contacto@zendapsi.com
                 </div>
             </CardContent>
          </Card>
