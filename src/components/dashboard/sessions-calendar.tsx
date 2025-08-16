@@ -85,7 +85,6 @@ export function SessionsCalendar() {
   const [selectedSession, setSelectedSession] = React.useState<Session | null>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState(false);
   const [view, setView] = React.useState<"month" | "week" | "day">("month");
-  const [showEventForm, setShowEventForm] = React.useState(false);
   
   const [isDayDetailModalOpen, setIsDayDetailModalOpen] = React.useState(false);
   const [dayDetailSessions, setDayDetailSessions] = React.useState<Session[]>([]);
@@ -592,14 +591,6 @@ export function SessionsCalendar() {
                 Agendar
             </Button>
             <GoogleAuthButton />
-            {/* <button
-              onClick={() => setShowEventForm(true)}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
-            >
-              <CalendarIcon className="h-5 w-5" />
-              Nuevo Evento
-            </button>
-            {showEventForm && <AddEventForm onClose={() => setShowEventForm(false)} />} */}
          </div>
       </header>
 

@@ -29,6 +29,7 @@ export interface Session {
   status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
   remindPsychologist?: boolean;
   remindPatient?: boolean;
+  googleEventId?: string; // Para futuras ediciones/eliminaciones
 }
 
 export interface Note {
@@ -54,6 +55,7 @@ export interface UserProfile {
   email: string;
   phone?: string;
   photoURL?: string;
+  googleAccessToken?: string; // Se añade el token de acceso
 }
 
 // Schema for chatWithNotes flow input
@@ -78,4 +80,3 @@ export const ProfileFormSchema = z.object({
 export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
 
     
-

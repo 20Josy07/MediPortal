@@ -1,44 +1,46 @@
 // components/GoogleAuthButton.tsx
 'use client';
-import { Calendar, Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Calendar, Check, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/context/auth-context";
+import { signInWithGoogleAndCalendar } from "@/app/auth/authservices";
 
 export default function GoogleAuthButton() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, userProfile } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    // Verificar si ya hay una sesión activa
-    const checkSession = () => {
-      // Aquí deberías verificar el estado de autenticación
-      // Por ejemplo, si usas el contexto de autenticación de Firebase
-      const user = localStorage.getItem('user');
-      if (user) {
-        setIsLoggedIn(true);
-      }
-    };
-
-    checkSession();
-  }, []);
+  // La cuenta está vinculada si el perfil del usuario tiene un googleAccessToken.
+  // Esto se establecerá después de un inicio de sesión exitoso con Google.
+  const isLinked = !!(userProfile as any)?.googleAccessToken;
 
   const handleAuthClick = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/google');
-      const { url } = await response.json();
-      if (url) {
-        window.location.href = url;
-      }
+      await signInWithGoogleAndCalendar();
+      // La actualización del estado del usuario será manejada por AuthProvider.
     } catch (error) {
       console.error('Error al iniciar autenticación:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (isLoggedIn) {
-      return (
+  if (isLoading) {
+    return (
         <button
-          onClick={handleAuthClick}
-          className="flex items-center justify-center px-4 py-2 bg-tertiary text-primary border border-primary rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 cursor-not-allowed"
+          disabled
+          className="flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-secondary shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         >
-          <svg
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Cargando...
+        </button>
+    );
+  }
+
+  if (isLinked) {
+      return (
+        <div className="flex h-9 items-center justify-center rounded-md border border-green-500 bg-green-50 px-3 py-2 text-sm font-semibold text-green-700 dark:bg-green-900/20 dark:text-green-400">
+           <svg
             className="w-5 h-5 mr-2"
             viewBox="0 0 24 24"
             fill="currentColor"
@@ -61,18 +63,18 @@ export default function GoogleAuthButton() {
               fill="#EA4335"
             />
           </svg>
-           <Calendar className="w-5 h-5" />
-           <Check className="w-3 h-3 ml-1" />
-        </button>
+           <Check className="w-5 h-5 ml-1 text-green-600" />
+           <span className="ml-2">Vinculado</span>
+        </div>
       );
     }
     return (
       <button
         onClick={handleAuthClick}
-        className="flex items-center justify-center px-4 py-2 bg-primary text-secondary rounded-md hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+        className="flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-secondary shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
       >
         <Calendar className="w-5 h-5 mr-2" />
         Vincular con Google Calendar
       </button>
     );
-  };
+};

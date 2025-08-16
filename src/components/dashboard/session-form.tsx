@@ -38,30 +38,8 @@ import { Switch } from "../ui/switch";
 import { Separator } from "../ui/separator";
 import { sendReminder } from "@/ai/flows/send-reminders-flow";
 import { useToast } from "@/hooks/use-toast";
-
-interface GoogleCalendarEvent {
-  summary: string;           // Título del evento
-  description?: string;      // Descripción
-  start: {
-    dateTime: string;        // Fecha y hora de inicio en formato ISO 8601
-    timeZone: string;        // Zona horaria (ej: "America/Bogota")
-  };
-  end: {
-    dateTime: string;        // Fecha y hora de fin en formato ISO 8601
-    timeZone: string;        // Zona horaria
-  };
-  attendees?: Array<{        // Opcional: asistentes
-    email: string;
-    displayName?: string;
-  }>;
-  reminders?: {              // Recordatorios
-    useDefault: boolean;
-    overrides?: Array<{
-      method: 'email' | 'popup';
-      minutes: number;
-    }>;
-  };
-}
+import { useAuth } from "@/context/auth-context";
+import { createCalendarEvent } from "@/app/auth/googlecalendarservices";
 
 const formSchema = z.object({
   patientId: z.string().min(1, { message: "Debes seleccionar un paciente." }),
@@ -77,6 +55,7 @@ const formSchema = z.object({
   status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
   remindPsychologist: z.boolean(),
   remindPatient: z.boolean(),
+  syncGoogleCalendar: z.boolean(),
 });
 
 type SessionFormValues = z.infer<typeof formSchema>;
@@ -99,7 +78,9 @@ export function SessionForm({
   initialDate,
 }: SessionFormProps) {
   const { toast } = useToast();
+  const { userProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const form = useForm<SessionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -112,6 +93,7 @@ export function SessionForm({
       status: session?.status || "Pendiente",
       remindPsychologist: session?.remindPsychologist ?? true,
       remindPatient: session?.remindPatient ?? true,
+      syncGoogleCalendar: true,
     },
   });
 
@@ -143,54 +125,6 @@ export function SessionForm({
     }
   }, [session, form]);
 
-  const convertToGoogleCalendarEvent = (
-    values: SessionFormValues,
-    patient: Patient
-  ): GoogleCalendarEvent => {
-    const [hours, minutes] = values.time.split(":").map(Number);
-    const startDate = new Date(values.date);
-    startDate.setHours(hours, minutes, 0, 0);
-    
-    const durationInMinutes = values.duration === "custom" 
-      ? (values.customDuration || 0) 
-      : parseInt(values.duration, 10);
-    
-    const endDate = addMinutes(startDate, durationInMinutes);
-  
-    const event: GoogleCalendarEvent = {
-      summary: `Sesión de ${values.type} - ${patient.name}`,
-      description: `Tipo: ${values.type}\nEstado: ${values.status}\nPaciente: ${patient.name}`,
-      start: {
-        dateTime: startDate.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      },
-      end: {
-        dateTime: endDate.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      }
-    };
-
-    if (patient.email) {
-      event.attendees = [{
-        email: patient.email,
-        displayName: patient.name
-      }];
-    }
-  
-    // Configurar recordatorios si están habilitados
-    if (values.remindPatient || values.remindPsychologist) {
-      event.reminders = {
-        useDefault: false,
-        overrides: [
-          { method: 'email', minutes: 1440 }, // 1 día antes
-          { method: 'popup', minutes: 30 }    // 30 minutos antes
-        ]
-      };
-    }
-  
-    return event;
-  };
-
   async function handleSubmit(values: SessionFormValues) {
     setIsSubmitting(true);
     try {
@@ -203,9 +137,7 @@ export function SessionForm({
         
         const newSessionInterval = { start: combinedDateTime, end: endDate };
 
-        // Check for overlaps
         const hasOverlap = sessions.some(existingSession => {
-        // If we are editing a session, we should not compare it with itself
         if (session && existingSession.id === session.id) {
             return false;
         }
@@ -214,54 +146,57 @@ export function SessionForm({
         });
 
         if (hasOverlap) {
-        form.setError("time", {
-            type: "manual",
-            message: "Esta cita se solapa con otra. Ajusta duración o cambia la hora."
-        });
-        return;
+            form.setError("time", {
+                type: "manual",
+                message: "Esta cita se solapa con otra. Ajusta duración o cambia la hora."
+            });
+            setIsSubmitting(false);
+            return;
         }
-
 
         const selectedPatient = patients.find((p) => p.id === values.patientId);
 
         if (!selectedPatient) {
-        form.setError("patientId", { message: "Paciente no encontrado." });
-        return;
+            form.setError("patientId", { message: "Paciente no encontrado." });
+            setIsSubmitting(false);
+            return;
         }
 
-        const googleEvent = convertToGoogleCalendarEvent(values, selectedPatient);
-        console.log("Evento para Google Calendar:", JSON.stringify(googleEvent, null, 2));
-
-        try {
-            const response = await fetch('/api/calendar/events', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                summary: googleEvent.summary,
-                description: googleEvent.description,
-                startDateTime: googleEvent.start.dateTime,
-                endDateTime: googleEvent.end.dateTime,
-            }),
-            });
-        
-            if (!response.ok) {
-            throw new Error('Error al crear el evento en Google Calendar');
+        if (values.syncGoogleCalendar) {
+            const accessToken = (userProfile as any)?.googleAccessToken;
+            if (!accessToken) {
+                toast({
+                    variant: "destructive",
+                    title: "No vinculado a Google Calendar",
+                    description: "Para sincronizar, primero vincula tu cuenta de Google Calendar desde el calendario."
+                });
+            } else {
+                 try {
+                    await createCalendarEvent(accessToken, {
+                        summary: `Sesión con ${selectedPatient.name}`,
+                        description: `Sesión de terapia ${values.type}.`,
+                        start: {
+                            dateTime: combinedDateTime.toISOString(),
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        },
+                        end: {
+                            dateTime: endDate.toISOString(),
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        },
+                        attendees: [{ email: selectedPatient.email }],
+                    });
+                     toast({ title: "Evento creado en Google Calendar." });
+                } catch (googleError) {
+                    console.error('Error al sincronizar con Google Calendar:', googleError);
+                    toast({
+                        variant: "destructive",
+                        title: "Error al sincronizar con Google Calendar",
+                        description: "La sesión se guardará localmente pero no se pudo sincronizar. Intenta vincular tu cuenta de nuevo."
+                    });
+                }
             }
-        
-            const eventData = await response.json();
-            console.log('Evento creado en Google Calendar:', eventData);
-        } catch (googleError) {
-            console.error('Error al sincronizar con Google Calendar:', googleError);
-            toast({
-            variant: "destructive",
-            title: "Error al sincronizar con Google Calendar",
-            description: "La sesión se guardará localmente pero no se pudo sincronizar con el calendario."
-            });
         }
         
-        // 3. Crear el objeto de sesión
         const sessionData: Omit<Session, "id"> = {
             patientId: values.patientId,
             patientName: selectedPatient.name,
@@ -274,7 +209,6 @@ export function SessionForm({
             remindPsychologist: values.remindPsychologist,
         };
         
-        // 4. Enviar recordatorios si están habilitados
         if (values.remindPatient || values.remindPsychologist) {
             try {
             await sendReminder({
@@ -290,16 +224,15 @@ export function SessionForm({
             });
             toast({ title: "Recordatorios programados." });
             } catch (e) {
-            console.error(e);
-            toast({ 
-                variant: "destructive", 
-                title: "Error al programar recordatorios",
-                description: "La sesión se guardará pero los recordatorios no se pudieron programar."
-            });
+                console.error(e);
+                toast({ 
+                    variant: "destructive", 
+                    title: "Error al programar recordatorios",
+                    description: "La sesión se guardará pero los recordatorios no se pudieron programar."
+                });
             }
         }
         
-        // 5. Guardar la sesión
         onSubmit(sessionData);
         
     } catch (error) {
@@ -498,11 +431,24 @@ export function SessionForm({
 
           <Separator className="!my-6"/>
           
-          <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                  <Bell className="h-5 w-5 text-muted-foreground" />
-                  <h3 className="text-base font-semibold">Recordatorios</h3>
-              </div>
+           <div className="space-y-4">
+              <FormField
+                  control={form.control}
+                  name="syncGoogleCalendar"
+                  render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                              <FormLabel>Sincronizar con Google Calendar</FormLabel>
+                               <FormDescription className="text-xs">
+                                  Crea un evento en tu calendario principal.
+                              </FormDescription>
+                          </div>
+                          <FormControl>
+                              <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!(userProfile as any)?.googleAccessToken} />
+                          </FormControl>
+                      </FormItem>
+                  )}
+              />
               <FormField
                   control={form.control}
                   name="remindPatient"
@@ -511,7 +457,7 @@ export function SessionForm({
                           <div className="space-y-0.5">
                               <FormLabel>Recordar a paciente</FormLabel>
                               <FormDescription className="text-xs">
-                                  Email
+                                  Notificación por WhatsApp.
                               </FormDescription>
                           </div>
                           <FormControl>
@@ -523,7 +469,7 @@ export function SessionForm({
           </div>
 
           <div className="flex justify-end gap-2 pt-6">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
               Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting}>
@@ -536,4 +482,3 @@ export function SessionForm({
     </div>
     );
 }
-
