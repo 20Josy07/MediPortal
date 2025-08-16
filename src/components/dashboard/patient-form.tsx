@@ -43,9 +43,10 @@ interface PatientFormProps {
   patient?: Omit<Patient, "nextSession"> | null;
   onSubmit: (data: PatientFormValues) => void;
   onCancel: () => void;
+  isSubmitting: boolean;
 }
 
-export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
+export function PatientForm({ patient, onSubmit, onCancel, isSubmitting }: PatientFormProps) {
   const form = useForm<PatientFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -205,8 +206,8 @@ export function PatientForm({ patient, onSubmit, onCancel }: PatientFormProps) {
         />
 
         <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
-            <Button type="submit">Guardar</Button>
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>Cancelar</Button>
+            <Button type="submit" disabled={isSubmitting}>Guardar</Button>
         </div>
       </form>
     </Form>
