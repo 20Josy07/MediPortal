@@ -46,7 +46,7 @@ const prompt = ai.definePrompt({
   Por favor, procesa el contenido y rellena los campos del JSON de salida.
 
   Si la plantilla es "SOAP", la estructura debe ser:
-  - subjective: En esta sección, debes resumir de manera BREVE y CONCISA la información que el paciente reporta. No transcribas el texto literally; en su lugar, sintetiza los puntos clave y preocupaciones del paciente.
+  - subjective: En esta sección, debes resumir de manera BREVE y CONCISA la información que el paciente reporta. No transcribas el texto literalmente; en su lugar, sintetiza los puntos clave y preocupaciones del paciente.
   - objective: **IMPORTANTE: Este campo debe contener exactamente el texto: "Completa manualmente".** El psicólogo la rellenará manualmente con sus observaciones directas del comportamiento, apariencia y afecto del paciente durante la sesión.
   - assessment: Tu análisis profesional DETALLADO de la situación. Debe ser una evaluación completa que integre la información subjetiva con el conocimiento clínico. Incluye hipótesis diagnósticas (si aplica), una evaluación del riesgo y una descripción de los patrones de pensamiento y comportamiento del paciente.
   - plan: El plan de tratamiento a seguir, que debe ser COMPLETO y bien definido. Describe los objetivos a corto y largo plazo, las intervenciones terapéuticas específicas que se utilizarán (ej. técnicas de TCC, psicoeducación) y las tareas asignadas al paciente. **Si el contenido original no menciona ningún plan de tratamiento, el campo 'plan' debe contener exactamente el texto: "Completa manualmente".**
