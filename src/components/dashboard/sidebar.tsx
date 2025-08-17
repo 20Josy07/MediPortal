@@ -30,11 +30,13 @@ import {
 } from "lucide-react";
 import * as React from 'react';
 import Image from "next/image";
+import { useAuth } from "@/context/auth-context";
 
 
 export function DashboardSidebar() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
+  const { userProfile } = useAuth();
 
   return (
     <Sidebar className="border-r">
@@ -90,6 +92,20 @@ export function DashboardSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          
+          {userProfile?.role === 'admin' && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === "/dashboard/reporte"}
+              >
+                <Link href="/dashboard/reporte">
+                  <BarChart2 />
+                  Reportes
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
       </SidebarContent>
        <SidebarFooter className="p-2 flex flex-col gap-2">

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -39,6 +38,7 @@ import { PatientForm } from "./patient-form";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
 import { ScrollArea } from "../ui/scroll-area";
+import { logButtonClick } from "@/lib/reportService";
 
 export function PatientTableWrapper() {
   const { user, db, loading: authLoading } = useAuth();
@@ -106,6 +106,12 @@ export function PatientTableWrapper() {
           createdAt: serverTimestamp(),
         };
         await addDoc(patientsCollection, newPatientData);
+        
+        // Registrar la creación del paciente
+        if (user.uid) {
+          await logButtonClick('new_patient_created', user.uid);
+        }
+        
         toast({ title: "Paciente agregado exitosamente." });
       }
       setIsFormOpen(false);

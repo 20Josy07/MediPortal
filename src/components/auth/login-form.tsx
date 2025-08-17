@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
+import { logButtonClick } from "@/lib/reportService";
 import {
   Form,
   FormControl,
@@ -58,6 +59,9 @@ export function LoginForm() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       router.push("/dashboard");
+      if (auth?.currentUser?.uid) {
+        await logButtonClick('login_email', auth.currentUser.uid);
+      }
     } catch (error: any) {
       console.error("Login Error:", error);
       toast({
@@ -88,6 +92,9 @@ export function LoginForm() {
       if (userDoc.exists() && !userDoc.data()?.validated) {
         await auth.signOut();  // Cerrar sesión
         throw new Error('account-not-validated');
+      }
+      if (auth?.currentUser?.uid) {
+        await logButtonClick('login_google', auth.currentUser.uid);
       }
       
       router.push("/dashboard");

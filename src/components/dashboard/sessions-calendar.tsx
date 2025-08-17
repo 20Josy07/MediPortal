@@ -71,7 +71,7 @@ import GoogleAuthButton from "@/components/googleauthbutton";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "../ui/scroll-area";
-
+import { logButtonClick } from "@/lib/reportService";
 
 export function SessionsCalendar() {
   const { user, db, loading: authLoading } = useAuth();
@@ -155,6 +155,12 @@ export function SessionsCalendar() {
         const docRef = await addDoc(sessionsCollection, sessionData);
         const newSession = { id: docRef.id, ...sessionData };
         setSessions([...sessions, newSession]);
+        
+        // Registrar la creación de la sesión
+        if (user.uid) {
+          await logButtonClick('session_created', user.uid);
+        }
+        
         toast({ title: "Sesión agendada exitosamente." });
       }
 

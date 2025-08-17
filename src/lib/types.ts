@@ -1,5 +1,3 @@
-
-
 import { z } from 'zod';
 
 export interface Patient {
@@ -54,6 +52,8 @@ export interface UserProfile {
   email: string;
   phone?: string;
   photoURL?: string;
+  role?: 'admin' | 'user';
+  [key: string]: any; // Para mantener compatibilidad con otros campos existentes
 }
 
 // Schema for chatWithNotes flow input
@@ -76,6 +76,3 @@ export const ProfileFormSchema = z.object({
   photoURL: z.string().optional(),
 });
 export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
-
-    
-

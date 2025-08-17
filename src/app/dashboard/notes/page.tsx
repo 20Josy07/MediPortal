@@ -33,6 +33,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { logButtonClick } from "@/lib/reportService";
 
 
 type ChatMessage = {
@@ -330,6 +331,12 @@ export default function SmartNotesPage() {
         };
         const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
         setNotes(prevNotes => [addedNote, ...prevNotes]);
+
+        // Registrar la grabación de audio
+        if (user.uid) {
+          await logButtonClick('audio_recording_saved', user.uid);
+        }
+
         toast({ title: "Nota de audio guardada y transcrita." });
       }
     } catch (err) {
@@ -422,6 +429,12 @@ export default function SmartNotesPage() {
       };
       const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
       setNotes(prevNotes => [addedNote, ...prevNotes]);
+      
+      // Registrar el guardado de la nota
+      if (user.uid) {
+        await logButtonClick('note_saved', user.uid);
+      }
+      
       setTextNoteContent("");
        if(textEditorRef.current) textEditorRef.current.innerHTML = "";
       toast({ title: "Resumen guardado" });
@@ -607,6 +620,11 @@ export default function SmartNotesPage() {
     reader.onloadend = async () => {
       const base64Audio = reader.result as string;
       await transcribeAndSaveAudio(base64Audio);
+
+      // Registrar la carga del archivo de audio
+      if (user?.uid) {
+        await logButtonClick('audio_file_uploaded', user.uid);
+      }
     };
     reader.onerror = () => {
         toast({ variant: "destructive", title: "Error al leer el archivo." });
