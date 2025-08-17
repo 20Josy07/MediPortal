@@ -1,7 +1,7 @@
 
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser, reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail } from "firebase/auth";
 import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, writeBatch } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
@@ -165,4 +165,4 @@ export const deleteUserAccount = async (user: User) => {
 };
 
 
-export { app, auth, db };
+export { app, auth, db, sendPasswordResetEmail };

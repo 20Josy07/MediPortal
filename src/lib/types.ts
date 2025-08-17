@@ -27,6 +27,7 @@ export interface Session {
   status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
   remindPsychologist?: boolean;
   remindPatient?: boolean;
+  googleEventId?: string; // Para futuras ediciones/eliminaciones
 }
 
 export interface Note {
@@ -53,7 +54,8 @@ export interface UserProfile {
   phone?: string;
   photoURL?: string;
   role?: 'admin' | 'user';
-  [key: string]: any; // Para mantener compatibilidad con otros campos existentes
+  googleAccessToken?: string; // Para la autenticación con Google
+  [key: string]: any; // Para mantener compatibilidad con otros campos
 }
 
 // Schema for chatWithNotes flow input

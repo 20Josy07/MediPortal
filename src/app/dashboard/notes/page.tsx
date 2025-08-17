@@ -341,7 +341,11 @@ export default function SmartNotesPage() {
       }
     } catch (err) {
       console.error("Transcription error:", err);
-      toast({ variant: "destructive", title: "Error al transcribir el audio." });
+      toast({ 
+        variant: "destructive", 
+        title: "Error al transcribir el audio.",
+        description: "No se pudo procesar el audio. Por favor, asegúrate de que el archivo no esté dañado e inténtalo de nuevo."
+      });
     } finally {
        setIsTranscribing(false);
        setSelectedAudioFile(null);

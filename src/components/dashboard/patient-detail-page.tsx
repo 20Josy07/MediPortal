@@ -870,7 +870,12 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                             </div>
                             <div>
                                 <Label className="font-semibold">Cambios Detectados</Label>
-                                <Textarea value={generatedReport.detectChanges} onChange={e => handleReportChange('detectedChanges', e.target.value)} rows={4} className="mt-1"/>
+                                <Textarea
+                                    value={generatedReport.detectedChanges}
+                                    onChange={e => handleReportChange('detectedChanges', e.target.value)}
+                                    rows={4}
+                                    className="mt-1"
+                                />
                             </div>
                             <div>
                                 <Label className="font-semibold">Frases Clave (Opcional)</Label>

@@ -35,8 +35,10 @@ export default function DashboardLayout({
     <SidebarProvider>
       <DashboardSidebar />
       <SidebarInset>
-        <DashboardNavbar />
-        <main className="flex-1 p-6 md:p-8">{children}</main>
+        <div className="flex flex-col h-full">
+          <DashboardNavbar />
+          <main className="flex-1 overflow-y-auto p-6 md:p-8">{children}</main>
+        </div>
       </SidebarInset>
       <GoogleApiLoader />
     </SidebarProvider>

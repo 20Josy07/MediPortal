@@ -46,6 +46,7 @@ export function PatientTableWrapper() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -86,6 +87,7 @@ export function PatientTableWrapper() {
       return;
     };
     
+    setIsSubmitting(true);
     const dataToSave: any = { ...data };
     if (data.dob) {
       dataToSave.dob = data.dob;
@@ -119,6 +121,8 @@ export function PatientTableWrapper() {
     } catch (error) {
       console.error("Error saving patient:", error);
       toast({ variant: "destructive", title: "Error al guardar el paciente." });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -238,6 +242,7 @@ export function PatientTableWrapper() {
               patient={selectedPatient}
               onSubmit={handleFormSubmit}
               onCancel={() => setIsFormOpen(false)}
+              isSubmitting={isSubmitting}
             />
           </ScrollArea>
         </DialogContent>
