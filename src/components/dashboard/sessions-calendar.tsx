@@ -595,7 +595,6 @@ export function SessionsCalendar() {
             >
                 Agendar
             </Button>
-            <GoogleAuthButton />
          </div>
       </header>
 

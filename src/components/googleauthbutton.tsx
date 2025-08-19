@@ -3,6 +3,7 @@
 import { Calendar, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
+import { Button } from "./ui/button";
 
 export default function GoogleAuthButton() {
   const { userProfile } = useAuth();
@@ -26,19 +27,19 @@ export default function GoogleAuthButton() {
 
   if (isLoading) {
     return (
-        <button
+        <Button
           disabled
-          className="flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-secondary shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+          className="h-9 text-sm"
         >
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Cargando...
-        </button>
+        </Button>
     );
   }
 
   if (isLinked) {
       return (
-        <div className="flex h-9 items-center justify-center rounded-md border border-green-500 bg-green-50 px-3 py-2 text-sm font-semibold text-green-700 dark:bg-green-900/20 dark:text-green-400">
+        <Button variant="outline" disabled className="h-9 text-sm border-green-500 bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400">
            <svg
             className="w-5 h-5 mr-2"
             viewBox="0 0 24 24"
@@ -64,16 +65,16 @@ export default function GoogleAuthButton() {
           </svg>
            <Check className="w-5 h-5 ml-1 text-green-600" />
            <span className="ml-2">Vinculado</span>
-        </div>
+        </Button>
       );
     }
     return (
-      <button
+      <Button
         onClick={handleAuthClick}
-        className="flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-secondary shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+        className="h-9 text-sm"
       >
         <Calendar className="w-5 h-5 mr-2" />
         Vincular con Google Calendar
-      </button>
+      </Button>
     );
 };
