@@ -1,23 +1,21 @@
+
 // components/GoogleAuthButton.tsx
 'use client';
 import { Calendar, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
-import { signInWithGoogleAndCalendar } from "@/app/auth/authservices";
+import { handleGoogleSignIn } from "@/app/auth/authservices";
 
 export default function GoogleAuthButton() {
-  const { user, userProfile } = useAuth();
+  const { userProfile } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
-  // La cuenta está vinculada si el perfil del usuario tiene un googleAccessToken.
-  // Esto se establecerá después de un inicio de sesión exitoso con Google.
-  const isLinked = !!(userProfile as any)?.googleAccessToken;
+  const isLinked = !!(userProfile as any)?.googleTokens;
 
   const handleAuthClick = async () => {
     setIsLoading(true);
     try {
-      await signInWithGoogleAndCalendar();
-      // La actualización del estado del usuario será manejada por AuthProvider.
+      await handleGoogleSignIn();
     } catch (error) {
       console.error('Error al iniciar autenticación:', error);
     } finally {
