@@ -33,9 +33,7 @@ const prompt = ai.definePrompt({
   name: 'transcribeAudioPrompt',
   input: { schema: TranscribeAudioInputSchema },
   output: { schema: TranscribeAudioOutputSchema },
-  prompt: `Tu tarea es transcribir el siguiente audio a texto de la manera más precisa posible.
-
-Audio: {{media url=audioDataUri}}`,
+  prompt: `{{media url=audioDataUri}}`,
 });
 
 
