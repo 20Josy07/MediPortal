@@ -592,8 +592,8 @@ export default function SmartNotesPage() {
       return;
     }
 
-    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3'];
-    const maxSize = 10 * 1024 * 1024; // 10 MB
+    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-m4a'];
+    const maxSize = 500 * 1024 * 1024; // 500 MB
 
     if (!allowedTypes.includes(file.type) && !file.name.endsWith('.mp3')) {
       toast({
@@ -608,7 +608,7 @@ export default function SmartNotesPage() {
       toast({
         variant: "destructive",
         title: "Archivo demasiado grande",
-        description: "El tamaño del archivo no puede exceder los 10 MB.",
+        description: "El tamaño del archivo no puede exceder los 500 MB.",
       });
       return;
     }
@@ -1372,5 +1372,7 @@ export default function SmartNotesPage() {
     </>
   );
 }
+
+    
 
     
