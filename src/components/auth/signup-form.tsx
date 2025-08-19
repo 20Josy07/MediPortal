@@ -29,7 +29,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { GoogleIcon, FacebookIcon, LinkedinIcon, MicrosoftIcon } from "../icons";
+import { GoogleIcon } from "../icons";
 import { signInWithGoogle } from "@/lib/firebase";
 import { cn } from "@/lib/utils";
 
@@ -297,15 +297,6 @@ export function SignUpForm({ termsAccepted }: SignUpFormProps) {
                 className="group h-12 w-12 rounded-full flex items-center justify-center"
              >
                 {isGoogleLoading ? <Loader2 className="h-6 w-6 animate-spin" /> : <GoogleIcon className="h-6 w-6 text-foreground" />}
-             </Button>
-             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center" disabled={!termsAccepted}>
-                <FacebookIcon className="h-6 w-6 text-foreground" />
-             </Button>
-             <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center" disabled={!termsAccepted}>
-                <LinkedinIcon className="h-6 w-6 text-foreground" />
-             </Button>
-              <Button type="button" variant="outline" size="icon" className="group h-12 w-12 rounded-full flex items-center justify-center" disabled={!termsAccepted}>
-                <MicrosoftIcon className="h-6 w-6 text-foreground" />
              </Button>
           </div>
         </div>
