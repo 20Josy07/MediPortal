@@ -1,11 +1,10 @@
-
 'use client';
 import { Calendar, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
 import { signInWithGoogleAndCalendar } from "@/app/auth/authservices";
 import { Button } from "./ui/button";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export default function GoogleAuthButton() {
   const { userProfile } = useAuth();
