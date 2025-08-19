@@ -1,67 +1,35 @@
 
 'use client';
 import { Calendar, Check, Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
+import { signInWithGoogleAndCalendar } from "@/app/auth/authservices";
 import { Button } from "./ui/button";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
-
+import { useToast } from "./ui/use-toast";
 
 export default function GoogleAuthButton() {
-  const { user, userProfile } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const { toast } = useToast();
+  const { userProfile } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const isLinked = !!(userProfile as any)?.googleTokens;
-  
-   useEffect(() => {
-    // Check for query params on mount
-    const gcalLinked = searchParams.get('gcal_linked');
-    const error = searchParams.get('error');
-
-    if (gcalLinked === 'true') {
-        toast({
-            title: "Calendario vinculado",
-            description: "Tu cuenta de Google Calendar se ha conectado correctamente.",
-        });
-        // Remove query param from URL without reloading
-        router.replace(pathname);
-    } else if (error === 'google_auth_failed') {
-        toast({
-            variant: "destructive",
-            title: "Error de vinculación",
-            description: "No se pudo vincular tu cuenta de Google Calendar. Por favor, inténtalo de nuevo.",
-        });
-        router.replace(pathname);
-    }
-  }, [pathname, router, searchParams, toast]);
 
   const handleAuthClick = async () => {
     setIsLoading(true);
     try {
-      const idToken = await user?.getIdToken();
-      if (!idToken) {
-        throw new Error("User not authenticated");
-      }
-      const response = await fetch('/api/auth/google', {
-        headers: {
-          'Authorization': `Bearer ${idToken}`
-        }
-      });
-      if (!response.ok) throw new Error('Failed to get auth URL');
-      const { url } = await response.json();
-      window.location.href = url;
+      await signInWithGoogleAndCalendar();
+      toast({
+        title: "Vinculación Exitosa",
+        description: "Tu cuenta de Google Calendar se ha conectado.",
+      })
     } catch (error) {
       console.error('Error al iniciar autenticación:', error);
       toast({
         variant: "destructive",
-        title: "Error de autenticación",
-        description: "No se pudo iniciar el proceso de vinculación. Por favor, inténtalo de nuevo."
+        title: "Error de Vinculación",
+        description: "No se pudo conectar con Google Calendar. Inténtalo de nuevo.",
       })
+    } finally {
       setIsLoading(false);
     }
   };
@@ -73,7 +41,7 @@ export default function GoogleAuthButton() {
           className="h-9 text-sm"
         >
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Redirigiendo...
+          Cargando...
         </Button>
     );
   }
