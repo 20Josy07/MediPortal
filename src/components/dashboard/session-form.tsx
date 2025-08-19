@@ -39,7 +39,6 @@ import { Separator } from "../ui/separator";
 import { sendReminder } from "@/ai/flows/send-reminders-flow";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
-import { useSession } from "next-auth/react";
 import { createCalendarEvent } from "@/app/auth/googlecalendarservices";
 
 const formSchema = z.object({
@@ -79,8 +78,7 @@ export function SessionForm({
   initialDate,
 }: SessionFormProps) {
   const { toast } = useToast();
-  const { user, userProfile } = useAuth();
-  const { data: nextAuthSession } = useSession();
+  const { userProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<SessionFormValues>({
@@ -165,12 +163,12 @@ export function SessionForm({
         }
 
         if (values.syncGoogleCalendar) {
-          const accessToken = (nextAuthSession as any)?.accessToken;
+            const accessToken = (userProfile as any)?.googleAccessToken;
             if (!accessToken) {
                 toast({
                     variant: "destructive",
                     title: "No vinculado a Google Calendar",
-                    description: "Para sincronizar, primero vincula tu cuenta de Google desde el calendario."
+                    description: "Para sincronizar, primero vincula tu cuenta de Google Calendar desde el calendario."
                 });
             } else {
                  try {
@@ -187,14 +185,13 @@ export function SessionForm({
                         },
                         attendees: [{ email: selectedPatient.email }],
                     });
-
-                    toast({ title: "Evento creado en Google Calendar." });
-                } catch (googleError: any) {
+                     toast({ title: "Evento creado en Google Calendar." });
+                } catch (googleError) {
                     console.error('Error al sincronizar con Google Calendar:', googleError);
                     toast({
                         variant: "destructive",
                         title: "Error al sincronizar con Google Calendar",
-                        description: googleError.message || "La sesión se guardará localmente pero no se pudo sincronizar. Intenta vincular tu cuenta de nuevo."
+                        description: "La sesión se guardará localmente pero no se pudo sincronizar. Intenta vincular tu cuenta de nuevo."
                     });
                 }
             }
@@ -447,7 +444,7 @@ export function SessionForm({
                               </FormDescription>
                           </div>
                           <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!(userProfile as any)?.googleTokens} />
+                              <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!(userProfile as any)?.googleAccessToken} />
                           </FormControl>
                       </FormItem>
                   )}

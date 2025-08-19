@@ -66,11 +66,12 @@ import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { SessionForm } from "./session-form";
+import AddEventForm from "@/components/AddEventForm";
 import GoogleAuthButton from "@/components/googleauthbutton";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "../ui/scroll-area";
-import { logButtonClick } from "@/lib/reportService";
+
 
 export function SessionsCalendar() {
   const { user, db, loading: authLoading } = useAuth();
@@ -153,12 +154,6 @@ export function SessionsCalendar() {
         const docRef = await addDoc(sessionsCollection, sessionData);
         const newSession = { id: docRef.id, ...sessionData };
         setSessions([...sessions, newSession]);
-        
-        // Registrar la creación de la sesión
-        if (user.uid) {
-          await logButtonClick('session_created', user.uid);
-        }
-        
         toast({ title: "Sesión agendada exitosamente." });
       }
 
@@ -589,13 +584,13 @@ export function SessionsCalendar() {
                 <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
                 </TabsList>
             </Tabs>
-            <GoogleAuthButton />
             <Button
                 onClick={() => handleAddNewSession()}
                 className="h-9 text-sm"
             >
                 Agendar
             </Button>
+            <GoogleAuthButton />
          </div>
       </header>
 
