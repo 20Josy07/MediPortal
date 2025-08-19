@@ -9,7 +9,7 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider>
+    <SessionProvider basePath="/api/auth" refetchOnWindowFocus={false} refetchInterval={0}>
       <AuthProvider>{children}</AuthProvider>
     </SessionProvider>
   );

@@ -37,7 +37,42 @@
 | **UI**         | [React](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [ShadCN UI](https://ui.shadcn.com/) |
 | **Backend/DB** | [Firebase](https://firebase.google.com/) |
 | **IA**         | [Genkit](https://firebase.google.com/docs/genkit) |
+| **Autenticación** | [Auth.js (NextAuth)](https://authjs.dev/) |
 | **Formularios**| [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) |
+
+---
+
+## ⚙️ Configuración de Entorno
+
+Para ejecutar el proyecto localmente, necesitas configurar las siguientes variables de entorno en un archivo `.env.local`:
+
+```env
+# Variables de Firebase (obtenidas desde tu consola de Firebase)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+
+# Variables de Autenticación con Google (Auth.js v5)
+# Estas credenciales se obtienen desde la Google Cloud Console
+AUTH_SECRET= # Un string aleatorio de 32 caracteres. Puedes generar uno con `openssl rand -base64 32`
+AUTH_URL=http://localhost:3000 # En producción, usa tu dominio principal
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# URL del Webhook para recordatorios (Make/Integromat)
+MAKE_WEBHOOK_URL=
+```
+
+### Configuración de Google OAuth
+
+Es crucial que la **URI de Redirección Autorizada** en tus credenciales de Google Cloud coincida exactamente con la configuración de Auth.js. Para el entorno local, debe ser:
+
+`http://localhost:3000/api/auth/callback/google`
+
+Para producción, reemplaza `http://localhost:3000` con tu dominio.
 
 ---
 
@@ -81,4 +116,3 @@
 [![Twitter](https://img.shields.io/badge/Twitter-Zenda-blue?style=for-the-badge&logo=twitter)](#)  
 
 ---
-

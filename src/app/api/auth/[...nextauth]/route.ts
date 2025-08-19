@@ -4,6 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 
+export const dynamic = "force-dynamic";
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -18,25 +20,29 @@ const handler = NextAuth({
       },
     }),
   ],
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account, user }) {
-      // Este es el flujo para el inicio de sesión inicial.
-      // Se persiste el token de acceso y el refresh token en el token JWT.
+      // On initial sign-in
       if (account && user) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.userId = user.id;
 
-        // Guarda o actualiza los tokens en Firestore
+        // Persist tokens to Firestore securely on the server side
         const userDocRef = doc(db, 'users', user.id);
-        const tokensToSave = {
+        const tokensToSave: any = {
           access_token: account.access_token,
-          // Solo actualiza el refresh_token si se proporciona uno nuevo
-          ...(account.refresh_token && { refresh_token: account.refresh_token }),
           scope: account.scope,
           token_type: account.token_type,
           expiry_date: account.expires_at ? account.expires_at * 1000 : undefined,
         };
+
+        // Only add the refresh_token to the object if it exists.
+        // This prevents overwriting a valid refresh_token with undefined.
+        if (account.refresh_token) {
+          tokensToSave.refresh_token = account.refresh_token;
+        }
 
         const docSnap = await getDoc(userDocRef);
         if(!docSnap.exists()) {
@@ -55,16 +61,17 @@ const handler = NextAuth({
         return token;
       }
       
-      // En las siguientes llamadas (para obtener la sesión), el token ya existe
-      // y no es necesario modificarlo. Simplemente lo devolvemos.
-      // Si no hacemos esto, devolvemos un objeto vacío y rompemos la sesión.
+      // Return previous token if the access token has not expired yet
+      // This is a placeholder for a token refresh logic if needed in the future.
       return token;
     },
     async session({ session, token }) {
-      // Pasa las propiedades del token JWT al objeto de sesión del cliente.
-      // Nunca expongas el refreshToken al cliente.
-      (session.user as any).id = token.userId;
+      // Pass safe properties to the client-side session object
+      if (session.user) {
+        (session.user as any).id = token.userId;
+      }
       (session as any).accessToken = token.accessToken;
+      
       return session;
     },
   },
