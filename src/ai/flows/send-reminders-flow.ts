@@ -1,7 +1,7 @@
 
 'use server';
 /**
- * @fileOverview An AI flow to send session reminders.
+ * @fileOverview An AI flow to send session reminders via WhatsApp.
  *
  * - sendReminder - A function that handles sending reminders.
  * - SendReminderInput - The input type for the sendReminder function.
@@ -18,7 +18,6 @@ const SendReminderInputSchema = z.object({
   patientEmail: z.string().describe("The patient's email address."),
   patientPhone: z.string().describe("The patient's phone number."),
   sessionDate: z.string().describe('The date and time of the session.'),
-  reminderType: z.enum(['patient', 'psychologist', 'both']).describe('Who to send the reminder to.'),
 });
 export type SendReminderInput = z.infer<typeof SendReminderInputSchema>;
 
@@ -38,7 +37,7 @@ const sendReminderFlow = ai.defineFlow(
     outputSchema: SendReminderOutputSchema,
   },
   async (input) => {
-    console.log('--- Iniciando flujo de envío de recordatorios ---');
+    console.log('--- Iniciando flujo de envío de recordatorio a paciente ---');
     
     const formattedDate = format(input.sessionDate, "eeee, d 'de' MMMM, yyyy 'a las' p", { locale: es });
     const webhookUrl = process.env.MAKE_WEBHOOK_URL;
@@ -48,41 +47,33 @@ const sendReminderFlow = ai.defineFlow(
       return { status: "Error: Webhook URL no configurada." };
     }
 
-    if (input.reminderType === 'patient' || input.reminderType === 'both') {
-      try {
-        const response = await fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            patientName: input.patientName,
-            patientEmail: input.patientEmail,
-            patientPhone: input.patientPhone,
-            sessionDate: formattedDate,
-            rawSessionDate: input.sessionDate,
-          }),
-        });
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          patientName: input.patientName,
+          patientEmail: input.patientEmail,
+          patientPhone: input.patientPhone,
+          sessionDate: formattedDate,
+          rawSessionDate: input.sessionDate,
+        }),
+      });
 
-        if (response.ok) {
-          console.log(`Webhook enviado exitosamente para el paciente ${input.patientName}`);
-        } else {
-          const errorText = await response.text();
-          console.error(`Error al enviar webhook para ${input.patientName}: ${response.status} ${errorText}`);
-        }
-      } catch (error) {
-        console.error(`Error de red al enviar webhook para ${input.patientName}:`, error);
+      if (response.ok) {
+        console.log(`Webhook de recordatorio para paciente ${input.patientName} enviado exitosamente.`);
+        return { status: 'Recordatorio para paciente enviado.' };
+      } else {
+        const errorText = await response.text();
+        console.error(`Error al enviar webhook para ${input.patientName}: ${response.status} ${errorText}`);
+        return { status: `Error al enviar recordatorio: ${errorText}` };
       }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error(`Error de red al enviar webhook para ${input.patientName}:`, errorMessage);
+      return { status: `Error de red: ${errorMessage}` };
     }
-
-    if (input.reminderType === 'psychologist' || input.reminderType === 'both') {
-        // Placeholder for psychologist reminder logic
-    }
-
-    console.log('--- Flujo de envío de recordatorios completado ---');
-    
-    return {
-      status: 'Proceso de recordatorios ejecutado.',
-    };
   }
 );

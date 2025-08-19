@@ -39,6 +39,8 @@ import { Separator } from "../ui/separator";
 import { sendReminder } from "@/ai/flows/send-reminders-flow";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
+import { useSession as useNextAuthSession } from "next-auth/react";
+import { createCalendarEvent } from "@/app/auth/googlecalendarservices";
 
 const formSchema = z.object({
   patientId: z.string().min(1, { message: "Debes seleccionar un paciente." }),
@@ -52,7 +54,6 @@ const formSchema = z.object({
   customDuration: z.number().optional(),
   type: z.enum(["Individual", "Pareja", "Familiar"]),
   status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
-  remindPsychologist: z.boolean(),
   remindPatient: z.boolean(),
   syncGoogleCalendar: z.boolean(),
 });
@@ -77,7 +78,8 @@ export function SessionForm({
   initialDate,
 }: SessionFormProps) {
   const { toast } = useToast();
-  const { user, userProfile } = useAuth();
+  const { userProfile } = useAuth();
+  const { data: nextAuthSession } = useNextAuthSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<SessionFormValues>({
@@ -90,7 +92,6 @@ export function SessionForm({
       customDuration: (session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : undefined) || 0,
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
-      remindPsychologist: session?.remindPsychologist ?? true,
       remindPatient: session?.remindPatient ?? true,
       syncGoogleCalendar: true,
     },
@@ -160,9 +161,13 @@ export function SessionForm({
             setIsSubmitting(false);
             return;
         }
+        
+        let googleEventId: string | undefined = undefined;
 
         if (values.syncGoogleCalendar) {
-            if (!(userProfile as any)?.googleTokens) {
+          const accessToken = (nextAuthSession as any)?.accessToken;
+
+            if (!accessToken) {
                 toast({
                     variant: "destructive",
                     title: "No vinculado a Google Calendar",
@@ -170,32 +175,29 @@ export function SessionForm({
                 });
             } else {
                  try {
-                    const idToken = await user?.getIdToken();
-                    const response = await fetch('/api/calendar/events', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`
+                    const eventData = {
+                        summary: `Sesión con ${selectedPatient.name}`,
+                        description: `Sesión de terapia ${values.type}.`,
+                        start: {
+                            dateTime: combinedDateTime.toISOString(),
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                         },
-                        body: JSON.stringify({
-                            summary: `Sesión con ${selectedPatient.name}`,
-                            description: `Sesión de terapia ${values.type}.`,
-                            start: {
-                                dateTime: combinedDateTime.toISOString(),
-                                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            },
-                            end: {
-                                dateTime: endDate.toISOString(),
-                                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            },
-                            attendees: [{ email: selectedPatient.email }],
-                        })
-                    });
+                        end: {
+                            dateTime: endDate.toISOString(),
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        },
+                        attendees: [{ email: selectedPatient.email }],
+                        reminders: {
+                          useDefault: false,
+                          overrides: [
+                            { method: 'email', minutes: 24 * 60 },
+                            { method: 'email', minutes: 60 },
+                          ],
+                        },
+                    };
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.details || 'Failed to create Google Calendar event');
-                    }
+                    const newEvent = await createCalendarEvent(accessToken, eventData);
+                    googleEventId = newEvent.id;
 
                     toast({ title: "Evento creado en Google Calendar." });
                 } catch (googleError: any) {
@@ -218,29 +220,24 @@ export function SessionForm({
             type: values.type,
             status: values.status,
             remindPatient: values.remindPatient,
-            remindPsychologist: values.remindPsychologist,
+            googleEventId: googleEventId,
         };
         
-        if (values.remindPatient || values.remindPsychologist) {
+        if (values.remindPatient) {
             try {
             await sendReminder({
                 patientName: selectedPatient.name,
                 patientEmail: selectedPatient.email,
                 patientPhone: selectedPatient.phone,
                 sessionDate: combinedDateTime.toISOString(),
-                reminderType: values.remindPatient && values.remindPsychologist 
-                ? 'both' 
-                : values.remindPatient 
-                    ? 'patient' 
-                    : 'psychologist',
             });
-            toast({ title: "Recordatorios programados." });
+            toast({ title: "Recordatorio para paciente programado." });
             } catch (e) {
                 console.error(e);
                 toast({ 
                     variant: "destructive", 
-                    title: "Error al programar recordatorios",
-                    description: "La sesión se guardará pero los recordatorios no se pudieron programar."
+                    title: "Error al programar recordatorio del paciente",
+                    description: "La sesión se guardará pero el recordatorio por WhatsApp no se pudo programar."
                 });
             }
         }
@@ -452,7 +449,7 @@ export function SessionForm({
                           <div className="space-y-0.5">
                               <FormLabel>Sincronizar con Google Calendar</FormLabel>
                                <FormDescription className="text-xs">
-                                  Crea un evento en tu calendario principal.
+                                  Crea un evento y usa los recordatorios de Google.
                               </FormDescription>
                           </div>
                           <FormControl>
@@ -467,9 +464,9 @@ export function SessionForm({
                   render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                           <div className="space-y-0.5">
-                              <FormLabel>Recordar a paciente</FormLabel>
+                              <FormLabel>Recordar a paciente (WhatsApp)</FormLabel>
                               <FormDescription className="text-xs">
-                                  Notificación por WhatsApp.
+                                  Envía un recordatorio por WhatsApp 24h antes.
                               </FormDescription>
                           </div>
                           <FormControl>

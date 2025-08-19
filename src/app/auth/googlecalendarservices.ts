@@ -1,4 +1,5 @@
 
+
 export interface CalendarEvent {
   summary: string;
   description: string;
@@ -11,6 +12,10 @@ export interface CalendarEvent {
     timeZone: string;
   };
   attendees?: Array<{ email: string }>;
+  reminders?: {
+    useDefault: boolean;
+    overrides?: Array<{ method: 'email' | 'popup'; minutes: number }>;
+  };
 }
 
 export const createCalendarEvent = async (accessToken: string, event: CalendarEvent) => {
