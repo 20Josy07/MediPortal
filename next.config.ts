@@ -32,12 +32,17 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  webpack: (config, options: WebpackConfigContext) => {
-    if (!options.isServer) {
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
+        "googleapis": false,
         "handlebars": false,
         "dotprompt": false,
+        "net": false,
+        "tls": false,
+        "fs": false,
+        "http2": false,
       };
     }
     return config;
