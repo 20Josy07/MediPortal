@@ -164,7 +164,6 @@ export function SessionForm({
             type: values.type,
             status: values.status,
             remindPatient: values.remindPatient,
-            googleEventId: undefined, // Explicitly set as undefined
         };
         
         if (values.remindPatient) {
@@ -173,7 +172,7 @@ export function SessionForm({
                 patientName: selectedPatient.name,
                 patientEmail: selectedPatient.email,
                 patientPhone: selectedPatient.phone,
-                sessionDate: combinedDateTime.toISOString(),
+                sessionDate: combinedDateTime,
             });
             toast({ title: "Recordatorio para paciente programado." });
             } catch (e) {

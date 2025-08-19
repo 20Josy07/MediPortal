@@ -17,7 +17,7 @@ const SendReminderInputSchema = z.object({
   patientName: z.string().describe("The patient's name."),
   patientEmail: z.string().describe("The patient's email address."),
   patientPhone: z.string().describe("The patient's phone number."),
-  sessionDate: z.string().describe('The date and time of the session.'),
+  sessionDate: z.date().describe('The date and time of the session.'),
 });
 export type SendReminderInput = z.infer<typeof SendReminderInputSchema>;
 
@@ -58,7 +58,7 @@ const sendReminderFlow = ai.defineFlow(
           patientEmail: input.patientEmail,
           patientPhone: input.patientPhone,
           sessionDate: formattedDate,
-          rawSessionDate: input.sessionDate,
+          rawSessionDate: input.sessionDate.toISOString(),
         }),
       });
 
