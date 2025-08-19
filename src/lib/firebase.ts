@@ -2,7 +2,7 @@
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth, updateProfile, type User, GoogleAuthProvider, signInWithPopup, deleteUser, reauthenticateWithCredential, EmailAuthProvider, sendPasswordResetEmail } from "firebase/auth";
-import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, writeBatch } from "firebase/firestore";
+import { getFirestore, type Firestore, collection, addDoc, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, writeBatch, enableMultiTabIndexedDbPersistence } from "firebase/firestore";
 import type { Note, UserProfile } from "./types";
 
 const firebaseConfig = {
@@ -23,6 +23,21 @@ if (firebaseConfig.apiKey) {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
     auth = getAuth(app);
     db = getFirestore(app);
+    
+    // Habilitar la persistencia multi-pestaña
+    enableMultiTabIndexedDbPersistence(db)
+      .catch((err) => {
+        if (err.code == 'failed-precondition') {
+          console.warn(
+            'La persistencia de Firestore multi-pestaña falló porque ya hay otra pestaña activa. Esto es normal.'
+          );
+        } else if (err.code == 'unimplemented') {
+          console.warn(
+            'El navegador actual no soporta la persistencia multi-pestaña de Firestore.'
+          );
+        }
+      });
+
 } else {
     console.error("Firebase config is missing, please check your .env file");
     // You might want to throw an error here or handle it gracefully
