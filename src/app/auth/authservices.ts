@@ -1,7 +1,7 @@
 
 import { auth, db } from "@/lib/firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export const signInWithGoogleAndCalendar = async () => {
     try {
@@ -10,7 +10,6 @@ export const signInWithGoogleAndCalendar = async () => {
         }
 
         const provider = new GoogleAuthProvider();
-        // Solicitar acceso offline para obtener un refresh_token
         provider.addScope('https://www.googleapis.com/auth/calendar.events');
         provider.setCustomParameters({
             access_type: 'offline',
@@ -23,23 +22,26 @@ export const signInWithGoogleAndCalendar = async () => {
         
         if (user && credential) {
             const userDocRef = doc(db, 'users', user.uid);
-            
-            // Construir el objeto de tokens, asegurándose de que todos los campos relevantes estén allí.
-            const googleTokens = {
-                access_token: credential.accessToken,
-                refresh_token: (credential as any).refreshToken, // El refresh_token puede no estar siempre presente
-                scope: (credential as any).scope,
-                token_type: (credential as any).tokenType,
-                // expiry_date se calcula a partir de expiresIn
-                expiry_date: Date.now() + ((credential as any).expiresIn * 1000)
+            const userDocSnap = await getDoc(userDocRef);
+            const existingTokens = userDocSnap.exists() ? userDocSnap.data()?.googleTokens : {};
+
+            const tokensToSave = {
+              access_token: credential.accessToken,
+              // Conserva el refresh_token existente si no se proporciona uno nuevo
+              refresh_token: (credential as any).refreshToken || existingTokens?.refresh_token,
+              scope: (credential as any).scope,
+              token_type: (credential as any).tokenType,
+              expiry_date: Date.now() + ((credential as any).expiresIn * 1000)
             };
+            
+            console.log("Tokens a guardar:", tokensToSave);
 
             const dataToSet = {
                 fullName: user.displayName,
                 email: user.email,
                 photoURL: user.photoURL,
-                googleTokens: googleTokens, // Guardar el token de acceso
-                googleAccessToken: credential.accessToken, // Para compatibilidad con la comprobación del botón
+                googleTokens: tokensToSave,
+                googleAccessToken: credential.accessToken,
             };
             
             await setDoc(userDocRef, dataToSet, { merge: true });
