@@ -592,14 +592,14 @@ export default function SmartNotesPage() {
       return;
     }
 
-    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-m4a'];
+    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/webm'];
     const maxSize = 10 * 1024 * 1024; // 10 MB
 
     if (!allowedTypes.includes(file.type) && !file.name.endsWith('.mp3')) {
       toast({
         variant: "destructive",
         title: "Formato de archivo no válido",
-        description: "Por favor, sube un archivo MP3 o WAV.",
+        description: "Por favor, sube un archivo MP3, WAV o WEBM.",
       });
       return;
     }
@@ -1010,7 +1010,7 @@ export default function SmartNotesPage() {
                                           ref={audioFileInputRef}
                                           onChange={handleAudioFileChange}
                                           className="hidden"
-                                          accept="audio/mpeg,audio/wav,audio/mp3"
+                                          accept="audio/mpeg,audio/wav,audio/mp3,audio/webm"
                                       />
                                   </div>
                                   <p className="text-muted-foreground text-center">

@@ -62,6 +62,9 @@ AUTH_URL=http://localhost:3000 # En producción, usa tu dominio principal
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
+# Clave de API para IA Generativa (Google AI Studio)
+GOOGLE_GEMINI_API_KEY=
+
 # URL del Webhook para recordatorios (Make/Integromat)
 MAKE_WEBHOOK_URL=
 ```

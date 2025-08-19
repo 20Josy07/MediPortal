@@ -23,15 +23,15 @@ const handler = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account, user }) {
-      // On initial sign-in, persist the OAuth tokens.
+      // Persist the OAuth access_token and refresh_token to the token right after signin
       if (account && user) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.userId = user.id;
-
+        
         const userDocRef = doc(db, 'users', user.id);
         
-        const tokensToSave: any = {
+        const tokensToSave: { [key: string]: any } = {
           access_token: account.access_token,
           scope: account.scope,
           token_type: account.token_type,
@@ -59,15 +59,14 @@ const handler = NextAuth({
             }, { merge: true });
         }
       }
-      
-      // Return the token, which will be used in the session callback
       return token;
     },
     async session({ session, token }) {
-      // Pass safe properties to the client-side session object
+      // Send properties to the client, like an access_token and user ID from a provider.
       if (session.user) {
         (session.user as any).id = token.userId;
       }
+      (session as any).accessToken = token.accessToken;
       
       return session;
     },
