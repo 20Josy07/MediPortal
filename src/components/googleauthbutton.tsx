@@ -44,8 +44,11 @@ export default function GoogleAuthButton() {
     setIsLoading(true);
     try {
       const idToken = await user?.getIdToken();
+      if (!idToken) {
+        throw new Error("User not authenticated");
+      }
       const response = await fetch('/api/auth/google', {
-         headers: {
+        headers: {
           'Authorization': `Bearer ${idToken}`
         }
       });
