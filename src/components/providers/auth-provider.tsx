@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useMemo, useCallback } from "react";
@@ -25,12 +26,15 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
       setUser(currentUser);
       if (!currentUser) {
         setUserProfile(null);
-        setLoading(false);
+        // Only set loading to false if next-auth has also resolved
+        if (status !== 'loading') {
+          setLoading(false);
+        }
       }
     });
 
     return () => unsubscribeAuth();
-  }, []);
+  }, [status]);
 
   useEffect(() => {
     let unsubscribeProfile: () => void = () => {};
@@ -51,9 +55,12 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
         console.error("Error listening to profile changes:", error);
         setLoading(false);
       });
+    } else if (!user && status !== 'loading') {
+        // If there's no firebase user and next-auth is not loading, we are done.
+        setLoading(false);
     }
     return () => unsubscribeProfile();
-  }, [user]);
+  }, [user, status]);
 
   const logout = useCallback(async () => {
     if (auth) {
