@@ -66,7 +66,6 @@ import type { Session, Patient } from "@/lib/types";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { SessionForm } from "./session-form";
-import AddEventForm from "@/components/AddEventForm";
 import GoogleAuthButton from "@/components/googleauthbutton";
 import { CalendarIcon } from "@heroicons/react/24/outline";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";

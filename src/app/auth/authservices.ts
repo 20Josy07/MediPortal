@@ -6,7 +6,13 @@ import { getGoogleAuthUrl } from "@/lib/google";
 
 
 export const handleGoogleSignIn = async () => {
-    const authUrl = getGoogleAuthUrl();
+    // This is now problematic because it's called from a client component,
+    // and getGoogleAuthUrl uses server-side libraries.
+    // A better approach would be to have an API route that returns the URL,
+    // or to construct it on the client if possible (but it requires secrets).
+    // Let's assume we get the URL from an API endpoint or another client-safe method.
+    // For now, let's just make it work.
+    const authUrl = await fetch('/api/auth/google').then(res => res.json()).then(data => data.url);
     window.location.href = authUrl;
 };
 

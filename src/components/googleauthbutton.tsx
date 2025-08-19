@@ -1,10 +1,8 @@
 
-// components/GoogleAuthButton.tsx
 'use client';
 import { Calendar, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/auth-context";
-import { handleGoogleSignIn } from "@/app/auth/authservices";
 
 export default function GoogleAuthButton() {
   const { userProfile } = useAuth();
@@ -15,10 +13,13 @@ export default function GoogleAuthButton() {
   const handleAuthClick = async () => {
     setIsLoading(true);
     try {
-      await handleGoogleSignIn();
+      // The auth URL must be fetched from the server to keep secrets safe
+      const response = await fetch('/api/auth/google');
+      if (!response.ok) throw new Error('Failed to get auth URL');
+      const { url } = await response.json();
+      window.location.href = url;
     } catch (error) {
       console.error('Error al iniciar autenticación:', error);
-    } finally {
       setIsLoading(false);
     }
   };
