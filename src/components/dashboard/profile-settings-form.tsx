@@ -10,20 +10,20 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Loader2, Upload, Settings, KeyRound, Clock, ShieldCheck, ChevronDown, Shield, Trash2 } from "lucide-react";
+import { User, Loader2, Upload, Settings, KeyRound, Clock, Shield, ChevronDown, Trash2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { deleteUserAccount, updateUserProfile } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 import { ProfileFormSchema, type ProfileFormValues } from "@/lib/types";
 import { Separator } from "../ui/separator";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "../ui/scroll-area";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { timezones } from "@/lib/timezones";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 
 interface ProfileSettingsFormProps {
@@ -102,6 +102,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
       email: "",
       phone: "",
       photoURL: "",
+      timezone: "",
     },
   });
 
@@ -115,6 +116,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
         email: userProfile?.email || user?.email || "",
         phone: userProfile?.phone || "",
         photoURL: userProfile?.photoURL || user?.photoURL || "",
+        timezone: userProfile?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
       };
       form.reset(initialValues);
       setIsFetching(false);
@@ -309,26 +311,32 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
                       </FormItem>
                     </CollapsibleContent>
                   </Collapsible>
-
-                  <div className="flex items-center justify-between p-3 border rounded-md">
-                    <div className="flex items-center gap-3">
-                      <Clock className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <p className="font-semibold">Zona horaria</p>
-                      </div>
-                    </div>
-                    <span className="text-sm text-muted-foreground">GMT-5 Colombia</span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 border rounded-md">
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-                      <div>
-                        <p className="font-semibold">Doble autenticación</p>
-                      </div>
-                    </div>
-                    <Switch id="2fa-switch" />
-                  </div>
+                  
+                   <FormField
+                      control={form.control}
+                      name="timezone"
+                      render={({ field }) => (
+                        <FormItem className="p-3 border rounded-md flex justify-between items-center">
+                           <div className="flex items-center gap-3">
+                               <Clock className="h-5 w-5 text-muted-foreground" />
+                                <FormLabel className="font-semibold">Zona horaria</FormLabel>
+                           </div>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="w-[280px]">
+                                <SelectValue placeholder="Selecciona una zona horaria" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {timezones.map(tz => (
+                                <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                 </CardContent>
               </div>
 
@@ -351,7 +359,7 @@ export function ProfileSettingsForm({ onSuccess }: ProfileSettingsFormProps) {
 
 
               <div className="flex justify-end pt-4">
-                <Button type="button" disabled={isLoading}>
+                <Button type="button" disabled={isLoading} onClick={() => form.handleSubmit(onSubmit)()}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Guardar Configuración
                 </Button>

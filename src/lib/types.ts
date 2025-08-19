@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export interface Patient {
@@ -25,8 +26,6 @@ export interface Session {
   duration: number; // in minutes
   type: "Individual" | "Pareja" | "Familiar";
   status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
-  remindPatient?: boolean;
-  googleEventId?: string; // Para futuras ediciones/eliminaciones
 }
 
 export interface Note {
@@ -53,6 +52,7 @@ export interface UserProfile {
   phone?: string;
   photoURL?: string;
   role?: 'admin' | 'user';
+  timezone?: string;
   googleAccessToken?: string; // Para la autenticación con Google
   [key: string]: any; // Para mantener compatibilidad con otros campos
 }
@@ -75,5 +75,6 @@ export const ProfileFormSchema = z.object({
   email: z.string().email("Correo electrónico inválido."),
   phone: z.string().optional(),
   photoURL: z.string().optional(),
+  timezone: z.string().optional(),
 });
 export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
