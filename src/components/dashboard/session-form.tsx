@@ -161,54 +161,6 @@ export function SessionForm({
             return;
         }
 
-        if (values.syncGoogleCalendar) {
-            if (!(userProfile as any)?.googleTokens) {
-                toast({
-                    variant: "destructive",
-                    title: "No vinculado a Google Calendar",
-                    description: "Para sincronizar, primero vincula tu cuenta de Google desde el calendario."
-                });
-            } else {
-                 try {
-                    const idToken = await user?.getIdToken();
-                    const response = await fetch('/api/calendar/events', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`
-                        },
-                        body: JSON.stringify({
-                            summary: `Sesión con ${selectedPatient.name}`,
-                            description: `Sesión de terapia ${values.type}.`,
-                            start: {
-                                dateTime: combinedDateTime.toISOString(),
-                                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            },
-                            end: {
-                                dateTime: endDate.toISOString(),
-                                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            },
-                            attendees: [{ email: selectedPatient.email }],
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.details || 'Failed to create Google Calendar event');
-                    }
-
-                    toast({ title: "Evento creado en Google Calendar." });
-                } catch (googleError: any) {
-                    console.error('Error al sincronizar con Google Calendar:', googleError);
-                    toast({
-                        variant: "destructive",
-                        title: "Error al sincronizar con Google Calendar",
-                        description: googleError.message || "La sesión se guardará localmente pero no se pudo sincronizar. Intenta vincular tu cuenta de nuevo."
-                    });
-                }
-            }
-        }
-        
         const sessionData: Omit<Session, "id"> = {
             patientId: values.patientId,
             patientName: selectedPatient.name,
@@ -262,8 +214,11 @@ export function SessionForm({
 
   return (
     <div className="max-h-[80vh] overflow-y-auto px-6 py-2">
+      <DialogDescription>
+        Completa los detalles de la sesión.
+      </DialogDescription>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-4">
           <FormField
             control={form.control}
             name="patientId"

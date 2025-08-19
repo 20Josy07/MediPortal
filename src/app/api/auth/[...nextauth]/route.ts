@@ -30,6 +30,7 @@ const handler = NextAuth({
         token.userId = user.id;
 
         const userDocRef = doc(db, 'users', user.id);
+        
         const tokensToSave: any = {
           access_token: account.access_token,
           scope: account.scope,
