@@ -27,20 +27,18 @@ const nextConfig: NextConfig = {
 
   webpack: (config, { isServer }) => {
     if (!isServer) {
+      // Excluir módulos de solo servidor del paquete del cliente
       config.resolve.fallback = {
         ...config.resolve.fallback,
-        googleapis: false,
-        handlebars: false,
-        dotprompt: false,
-        net: false,
-        tls: false,
-        fs: false,
-        http2: false,
+        googleapis: false, // Excluye 'googleapis'
+        fs: false,       // Excluye 'fs'
+        net: false,      // Excluye 'net'
+        tls: false,      // Excluye 'tls'
+        http2: false,    // Excluye 'http2'
+        // Puedes añadir otros módulos aquí si es necesario
+        child_process: false,
       };
     }
-
-    // Opcional: si un paquete trae sourcemaps pesados, se pueden desactivar así:
-    // config.devtool = false;
 
     return config;
   },

@@ -589,6 +589,7 @@ export function SessionsCalendar() {
                 <TabsTrigger value="day" className="h-6 px-2 text-xs">Día</TabsTrigger>
                 </TabsList>
             </Tabs>
+            <GoogleAuthButton />
             <Button
                 onClick={() => handleAddNewSession()}
                 className="h-9 text-sm"

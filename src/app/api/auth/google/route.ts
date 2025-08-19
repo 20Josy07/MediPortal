@@ -11,6 +11,7 @@ if (!getApps().length) {
 export async function GET(request: Request) {
   const cookieStore = cookies();
   const idToken = cookieStore.get('idToken')?.value;
+  console.log('API route /api/auth/google called');
 
   if (!idToken) {
     // Si no hay token, el usuario no está logueado en el cliente.
