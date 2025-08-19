@@ -38,7 +38,6 @@ import { Switch } from "../ui/switch";
 import { Separator } from "../ui/separator";
 import { sendReminder } from "@/ai/flows/send-reminders-flow";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/context/auth-context";
 
 const formSchema = z.object({
   patientId: z.string().min(1, { message: "Debes seleccionar un paciente." }),
@@ -52,9 +51,7 @@ const formSchema = z.object({
   customDuration: z.number().optional(),
   type: z.enum(["Individual", "Pareja", "Familiar"]),
   status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
-  remindPsychologist: z.boolean(),
   remindPatient: z.boolean(),
-  syncGoogleCalendar: z.boolean(),
 });
 
 type SessionFormValues = z.infer<typeof formSchema>;
@@ -77,7 +74,6 @@ export function SessionForm({
   initialDate,
 }: SessionFormProps) {
   const { toast } = useToast();
-  const { user, userProfile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<SessionFormValues>({
@@ -90,9 +86,7 @@ export function SessionForm({
       customDuration: (session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : undefined) || 0,
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
-      remindPsychologist: session?.remindPsychologist ?? true,
       remindPatient: session?.remindPatient ?? true,
-      syncGoogleCalendar: true,
     },
   });
 
@@ -170,29 +164,24 @@ export function SessionForm({
             type: values.type,
             status: values.status,
             remindPatient: values.remindPatient,
-            remindPsychologist: values.remindPsychologist,
+            googleEventId: undefined, // Explicitly set as undefined
         };
         
-        if (values.remindPatient || values.remindPsychologist) {
+        if (values.remindPatient) {
             try {
             await sendReminder({
                 patientName: selectedPatient.name,
                 patientEmail: selectedPatient.email,
                 patientPhone: selectedPatient.phone,
                 sessionDate: combinedDateTime.toISOString(),
-                reminderType: values.remindPatient && values.remindPsychologist 
-                ? 'both' 
-                : values.remindPatient 
-                    ? 'patient' 
-                    : 'psychologist',
             });
-            toast({ title: "Recordatorios programados." });
+            toast({ title: "Recordatorio para paciente programado." });
             } catch (e) {
                 console.error(e);
                 toast({ 
                     variant: "destructive", 
-                    title: "Error al programar recordatorios",
-                    description: "La sesión se guardará pero los recordatorios no se pudieron programar."
+                    title: "Error al programar recordatorio del paciente",
+                    description: "La sesión se guardará pero el recordatorio por WhatsApp no se pudo programar."
                 });
             }
         }
@@ -214,11 +203,8 @@ export function SessionForm({
 
   return (
     <div className="max-h-[80vh] overflow-y-auto px-6 py-2">
-      <DialogDescription>
-        Completa los detalles de la sesión.
-      </DialogDescription>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pt-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="patientId"
@@ -401,30 +387,13 @@ export function SessionForm({
            <div className="space-y-4">
               <FormField
                   control={form.control}
-                  name="syncGoogleCalendar"
-                  render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                          <div className="space-y-0.5">
-                              <FormLabel>Sincronizar con Google Calendar</FormLabel>
-                               <FormDescription className="text-xs">
-                                  Crea un evento en tu calendario principal.
-                              </FormDescription>
-                          </div>
-                          <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!(userProfile as any)?.googleTokens} />
-                          </FormControl>
-                      </FormItem>
-                  )}
-              />
-              <FormField
-                  control={form.control}
                   name="remindPatient"
                   render={({ field }) => (
                       <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                           <div className="space-y-0.5">
-                              <FormLabel>Recordar a paciente</FormLabel>
+                              <FormLabel>Recordar a paciente (WhatsApp)</FormLabel>
                               <FormDescription className="text-xs">
-                                  Notificación por WhatsApp.
+                                  Envía un recordatorio por WhatsApp 24h antes.
                               </FormDescription>
                           </div>
                           <FormControl>
