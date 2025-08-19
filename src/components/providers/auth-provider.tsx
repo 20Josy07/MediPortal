@@ -12,19 +12,6 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const setSessionCookie = useCallback(async (user: User | null) => {
-    if (user) {
-        const idToken = await user.getIdToken(true);
-        const idTokenResult = await user.getIdTokenResult();
-        const expiresIn = new Date(idTokenResult.expirationTime).getTime() - Date.now();
-        document.cookie = `__session=${idToken}; path=/; max-age=${expiresIn / 1000}; SameSite=Lax; Secure`;
-        document.cookie = `idToken=${idToken}; path=/; max-age=${expiresIn / 1000}; SameSite=Lax; Secure`;
-    } else {
-        document.cookie = '__session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        document.cookie = 'idToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    }
-  }, []);
-
   useEffect(() => {
     if (!auth) {
       setLoading(false);
@@ -33,7 +20,6 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
 
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setSessionCookie(currentUser);
       if (!currentUser) {
         setUserProfile(null);
         setLoading(false);
@@ -41,7 +27,7 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
     });
 
     return () => unsubscribeAuth();
-  }, [setSessionCookie]);
+  }, []);
 
   useEffect(() => {
     let unsubscribeProfile: () => void = () => {};
@@ -69,7 +55,6 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
   const logout = async () => {
     if (auth) {
       await signOut(auth);
-      setSessionCookie(null);
     }
   };
 

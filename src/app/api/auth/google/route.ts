@@ -1,6 +1,5 @@
 import { getGoogleAuthUrl } from '@/lib/google';
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { auth as adminAuth } from 'firebase-admin';
 import { initializeApp, getApps } from 'firebase-admin/app';
 
@@ -9,15 +8,14 @@ if (!getApps().length) {
 }
 
 export async function GET(request: Request) {
-  const cookieStore = cookies();
-  const idToken = cookieStore.get('idToken')?.value;
   console.log('API route /api/auth/google called');
-
-  if (!idToken) {
-    // Si no hay token, el usuario no está logueado en el cliente.
-    // Redirigir a login, idealmente con un 'next' para volver aquí.
-    return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
+  const authHeader = request.headers.get('Authorization');
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'User not authenticated, no token provided' }, { status: 401 });
   }
+
+  const idToken = authHeader.split('Bearer ')[1];
 
   try {
     // Verificar el token para asegurarse de que es válido
