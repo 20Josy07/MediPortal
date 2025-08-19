@@ -39,6 +39,8 @@ import { Separator } from "../ui/separator";
 import { sendReminder } from "@/ai/flows/send-reminders-flow";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
+import { useSession } from "next-auth/react";
+import { createCalendarEvent } from "@/app/auth/googlecalendarservices";
 
 const formSchema = z.object({
   patientId: z.string().min(1, { message: "Debes seleccionar un paciente." }),
@@ -78,6 +80,7 @@ export function SessionForm({
 }: SessionFormProps) {
   const { toast } = useToast();
   const { user, userProfile } = useAuth();
+  const { data: nextAuthSession } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const form = useForm<SessionFormValues>({
@@ -162,7 +165,8 @@ export function SessionForm({
         }
 
         if (values.syncGoogleCalendar) {
-            if (!(userProfile as any)?.googleTokens) {
+          const accessToken = (nextAuthSession as any)?.accessToken;
+            if (!accessToken) {
                 toast({
                     variant: "destructive",
                     title: "No vinculado a Google Calendar",
@@ -170,32 +174,19 @@ export function SessionForm({
                 });
             } else {
                  try {
-                    const idToken = await user?.getIdToken();
-                    const response = await fetch('/api/calendar/events', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`
+                    await createCalendarEvent(accessToken, {
+                        summary: `Sesión con ${selectedPatient.name}`,
+                        description: `Sesión de terapia ${values.type}.`,
+                        start: {
+                            dateTime: combinedDateTime.toISOString(),
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                         },
-                        body: JSON.stringify({
-                            summary: `Sesión con ${selectedPatient.name}`,
-                            description: `Sesión de terapia ${values.type}.`,
-                            start: {
-                                dateTime: combinedDateTime.toISOString(),
-                                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            },
-                            end: {
-                                dateTime: endDate.toISOString(),
-                                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                            },
-                            attendees: [{ email: selectedPatient.email }],
-                        })
+                        end: {
+                            dateTime: endDate.toISOString(),
+                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        },
+                        attendees: [{ email: selectedPatient.email }],
                     });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.details || 'Failed to create Google Calendar event');
-                    }
 
                     toast({ title: "Evento creado en Google Calendar." });
                 } catch (googleError: any) {
