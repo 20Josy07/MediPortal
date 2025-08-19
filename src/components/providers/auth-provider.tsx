@@ -6,11 +6,14 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import type { UserProfile } from "@/lib/types";
 import { AuthContext, type AuthContextType } from "@/context/auth-context";
+import { useSession } from "next-auth/react";
 
 export function AuthProvider({ children }: {children: React.ReactNode}) {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const { status } = useSession();
+
 
   useEffect(() => {
     if (!auth) {
@@ -52,11 +55,18 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
     return () => unsubscribeProfile();
   }, [user]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     if (auth) {
       await signOut(auth);
     }
-  };
+  }, [auth]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      logout();
+    }
+  }, [status, logout]);
+
 
   const value = useMemo<AuthContextType>(
     () => ({
@@ -67,7 +77,7 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
       auth,
       db,
     }),
-    [user, userProfile, loading]
+    [user, userProfile, loading, logout, auth, db]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
