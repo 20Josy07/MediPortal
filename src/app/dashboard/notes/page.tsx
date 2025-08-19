@@ -194,14 +194,12 @@ export default function SmartNotesPage() {
   const [editableNoteTitle, setEditableNoteTitle] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isFileProcessing, setIsFileProcessing] = useState(false);
-  const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   
-  const [selectedAudioFile, setSelectedAudioFile] = useState<File | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<NoteTemplate>("SOAP");
   const [generatedBlocks, setGeneratedBlocks] = useState<GeneratedBlocks | null>(null);
   const [isEditingTranscription, setIsEditingTranscription] = useState(false);
@@ -216,7 +214,6 @@ export default function SmartNotesPage() {
   const audioChunksRef = useRef<Blob[]>([]);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const audioFileInputRef = useRef<HTMLInputElement | null>(null);
   const chatScrollAreaRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const textEditorRef = useRef<HTMLDivElement>(null);
@@ -348,7 +345,6 @@ export default function SmartNotesPage() {
       });
     } finally {
        setIsTranscribing(false);
-       setSelectedAudioFile(null);
     }
   };
 
@@ -586,94 +582,6 @@ export default function SmartNotesPage() {
     }
   };
   
-  const handleAudioFileSelected = (file: File) => {
-    if (!selectedPatientId) {
-      toast({ variant: "destructive", title: "Selecciona un paciente primero." });
-      return;
-    }
-
-    const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/webm'];
-    const maxSize = 10 * 1024 * 1024; // 10 MB
-
-    if (!allowedTypes.includes(file.type) && !file.name.endsWith('.mp3')) {
-      toast({
-        variant: "destructive",
-        title: "Formato de archivo no válido",
-        description: "Por favor, sube un archivo MP3, WAV o WEBM.",
-      });
-      return;
-    }
-
-    if (file.size > maxSize) {
-      toast({
-        variant: "destructive",
-        title: "Archivo demasiado grande",
-        description: "El tamaño del archivo no puede exceder los 10 MB.",
-      });
-      return;
-    }
-
-    setSelectedAudioFile(file);
-  };
-  
-  const handleUploadAudio = async () => {
-    if (!selectedAudioFile) return;
-
-    const reader = new FileReader();
-    reader.readAsDataURL(selectedAudioFile);
-    reader.onloadend = async () => {
-      const base64Audio = reader.result as string;
-      await transcribeAndSaveAudio(base64Audio);
-
-      // Registrar la carga del archivo de audio
-      if (user?.uid) {
-        await logButtonClick('audio_file_uploaded', user.uid);
-      }
-    };
-    reader.onerror = () => {
-        toast({ variant: "destructive", title: "Error al leer el archivo." });
-    };
-  }
-
-  const handleAudioFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      handleAudioFileSelected(file);
-    }
-    if (audioFileInputRef.current) {
-      audioFileInputRef.current.value = "";
-    }
-  };
-
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDraggingOver(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDraggingOver(false);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDraggingOver(false);
-
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleAudioFileSelected(file);
-    } else {
-      toast({ variant: "destructive", title: "No se soltó ningún archivo." });
-    }
-  };
 
   const handleAiChatSubmit = async () => {
     if (!chatInput.trim()) return;
@@ -951,74 +859,32 @@ export default function SmartNotesPage() {
                       <TabsTrigger value="text">Nota de Texto</TabsTrigger>
                   </TabsList>
                   <TabsContent value="voice">
-                      <Card 
-                         onDragEnter={handleDragEnter}
-                         onDragLeave={handleDragLeave}
-                         onDragOver={handleDragOver}
-                         onDrop={handleDrop}
-                         className={cn("transition-all", isDraggingOver && "border-primary ring-2 ring-primary bg-primary/10")}
-                      >
-                      <CardHeader>
-                          <CardTitle>Transcripción Automática</CardTitle>
-                          <CardDescription>
-                          Graba, sube o arrastra el audio de tu sesión y la IA lo transcribirá por ti.
-                          </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
-                          {selectedAudioFile ? (
-                              <div className="flex flex-col items-center gap-4 w-full">
-                                  <div className="flex items-center gap-3 p-3 border rounded-md bg-muted/50 w-full max-w-sm">
-                                      <FileAudio className="h-6 w-6 text-primary" />
-                                      <p className="font-medium truncate flex-1">{selectedAudioFile.name}</p>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedAudioFile(null)}>
-                                          <Trash2 className="h-4 w-4 text-destructive"/>
-                                      </Button>
-                                  </div>
-                                  <Button onClick={handleUploadAudio} disabled={isTranscribing}>
-                                      {isTranscribing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                                      Subir Archivo
-                                  </Button>
-                              </div>
-                          ) : (
-                              <>
-                                  <div className="flex gap-4 items-center">
-                                      <Button
-                                          size="icon"
-                                          className={`h-24 w-24 rounded-full transition-all duration-300 ${isRecording ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-primary hover:bg-primary/90"}`}
-                                          onClick={handleMicClick}
-                                          disabled={isTranscribing || !selectedPatientId}
-                                      >
-                                          {isTranscribing && !isRecording ? (
-                                              <Loader2 className="h-10 w-10 animate-spin" />
-                                          ) : isRecording ? (
-                                              <StopCircle className="h-10 w-10" />
-                                          ) : (
-                                              <Mic className="h-10 w-10" />
-                                          )}
-                                      </Button>
-                                      <Button
-                                          variant="outline"
-                                          className="h-24 w-24 rounded-full flex flex-col gap-1"
-                                          onClick={() => audioFileInputRef.current?.click()}
-                                          disabled={isTranscribing || !selectedPatientId}
-                                      >
-                                          <Upload className="h-8 w-8" />
-                                          <span className="text-xs">Subir</span>
-                                      </Button>
-                                      <input
-                                          type="file"
-                                          ref={audioFileInputRef}
-                                          onChange={handleAudioFileChange}
-                                          className="hidden"
-                                          accept="audio/mpeg,audio/wav,audio/mp3,audio/webm"
-                                      />
-                                  </div>
-                                  <p className="text-muted-foreground text-center">
-                                      {isDraggingOver ? "Suelta el archivo para transcribir" : isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : !selectedPatientId ? "Selecciona un paciente para empezar" : "Iniciar Grabación o Subir Archivo"}
-                                  </p>
-                              </>
-                          )}
-                      </CardContent>
+                      <Card>
+                          <CardHeader>
+                              <CardTitle>Transcripción Automática</CardTitle>
+                              <CardDescription>
+                                  Graba el audio de tu sesión y la IA lo transcribirá por ti.
+                              </CardDescription>
+                          </CardHeader>
+                          <CardContent className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
+                              <Button
+                                  size="icon"
+                                  className={`h-24 w-24 rounded-full transition-all duration-300 ${isRecording ? "bg-red-500 hover:bg-red-600 animate-pulse" : "bg-primary hover:bg-primary/90"}`}
+                                  onClick={handleMicClick}
+                                  disabled={isTranscribing || !selectedPatientId}
+                              >
+                                  {isTranscribing && !isRecording ? (
+                                      <Loader2 className="h-10 w-10 animate-spin" />
+                                  ) : isRecording ? (
+                                      <StopCircle className="h-10 w-10" />
+                                  ) : (
+                                      <Mic className="h-10 w-10" />
+                                  )}
+                              </Button>
+                              <p className="text-muted-foreground text-center">
+                                  {isTranscribing ? "Transcribiendo..." : isRecording ? `Grabando... ${formatTime(recordingTime)}` : !selectedPatientId ? "Selecciona un paciente para empezar" : "Iniciar Grabación"}
+                              </p>
+                          </CardContent>
                       </Card>
                   </TabsContent>
                   <TabsContent value="text">

@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -590,7 +591,6 @@ export function SessionsCalendar() {
             >
                 Agendar
             </Button>
-            <GoogleAuthButton />
          </div>
       </header>
 

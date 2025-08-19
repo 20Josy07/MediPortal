@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -55,7 +56,6 @@ const formSchema = z.object({
   type: z.enum(["Individual", "Pareja", "Familiar"]),
   status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
   remindPatient: z.boolean(),
-  syncGoogleCalendar: z.boolean(),
 });
 
 type SessionFormValues = z.infer<typeof formSchema>;
@@ -93,7 +93,6 @@ export function SessionForm({
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
       remindPatient: session?.remindPatient ?? true,
-      syncGoogleCalendar: true,
     },
   });
 
@@ -162,55 +161,6 @@ export function SessionForm({
             return;
         }
         
-        let googleEventId: string | undefined = undefined;
-
-        if (values.syncGoogleCalendar) {
-          const accessToken = (nextAuthSession as any)?.accessToken;
-
-            if (!accessToken) {
-                toast({
-                    variant: "destructive",
-                    title: "No vinculado a Google Calendar",
-                    description: "Para sincronizar, primero vincula tu cuenta de Google desde el calendario."
-                });
-            } else {
-                 try {
-                    const eventData = {
-                        summary: `Sesión con ${selectedPatient.name}`,
-                        description: `Sesión de terapia ${values.type}.`,
-                        start: {
-                            dateTime: combinedDateTime.toISOString(),
-                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                        },
-                        end: {
-                            dateTime: endDate.toISOString(),
-                            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                        },
-                        attendees: [{ email: selectedPatient.email }],
-                        reminders: {
-                          useDefault: false,
-                          overrides: [
-                            { method: 'email', minutes: 24 * 60 },
-                            { method: 'email', minutes: 60 },
-                          ],
-                        },
-                    };
-
-                    const newEvent = await createCalendarEvent(accessToken, eventData);
-                    googleEventId = newEvent.id;
-
-                    toast({ title: "Evento creado en Google Calendar." });
-                } catch (googleError: any) {
-                    console.error('Error al sincronizar con Google Calendar:', googleError);
-                    toast({
-                        variant: "destructive",
-                        title: "Error al sincronizar con Google Calendar",
-                        description: googleError.message || "La sesión se guardará localmente pero no se pudo sincronizar. Intenta vincular tu cuenta de nuevo."
-                    });
-                }
-            }
-        }
-        
         const sessionData: Omit<Session, "id"> = {
             patientId: values.patientId,
             patientName: selectedPatient.name,
@@ -220,7 +170,7 @@ export function SessionForm({
             type: values.type,
             status: values.status,
             remindPatient: values.remindPatient,
-            googleEventId: googleEventId,
+            googleEventId: undefined, // Explicitly set as undefined
         };
         
         if (values.remindPatient) {
@@ -441,23 +391,6 @@ export function SessionForm({
           <Separator className="!my-6"/>
           
            <div className="space-y-4">
-              <FormField
-                  control={form.control}
-                  name="syncGoogleCalendar"
-                  render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                          <div className="space-y-0.5">
-                              <FormLabel>Sincronizar con Google Calendar</FormLabel>
-                               <FormDescription className="text-xs">
-                                  Crea un evento y usa los recordatorios de Google.
-                              </FormDescription>
-                          </div>
-                          <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} disabled={!(userProfile as any)?.googleTokens} />
-                          </FormControl>
-                      </FormItem>
-                  )}
-              />
               <FormField
                   control={form.control}
                   name="remindPatient"
