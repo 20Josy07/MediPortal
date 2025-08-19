@@ -23,13 +23,12 @@ const handler = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account, user }) {
-      // On initial sign-in
+      // On initial sign-in, persist the OAuth tokens.
       if (account && user) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.userId = user.id;
 
-        // Persist tokens to Firestore securely on the server side
         const userDocRef = doc(db, 'users', user.id);
         const tokensToSave: any = {
           access_token: account.access_token,
@@ -38,8 +37,8 @@ const handler = NextAuth({
           expiry_date: account.expires_at ? account.expires_at * 1000 : undefined,
         };
 
-        // Only add the refresh_token to the object if it exists.
-        // This prevents overwriting a valid refresh_token with undefined.
+        // The refresh_token is only sent on the first authorization.
+        // We only want to save it if it exists to avoid overwriting it with undefined.
         if (account.refresh_token) {
           tokensToSave.refresh_token = account.refresh_token;
         }
@@ -58,11 +57,9 @@ const handler = NextAuth({
                 googleTokens: tokensToSave,
             }, { merge: true });
         }
-        return token;
       }
       
-      // Return previous token if the access token has not expired yet
-      // This is a placeholder for a token refresh logic if needed in the future.
+      // Return the token, which will be used in the session callback
       return token;
     },
     async session({ session, token }) {
