@@ -179,7 +179,7 @@ export function SessionForm({
                 patientName: selectedPatient.name,
                 patientEmail: selectedPatient.email,
                 patientPhone: selectedPatient.phone,
-                sessionDate: combinedDateTime.toISOString(),
+                sessionDate: combinedDateTime,
             });
             toast({ title: "Recordatorio para paciente programado." });
             } catch (e) {
@@ -388,28 +388,6 @@ export function SessionForm({
           )}
           />
 
-          <Separator className="!my-6"/>
-          
-           <div className="space-y-4">
-              <FormField
-                  control={form.control}
-                  name="remindPatient"
-                  render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                          <div className="space-y-0.5">
-                              <FormLabel>Recordar a paciente (WhatsApp)</FormLabel>
-                              <FormDescription className="text-xs">
-                                  Envía un recordatorio por WhatsApp 24h antes.
-                              </FormDescription>
-                          </div>
-                          <FormControl>
-                              <Switch checked={field.value} onCheckedChange={field.onChange} />
-                          </FormControl>
-                      </FormItem>
-                  )}
-              />
-          </div>
-
           <div className="flex justify-end gap-2 pt-6">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
               Cancelar
@@ -424,3 +402,5 @@ export function SessionForm({
     </div>
     );
 }
+
+    
