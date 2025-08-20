@@ -10,7 +10,7 @@ export interface Patient {
   nextSession: string | null;
   status: "Activo" | "Inactivo";
   dob?: string;
-  createdAt?: Date;
+  createdAt?: any;
   consultationType?: string;
   mainDiagnosis?: string;
   currentObjective?: string;
@@ -27,8 +27,8 @@ export interface Session {
   duration: number; // in minutes
   type: "Individual" | "Pareja" | "Familiar";
   status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
-  remindPsychologist?: boolean;
   remindPatient?: boolean;
+  googleEventId?: string;
 }
 
 export interface Note {
@@ -54,6 +54,7 @@ export interface UserProfile {
   email: string;
   phone?: string;
   photoURL?: string;
+  timezone?: string;
 }
 
 // Schema for chatWithNotes flow input
@@ -74,8 +75,8 @@ export const ProfileFormSchema = z.object({
   email: z.string().email("Correo electrónico inválido."),
   phone: z.string().optional(),
   photoURL: z.string().optional(),
+  timezone: z.string().optional(),
 });
 export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
 
     
-

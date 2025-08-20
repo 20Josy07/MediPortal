@@ -40,7 +40,7 @@ const formSchema = z.object({
 type PatientFormValues = z.infer<typeof formSchema>;
 
 interface PatientFormProps {
-  patient?: Omit<Patient, "nextSession"> | null;
+  patient?: Patient | null;
   onSubmit: (data: PatientFormValues) => void;
   onCancel: () => void;
   isSubmitting: boolean;
