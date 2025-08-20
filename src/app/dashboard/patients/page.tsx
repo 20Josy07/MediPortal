@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -48,6 +49,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PatientForm } from "@/components/dashboard/patient-form";
 import { Label } from "@/components/ui/label";
 
+const calculateAge = (dob: string | undefined): number | null => {
+    if (!dob) return null;
+    const birthDate = new Date(dob);
+    if (isNaN(birthDate.getTime())) return null;
+    return new Date().getFullYear() - birthDate.getFullYear();
+};
+
+
 const PatientCard = ({ patient, onEdit, onDelete }: { patient: Patient, onEdit: (patient: Patient) => void, onDelete: (patient: Patient) => void }) => {
   const getInitials = (name: string) => {
     if (!name) return "U";
@@ -58,7 +67,7 @@ const PatientCard = ({ patient, onEdit, onDelete }: { patient: Patient, onEdit: 
     return name.substring(0, 2);
   };
 
-  const age = patient.dob ? new Date().getFullYear() - new Date(patient.dob).getFullYear() : 'N/A';
+  const age = calculateAge(patient.dob);
 
   return (
     <div className="flex items-center justify-between rounded-lg border border-border p-4 hover:bg-muted/50 transition-colors">
@@ -86,7 +95,7 @@ const PatientCard = ({ patient, onEdit, onDelete }: { patient: Patient, onEdit: 
             </span>
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>Edad: {age}</span>
+            <span>Edad: {age ?? 'N/A'}</span>
             <span>Condición: {patient.mainDiagnosis || "No especificada"}</span>
           </div>
         </div>
@@ -127,7 +136,18 @@ export default function PatientsPage() {
     const { toast } = useToast();
     const [patients, setPatients] = useState<Patient[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("all");
+    
+    // States for the main filter controls
+    const [mainStatusFilter, setMainStatusFilter] = useState("all");
+    const [ageRangeFilter, setAgeRangeFilter] = useState("all");
+    const [conditionFilter, setConditionFilter] = useState("");
+
+    // Temporary states for the dropdown menu
+    const [dropdownStatusFilter, setDropdownStatusFilter] = useState("all");
+    const [dropdownAgeRange, setDropdownAgeRange] = useState("all");
+    const [dropdownCondition, setDropdownCondition] = useState("");
+
+
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -158,16 +178,38 @@ export default function PatientsPage() {
 
         return () => unsubscribe();
     }, [user, db, authLoading, toast]);
+    
+    const applyFilters = () => {
+        setMainStatusFilter(dropdownStatusFilter);
+        setAgeRangeFilter(dropdownAgeRange);
+        setConditionFilter(dropdownCondition);
+    };
 
     const filteredPatients = useMemo(() => {
         return patients.filter((patient) => {
-            const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                (patient.mainDiagnosis && patient.mainDiagnosis.toLowerCase().includes(searchTerm.toLowerCase()));
-            const matchesStatus = statusFilter === 'all' || patient.status === statusFilter;
-            return matchesSearch && matchesStatus;
+            // Main search term
+            const matchesSearch = searchTerm === "" || 
+                                patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                patient.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+            // Dropdown: Status filter
+            const matchesStatus = mainStatusFilter === 'all' || patient.status === mainStatusFilter;
+
+            // Dropdown: Age range filter
+            const age = calculateAge(patient.dob);
+            const matchesAge = ageRangeFilter === 'all' || (age !== null && (
+                (ageRangeFilter === '0-12' && age <= 12) ||
+                (ageRangeFilter === '13-17' && age >= 13 && age <= 17) ||
+                (ageRangeFilter === '18-59' && age >= 18 && age <= 59) ||
+                (ageRangeFilter === '60+' && age >= 60)
+            ));
+            
+            // Dropdown: Condition filter
+            const matchesCondition = conditionFilter === "" || (patient.mainDiagnosis && patient.mainDiagnosis.toLowerCase().includes(conditionFilter.toLowerCase()));
+
+            return matchesSearch && matchesStatus && matchesAge && matchesCondition;
         });
-    }, [patients, searchTerm, statusFilter]);
+    }, [patients, searchTerm, mainStatusFilter, ageRangeFilter, conditionFilter]);
 
     const stats = useMemo(() => ({
         total: patients.length,
@@ -294,23 +336,13 @@ export default function PatientsPage() {
                                 <div className="relative flex-1">
                                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input 
-                                        placeholder="Buscar por nombre, email o condición..." 
+                                        placeholder="Buscar por nombre, email..." 
                                         className="pl-10"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                      />
                                 </div>
-                                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                    <SelectTrigger className="w-36">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="all">Todos</SelectItem>
-                                        <SelectItem value="Activo">Activos</SelectItem>
-                                        <SelectItem value="Inactivo">Inactivos</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                 <DropdownMenu>
+                                <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="outline" size="sm" className="gap-2 bg-transparent">
                                             <Filter className="h-4 w-4" />
@@ -320,7 +352,7 @@ export default function PatientsPage() {
                                     <DropdownMenuContent align="end" className="w-64 p-4 space-y-4">
                                          <div>
                                             <Label className="font-semibold text-sm">Estado</Label>
-                                            <Select>
+                                            <Select value={dropdownStatusFilter} onValueChange={setDropdownStatusFilter}>
                                                 <SelectTrigger className="mt-1">
                                                     <SelectValue placeholder="Seleccionar estado" />
                                                 </SelectTrigger>
@@ -328,17 +360,17 @@ export default function PatientsPage() {
                                                     <SelectItem value="all">Todos</SelectItem>
                                                     <SelectItem value="Activo">Activo</SelectItem>
                                                     <SelectItem value="Inactivo">Inactivo</SelectItem>
-                                                    <SelectItem value="new">Nuevos</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                          <div>
                                             <Label className="font-semibold text-sm">Rango de Edad</Label>
-                                            <Select>
+                                            <Select value={dropdownAgeRange} onValueChange={setDropdownAgeRange}>
                                                 <SelectTrigger className="mt-1">
                                                     <SelectValue placeholder="Seleccionar rango" />
                                                 </SelectTrigger>
                                                 <SelectContent>
+                                                    <SelectItem value="all">Todos</SelectItem>
                                                     <SelectItem value="0-12">Niños (0-12)</SelectItem>
                                                     <SelectItem value="13-17">Adolescentes (13-17)</SelectItem>
                                                     <SelectItem value="18-59">Adultos (18-59)</SelectItem>
@@ -348,14 +380,21 @@ export default function PatientsPage() {
                                         </div>
                                         <div>
                                             <Label className="font-semibold text-sm">Condición</Label>
-                                            <Input placeholder="Ej: Ansiedad..." className="mt-1" />
+                                            <Input 
+                                                placeholder="Ej: Ansiedad..." 
+                                                className="mt-1" 
+                                                value={dropdownCondition} 
+                                                onChange={(e) => setDropdownCondition(e.target.value)}
+                                            />
                                         </div>
                                         <DropdownMenuSeparator />
                                         <div className="flex justify-end gap-2">
                                             <DropdownMenuItem asChild>
-                                              <Button variant="ghost" size="sm">Cancelar</Button>
+                                              <Button type="button" variant="ghost" size="sm">Cancelar</Button>
                                             </DropdownMenuItem>
-                                            <Button size="sm">Aplicar</Button>
+                                            <DropdownMenuItem asChild>
+                                                <Button type="button" size="sm" onClick={applyFilters}>Aplicar</Button>
+                                            </DropdownMenuItem>
                                         </div>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
