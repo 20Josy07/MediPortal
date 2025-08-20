@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
@@ -46,6 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PatientForm } from "@/components/dashboard/patient-form";
+import { Label } from "@/components/ui/label";
 
 const PatientCard = ({ patient, onEdit, onDelete }: { patient: Patient, onEdit: (patient: Patient) => void, onDelete: (patient: Patient) => void }) => {
   const getInitials = (name: string) => {
@@ -317,23 +318,24 @@ export default function PatientsPage() {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end" className="w-64 p-4 space-y-4">
-                                        <div>
-                                            <h4 className="font-medium text-sm mb-2">Estado</h4>
-                                            <Select value={statusFilter} onValueChange={setStatusFilter}>
-                                                <SelectTrigger>
-                                                    <SelectValue />
+                                         <div>
+                                            <Label className="font-semibold text-sm">Estado</Label>
+                                            <Select>
+                                                <SelectTrigger className="mt-1">
+                                                    <SelectValue placeholder="Seleccionar estado" />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="all">Todos</SelectItem>
                                                     <SelectItem value="Activo">Activo</SelectItem>
                                                     <SelectItem value="Inactivo">Inactivo</SelectItem>
+                                                    <SelectItem value="new">Nuevos</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         </div>
                                          <div>
-                                            <h4 className="font-medium text-sm mb-2">Rango de Edad</h4>
+                                            <Label className="font-semibold text-sm">Rango de Edad</Label>
                                             <Select>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="mt-1">
                                                     <SelectValue placeholder="Seleccionar rango" />
                                                 </SelectTrigger>
                                                 <SelectContent>
@@ -345,11 +347,14 @@ export default function PatientsPage() {
                                             </Select>
                                         </div>
                                         <div>
-                                            <h4 className="font-medium text-sm mb-2">Condición</h4>
-                                            <Input placeholder="Ej: Ansiedad..." />
+                                            <Label className="font-semibold text-sm">Condición</Label>
+                                            <Input placeholder="Ej: Ansiedad..." className="mt-1" />
                                         </div>
-                                        <div className="flex justify-end gap-2 pt-2">
-                                            <Button variant="ghost" size="sm">Cancelar</Button>
+                                        <DropdownMenuSeparator />
+                                        <div className="flex justify-end gap-2">
+                                            <DropdownMenuItem asChild>
+                                              <Button variant="ghost" size="sm">Cancelar</Button>
+                                            </DropdownMenuItem>
                                             <Button size="sm">Aplicar</Button>
                                         </div>
                                     </DropdownMenuContent>
