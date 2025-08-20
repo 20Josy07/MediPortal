@@ -40,7 +40,7 @@ const sendReminderFlow = ai.defineFlow(
   async (input) => {
     console.log('--- Iniciando flujo de envío de recordatorios ---');
     
-    const formattedDate = format(input.sessionDate, "eeee, d 'de' MMMM, yyyy 'a las' p", { locale: es });
+    const formattedDate = format(new Date(input.sessionDate), "eeee, d 'de' MMMM, yyyy 'a las' p", { locale: es });
     const webhookUrl = process.env.MAKE_WEBHOOK_URL;
 
     if (!webhookUrl) {
