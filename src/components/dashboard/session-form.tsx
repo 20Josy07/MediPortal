@@ -75,7 +75,6 @@ const formSchema = z.object({
   customDuration: z.number().optional(),
   type: z.enum(["Individual", "Pareja", "Familiar"]),
   status: z.enum(["Confirmada", "Pendiente", "Cancelada", "No asistió"]),
-  remindPsychologist: z.boolean(),
   remindPatient: z.boolean(),
 });
 
@@ -110,7 +109,6 @@ export function SessionForm({
       customDuration: (session?.duration && ![30, 45, 60, 90].includes(session.duration) ? session.duration : undefined) || 0,
       type: session?.type || "Individual",
       status: session?.status || "Pendiente",
-      remindPsychologist: session?.remindPsychologist ?? true,
       remindPatient: session?.remindPatient ?? true,
     },
   });
@@ -178,7 +176,7 @@ export function SessionForm({
     }
   
     // Configurar recordatorios si están habilitados
-    if (values.remindPatient || values.remindPsychologist) {
+    if (values.remindPatient) {
       event.reminders = {
         useDefault: false,
         overrides: [
@@ -261,7 +259,6 @@ export function SessionForm({
             });
         }
         
-        // 3. Crear el objeto de sesión
         const sessionData: Omit<Session, "id"> = {
             patientId: values.patientId,
             patientName: selectedPatient.name,
@@ -271,22 +268,15 @@ export function SessionForm({
             type: values.type,
             status: values.status,
             remindPatient: values.remindPatient,
-            remindPsychologist: values.remindPsychologist,
         };
         
-        // 4. Enviar recordatorios si están habilitados
-        if (values.remindPatient || values.remindPsychologist) {
+        if (values.remindPatient) {
             try {
             await sendReminder({
                 patientName: selectedPatient.name,
                 patientEmail: selectedPatient.email,
                 patientPhone: selectedPatient.phone,
-                sessionDate: combinedDateTime.toISOString(),
-                reminderType: values.remindPatient && values.remindPsychologist 
-                ? 'both' 
-                : values.remindPatient 
-                    ? 'patient' 
-                    : 'psychologist',
+                sessionDate: combinedDateTime,
             });
             toast({ title: "Recordatorios programados." });
             } catch (e) {
@@ -299,7 +289,6 @@ export function SessionForm({
             }
         }
         
-        // 5. Guardar la sesión
         onSubmit(sessionData);
         
     } catch (error) {
