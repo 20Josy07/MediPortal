@@ -38,6 +38,7 @@ import { Switch } from "../ui/switch";
 import { Separator } from "../ui/separator";
 import { sendReminder } from "@/ai/flows/send-reminders-flow";
 import { useToast } from "@/hooks/use-toast";
+import { DialogFooter } from "../ui/dialog";
 
 interface GoogleCalendarEvent {
   summary: string;           // Título del evento
@@ -276,8 +277,7 @@ export function SessionForm({
                 patientName: selectedPatient.name,
                 patientEmail: selectedPatient.email,
                 patientPhone: selectedPatient.phone,
-                sessionDate: combinedDateTime.toISOString(),
-                reminderType: 'patient',
+                sessionDate: combinedDateTime.toISOString()
             });
             toast({ title: "Recordatorios programados." });
             } catch (e) {
@@ -486,6 +486,50 @@ export function SessionForm({
           )}
           />
 
+          <Separator />
+          <div className="space-y-4">
+            <h3 className="text-md font-medium flex items-center gap-2"><Bell className="h-4 w-4"/>Recordatorios</h3>
+             <FormField
+                control={form.control}
+                name="remindPatient"
+                render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                    <FormLabel>Recordar a paciente (WhatsApp)</FormLabel>
+                    <FormDescription>
+                        Envía un recordatorio por WhatsApp 24h antes.
+                    </FormDescription>
+                    </div>
+                    <FormControl>
+                    <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                    />
+                    </FormControl>
+                </FormItem>
+                )}
+            />
+             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-muted/50">
+                <div className="space-y-0.5">
+                <FormLabel className="text-muted-foreground">Sincronizar con Google Calendar</FormLabel>
+                <FormDescription>
+                    Agrega este evento a tu calendario de Google.
+                </FormDescription>
+                </div>
+                <FormControl>
+                <Switch
+                    disabled
+                />
+                </FormControl>
+            </FormItem>
+          </div>
+          <DialogFooter className="pt-4">
+                <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>Cancelar</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {session ? 'Guardar Cambios' : 'Agendar Sesión'}
+                </Button>
+            </DialogFooter>
         </form>
       </Form>
     </div>
