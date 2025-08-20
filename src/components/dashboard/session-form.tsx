@@ -217,6 +217,7 @@ export function SessionForm({
             type: "manual",
             message: "Esta cita se solapa con otra. Ajusta duración o cambia la hora."
         });
+        setIsSubmitting(false);
         return;
         }
 
@@ -225,6 +226,7 @@ export function SessionForm({
 
         if (!selectedPatient) {
         form.setError("patientId", { message: "Paciente no encontrado." });
+        setIsSubmitting(false);
         return;
         }
 
@@ -277,7 +279,8 @@ export function SessionForm({
                 patientName: selectedPatient.name,
                 patientEmail: selectedPatient.email,
                 patientPhone: selectedPatient.phone,
-                sessionDate: combinedDateTime.toISOString()
+                sessionDate: combinedDateTime.toISOString(),
+                reminderType: 'patient',
             });
             toast({ title: "Recordatorios programados." });
             } catch (e) {
@@ -518,6 +521,7 @@ export function SessionForm({
                 </div>
                 <FormControl>
                 <Switch
+                    defaultChecked
                     disabled
                 />
                 </FormControl>
