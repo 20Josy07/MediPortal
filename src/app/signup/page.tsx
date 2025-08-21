@@ -8,6 +8,9 @@ import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { signInWithGoogle } from "@/lib/firebase";
 import { AuthCard } from "@/components/auth/auth-card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -92,7 +95,12 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-5 bg-cover bg-center" style={{backgroundImage: "url('https://i.postimg.cc/jdtHgNF9/Bg.jpg')"}}>
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-gray-900 p-5 bg-cover bg-center" style={{backgroundImage: "url('https://i.postimg.cc/jdtHgNF9/Bg.jpg')"}}>
+       <Link href="/" passHref>
+        <Button asChild variant="ghost" className="absolute top-6 left-6 w-12 h-12 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/10 hover:bg-black/40 transition-all duration-200 hover:scale-110">
+          <Home className="w-6 h-6 text-white/80" />
+        </Button>
+      </Link>
       <AuthCard
         isLoading={isLoading}
         email={email}

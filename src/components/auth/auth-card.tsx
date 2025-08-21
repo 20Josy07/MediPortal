@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Home, Mail, Eye, EyeOff, User, Calendar } from "lucide-react"
+import { Mail, Eye, EyeOff, User, Calendar } from "lucide-react"
 import { Checkbox } from "../ui/checkbox"
 import Link from "next/link"
 
@@ -62,11 +62,6 @@ export function AuthCard({
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl">
-        <Link href="/" passHref>
-           <Button asChild variant="ghost" className="absolute top-4 left-4 w-10 h-10 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/10 hover:bg-black/40 transition-all duration-200 hover:scale-110">
-              <Home className="w-5 h-5 text-white/80" />
-           </Button>
-        </Link>
         {/* Header with tabs */}
         <div className="flex items-center justify-center mb-8">
           <div className="flex bg-black/30 backdrop-blur-sm rounded-full p-1 border border-white/10">
