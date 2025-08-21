@@ -2,12 +2,12 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { collection, onSnapshot, query, orderBy, where, Timestamp } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, where, Timestamp, limit, getDocs } from "firebase/firestore";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
-import type { Session, Patient } from "@/lib/types";
-import { format, isToday, startOfDay, endOfDay, isFuture, subDays, addMinutes } from "date-fns";
+import type { Session, Patient, Note } from "@/lib/types";
+import { format, isToday, startOfDay, endOfDay, isFuture, subDays, addMinutes, formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 
 import {
@@ -25,12 +25,17 @@ import {
   Brain,
   Heart,
   Target,
+  NotebookText,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton";
+
+type ActivityItem = (Session & { activityType: 'session' }) | (Note & { activityType: 'note' });
+
 
 export default function DashboardPage() {
     const { user, db, userProfile, loading: authLoading } = useAuth();
@@ -38,7 +43,9 @@ export default function DashboardPage() {
 
     const [sessions, setSessions] = useState<Session[]>([]);
     const [patients, setPatients] = useState<Patient[]>([]);
+    const [recentNotes, setRecentNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingNotes, setIsLoadingNotes] = useState(true);
 
     useEffect(() => {
         if (authLoading || !user || !db) {
@@ -68,13 +75,13 @@ export default function DashboardPage() {
         const startOfToday = startOfDay(now);
 
         const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
-        const q = query(
+        const qSessions = query(
             sessionsCollection,
             where("date", ">=", Timestamp.fromDate(startOfToday)),
             orderBy("date")
         );
 
-        const unsubscribeSessions = onSnapshot(q, (snapshot) => {
+        const unsubscribeSessions = onSnapshot(qSessions, (snapshot) => {
             const sessionList = snapshot.docs.map((doc) => {
                 const data = doc.data();
                 return {
@@ -95,6 +102,32 @@ export default function DashboardPage() {
             });
             setIsLoading(false);
         });
+        
+        const fetchRecentNotes = async () => {
+            setIsLoadingNotes(true);
+            const allNotes: Note[] = [];
+            const patientDocs = await getDocs(patientsCollection);
+            for (const patientDoc of patientDocs.docs) {
+                const notesCollectionRef = collection(db, `users/${user.uid}/patients/${patientDoc.id}/notes`);
+                const qNotes = query(notesCollectionRef, orderBy("createdAt", "desc"), limit(5));
+                const notesSnapshot = await getDocs(qNotes);
+                notesSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    allNotes.push({
+                        id: doc.id,
+                        patientId: patientDoc.id,
+                        ...data,
+                        createdAt: data.createdAt.toDate(),
+                    } as Note);
+                });
+            }
+             // Sort all notes by date and take the most recent 5
+            allNotes.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+            setRecentNotes(allNotes.slice(0, 5));
+            setIsLoadingNotes(false);
+        };
+
+        fetchRecentNotes();
 
         return () => {
             unsubscribePatients();
@@ -127,8 +160,42 @@ export default function DashboardPage() {
             .sort((a, b) => a.date.getTime() - b.date.getTime());
     }, [sessions]);
 
+    const recentActivity = useMemo(() => {
+        const completedSessions = sessions
+            .filter(s => s.status === 'Confirmada') // Assuming 'Confirmada' means completed for activity feed
+            .map(s => ({ ...s, activityType: 'session' as const, activityDate: s.date }));
+
+        const notesAsActivity = recentNotes.map(n => {
+            const patient = patients.find(p => p.id === n.patientId);
+            return { ...n, activityType: 'note' as const, activityDate: n.createdAt, patientName: patient?.name || 'Paciente desconocido' };
+        });
+
+        const combined = [...completedSessions, ...notesAsActivity];
+
+        return combined.sort((a, b) => b.activityDate.getTime() - a.activityDate.getTime()).slice(0, 5);
+    }, [sessions, recentNotes, patients]);
+
+
     if (isLoading) {
         return <div>Cargando...</div>;
+    }
+
+    const getActivityIcon = (activity: ActivityItem) => {
+        if (activity.activityType === 'session') {
+            return (
+                <div className="rounded-full bg-green-100 p-1 dark:bg-green-900">
+                    <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
+                </div>
+            );
+        }
+        if (activity.activityType === 'note') {
+            return (
+                 <div className="rounded-full bg-purple-100 p-1 dark:bg-purple-900">
+                    <NotebookText className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+                </div>
+            )
+        }
+        return null;
     }
 
     return (
@@ -343,36 +410,50 @@ export default function DashboardPage() {
                                 <CardDescription>Últimas actualizaciones del sistema</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                <div className="flex items-start gap-3">
-                                <div className="rounded-full bg-green-100 p-1 dark:bg-green-900">
-                                    <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
-                                </div>
-                                <div className="space-y-1 text-sm">
-                                    <p className="font-medium text-foreground">Sesión completada exitosamente</p>
-                                    <p className="text-muted-foreground">Josimar Acosta - Terapia Cognitiva</p>
-                                    <p className="text-xs text-muted-foreground">Hace 15 minutos</p>
-                                </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                <div className="rounded-full bg-blue-100 p-1 dark:bg-blue-900">
-                                    <Calendar className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <div className="space-y-1 text-sm">
-                                    <p className="font-medium text-foreground">Nueva cita programada</p>
-                                    <p className="text-muted-foreground">Ana Rodríguez - Mañana 10:00 AM</p>
-                                    <p className="text-xs text-muted-foreground">Hace 1 hora</p>
-                                </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                <div className="rounded-full bg-purple-100 p-1 dark:bg-purple-900">
-                                    <FileText className="h-3 w-3 text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <div className="space-y-1 text-sm">
-                                    <p className="font-medium text-foreground">Notas clínicas actualizadas</p>
-                                    <p className="text-muted-foreground">Keren Mercado - Sesión #8</p>
-                                    <p className="text-xs text-muted-foreground">Hace 2 horas</p>
-                                </div>
-                                </div>
+                                {isLoadingNotes ? (
+                                    <>
+                                        <div className="flex items-center space-x-4">
+                                            <Skeleton className="h-8 w-8 rounded-full" />
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-[200px]" />
+                                                <Skeleton className="h-4 w-[150px]" />
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-4">
+                                            <Skeleton className="h-8 w-8 rounded-full" />
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-[200px]" />
+                                                <Skeleton className="h-4 w-[150px]" />
+                                            </div>
+                                        </div>
+                                         <div className="flex items-center space-x-4">
+                                            <Skeleton className="h-8 w-8 rounded-full" />
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-4 w-[200px]" />
+                                                <Skeleton className="h-4 w-[150px]" />
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : recentActivity.length > 0 ? (
+                                    recentActivity.map((activity) => (
+                                        <div key={activity.id} className="flex items-start gap-3">
+                                            {getActivityIcon(activity)}
+                                            <div className="space-y-1 text-sm">
+                                                <p className="font-medium text-foreground">
+                                                    {activity.activityType === 'session' ? 'Sesión completada' : 'Nueva nota creada'}
+                                                </p>
+                                                <p className="text-muted-foreground">
+                                                    {activity.activityType === 'note' ? activity.patientName : activity.patientName} - {activity.activityType === 'session' ? activity.type : activity.title}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {formatDistanceToNow(activity.activityType === 'note' ? activity.createdAt : activity.date, { addSuffix: true, locale: es })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground text-center py-4">No hay actividad reciente.</p>
+                                )}
                             </CardContent>
                         </Card>
                     </div>
@@ -381,3 +462,4 @@ export default function DashboardPage() {
         </div>
     )
 }
+
