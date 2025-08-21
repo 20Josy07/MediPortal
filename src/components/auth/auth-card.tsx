@@ -1,4 +1,3 @@
-
 "use client"
 
 import type React from "react"
@@ -6,8 +5,9 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X, Mail, Eye, EyeOff, User, Calendar } from "lucide-react"
+import { Home, Mail, Eye, EyeOff, User, Calendar } from "lucide-react"
 import { Checkbox } from "../ui/checkbox"
+import Link from "next/link"
 
 interface AuthCardProps {
   isLoading: boolean
@@ -61,9 +61,14 @@ export function AuthCard({
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl">
-        {/* Header with tabs and close button */}
-        <div className="flex items-center justify-between mb-8">
+      <div className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl">
+        <Link href="/" passHref>
+           <Button asChild variant="ghost" className="absolute top-4 left-4 w-10 h-10 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/10 hover:bg-black/40 transition-all duration-200 hover:scale-110">
+              <Home className="w-5 h-5 text-white/80" />
+           </Button>
+        </Link>
+        {/* Header with tabs */}
+        <div className="flex items-center justify-center mb-8">
           <div className="flex bg-black/30 backdrop-blur-sm rounded-full p-1 border border-white/10">
             <button
               onClick={() => setActiveTab("signup")}
@@ -86,13 +91,10 @@ export function AuthCard({
               Iniciar Sesión
             </button>
           </div>
-          <button className="w-10 h-10 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/10 hover:bg-black/40 transition-all duration-200 hover:scale-110 hover:rotate-90">
-            <X className="w-5 h-5 text-white/80" />
-          </button>
         </div>
 
         {/* Titles translated to Spanish */}
-        <h1 className="text-3xl font-normal text-white mb-8 transition-all duration-300">
+        <h1 className="text-3xl font-normal text-white mb-8 transition-all duration-300 text-center">
           {activeTab === "signup" ? "Crear una cuenta" : "Bienvenido de vuelta"}
         </h1>
 
@@ -176,7 +178,7 @@ export function AuthCard({
 
               {/* Gender */}
               <div className="relative">
-                <Select value={gender} onValueChange={setGender}>
+                <Select value={gender} onValueChange={setGender} required>
                   <SelectTrigger className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30">
                     <SelectValue placeholder="Seleccionar género" />
                   </SelectTrigger>
@@ -248,11 +250,11 @@ export function AuthCard({
               {/* Remember me and forgot password */}
               <div className="flex items-center justify-between">
                 <label className="flex items-center space-x-2 cursor-pointer">
-                  <Checkbox
+                   <Checkbox
                     id="remember-me"
                     checked={rememberMe}
                     onCheckedChange={(checked) => setRememberMe(Boolean(checked))}
-                    className="w-4 h-4 rounded border border-white/20 bg-black/20 text-white focus:ring-white/20 focus:ring-2"
+                    className="w-4 h-4 rounded border border-white/20 bg-black/20 text-white data-[state=checked]:bg-white/30 data-[state=checked]:border-white/30"
                   />
                   <label htmlFor="remember-me" className="text-white/60 text-sm">Recordarme</label>
                 </label>
