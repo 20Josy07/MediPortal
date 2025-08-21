@@ -48,6 +48,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PatientForm } from "@/components/dashboard/patient-form";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 const calculateAge = (dob: string | undefined): number | null => {
     if (!dob) return null;
@@ -57,7 +58,7 @@ const calculateAge = (dob: string | undefined): number | null => {
 };
 
 
-const PatientCard = ({ patient, onEdit, onDelete }: { patient: Patient, onEdit: (patient: Patient) => void, onDelete: (patient: Patient) => void }) => {
+const PatientCard = ({ patient, onEdit, onDelete, index }: { patient: Patient, onEdit: (patient: Patient) => void, onDelete: (patient: Patient) => void, index: number }) => {
   const getInitials = (name: string) => {
     if (!name) return "U";
     const names = name.split(" ");
@@ -66,6 +67,14 @@ const PatientCard = ({ patient, onEdit, onDelete }: { patient: Patient, onEdit: 
     }
     return name.substring(0, 2);
   };
+  
+  const colors = [
+      { bg: "bg-blue-100", text: "text-blue-600" },
+      { bg: "bg-green-100", text: "text-green-600" },
+      { bg: "bg-amber-100", text: "text-amber-600" },
+      { bg: "bg-purple-100", text: "text-purple-600" },
+  ];
+  const color = colors[index % colors.length];
 
   const age = calculateAge(patient.dob);
 
@@ -73,7 +82,7 @@ const PatientCard = ({ patient, onEdit, onDelete }: { patient: Patient, onEdit: 
     <div className="flex items-center justify-between rounded-lg border border-border p-4 hover:bg-muted/50 transition-colors">
       <div className="flex items-center gap-4">
         <Avatar className="h-12 w-12">
-            <AvatarFallback className="bg-primary/10 text-primary font-medium">
+            <AvatarFallback className={cn("font-medium", color.bg, color.text)}>
                 {getInitials(patient.name)}
             </AvatarFallback>
         </Avatar>
@@ -408,8 +417,8 @@ export default function PatientsPage() {
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                             </div>
                         ) : filteredPatients.length > 0 ? (
-                            filteredPatients.map((patient) => (
-                                <PatientCard key={patient.id} patient={patient} onEdit={openEditForm} onDelete={openDeleteConfirm} />
+                            filteredPatients.map((patient, index) => (
+                                <PatientCard key={patient.id} patient={patient} onEdit={openEditForm} onDelete={openDeleteConfirm} index={index}/>
                             ))
                         ) : (
                             <div className="text-center py-10 text-muted-foreground">
