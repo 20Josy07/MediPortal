@@ -51,6 +51,8 @@ export default function DashboardPage() {
     const [recentNotes, setRecentNotes] = useState<Note[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingNotes, setIsLoadingNotes] = useState(true);
+    const [pendingNotesCount, setPendingNotesCount] = useState(0);
+
 
     useEffect(() => {
         if (authLoading || !user || !db) {
@@ -107,37 +109,43 @@ export default function DashboardPage() {
             setIsLoading(false);
         });
         
-        const fetchRecentNotes = async () => {
+        const fetchRecentNotesAndPendingCount = async () => {
             setIsLoadingNotes(true);
             try {
                 const allNotes: Note[] = [];
+                let pendingCount = 0;
                 const patientDocs = await getDocs(patientsCollection);
                 for (const patientDoc of patientDocs.docs) {
                     const notesCollectionRef = collection(db, `users/${user.uid}/patients/${patientDoc.id}/notes`);
-                    const qNotes = query(notesCollectionRef, orderBy("createdAt", "desc"), limit(5));
-                    const notesSnapshot = await getDocs(qNotes);
+                    const notesSnapshot = await getDocs(notesCollectionRef);
                     notesSnapshot.forEach(doc => {
                         const data = doc.data();
-                        allNotes.push({
+                        const note = {
                             id: doc.id,
                             patientId: patientDoc.id,
                             ...data,
                             createdAt: data.createdAt.toDate(),
-                        } as Note);
+                        } as Note;
+                        
+                        allNotes.push(note);
+                        if (note.status === 'Draft') {
+                            pendingCount++;
+                        }
                     });
                 }
-                 // Sort all notes by date and take the most recent 5
+                 // Sort all notes by date and take the most recent 5 for the activity feed
                 allNotes.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
                 setRecentNotes(allNotes.slice(0, 5));
+                setPendingNotesCount(pendingCount);
             } catch (e) {
-                console.error("Error fetching recent notes:", e);
-                toast({ variant: "destructive", title: "Error al cargar notas recientes." });
+                console.error("Error fetching notes:", e);
+                toast({ variant: "destructive", title: "Error al cargar notas." });
             } finally {
                 setIsLoadingNotes(false);
             }
         };
 
-        fetchRecentNotes();
+        fetchRecentNotesAndPendingCount();
 
         return () => {
             unsubscribePatients();
@@ -267,12 +275,15 @@ export default function DashboardPage() {
             <main className="p-6 space-y-6">
                 {/* Important Alerts */}
                 <div className="grid gap-4 md:grid-cols-2">
-                    <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-                        <AlertCircle className="h-4 w-4 text-amber-600" />
-                        <AlertDescription className="text-amber-800 dark:text-amber-200">
-                            <strong>3 notas clínicas</strong> pendientes de completar - vencen en 24 horas
-                        </AlertDescription>
-                    </Alert>
+                    {pendingNotesCount > 0 && (
+                        <Alert className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+                            <AlertCircle className="h-4 w-4 text-amber-600" />
+                            <AlertDescription className="text-amber-800 dark:text-amber-200">
+                                <strong>{pendingNotesCount} {pendingNotesCount === 1 ? 'nota clínica pendiente' : 'notas clínicas pendientes'}</strong> por completar. 
+                                <Link href="/dashboard/notes" className="font-semibold underline ml-1">Ir a notas</Link>
+                            </AlertDescription>
+                        </Alert>
+                    )}
                     {nextSession && (
                          <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
                             <Calendar className="h-4 w-4 text-blue-600" />
@@ -517,4 +528,5 @@ export default function DashboardPage() {
             </main>
         </div>
     )
-}
+
+    
