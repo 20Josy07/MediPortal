@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -142,12 +143,6 @@ export default function LoginPage() {
         // Props for signup form, not used here but required by the component
         fullName=""
         setFullName={() => {}}
-        username=""
-        setUsername={() => {}}
-        birthDate=""
-        setBirthDate={() => {}}
-        gender=""
-        setGender={() => {}}
         onSignUp={() => {}}
       />
     </div>

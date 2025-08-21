@@ -1,11 +1,15 @@
+
 "use client"
 
 import type React from "react"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { X, Mail, Eye, EyeOff, User, Calendar } from "lucide-react"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Eye, EyeOff, Loader2, Mail, Lock, User } from "lucide-react"
 
 interface AuthCardProps {
   isLoading: boolean
@@ -17,12 +21,6 @@ interface AuthCardProps {
   setRememberMe: (remember: boolean) => void
   fullName: string
   setFullName: (name: string) => void
-  username: string
-  setUsername: (username: string) => void
-  birthDate: string
-  setBirthDate: (date: string) => void
-  gender: string
-  setGender: (gender: string) => void
   onSignIn: (e: React.FormEvent) => void
   onSignUp: (e: React.FormEvent) => void
   onSocialLogin: (provider: string) => void
@@ -39,285 +37,215 @@ export function AuthCard({
   setRememberMe,
   fullName,
   setFullName,
-  username,
-  setUsername,
-  birthDate,
-  setBirthDate,
-  gender,
-  setGender,
   onSignIn,
   onSignUp,
   onSocialLogin,
   onForgotPassword,
 }: AuthCardProps) {
-  const [activeTab, setActiveTab] = useState("signup")
   const [showPassword, setShowPassword] = useState(false)
-
-  const handleRedirect = () => {
-    window.open("https://www.youtube.com/@diecastbydollarall", "_blank")
-  }
+  const [confirmPassword, setConfirmPassword] = useState("")
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl">
-        {/* Header with tabs and close button */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex bg-black/30 backdrop-blur-sm rounded-full p-1 border border-white/10">
-            <button
-              onClick={() => setActiveTab("signup")}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
-                activeTab === "signup"
-                  ? "bg-white/20 backdrop-blur-sm text-white border border-white/20 shadow-lg"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              Registrarse
-            </button>
-            <button
-              onClick={() => setActiveTab("signin")}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
-                activeTab === "signin"
-                  ? "bg-white/20 backdrop-blur-sm text-white border border-white/20 shadow-lg"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              Iniciar Sesión
-            </button>
+    <Tabs defaultValue="signin" className="w-full max-w-md">
+      <TabsList className="grid w-full grid-cols-2 bg-white/10 backdrop-blur-sm">
+        <TabsTrigger
+          value="signin"
+          className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70"
+        >
+          Sign In
+        </TabsTrigger>
+        <TabsTrigger
+          value="signup"
+          className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70"
+        >
+          Sign Up
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="signin" className="space-y-4 mt-6">
+        <form onSubmit={onSignIn} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="signin-email" className="text-white/90">
+              Email
+            </Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+              <Input
+                id="signin-email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 backdrop-blur-sm"
+                required
+              />
+            </div>
           </div>
-          <button className="w-10 h-10 bg-black/30 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/10 hover:bg-black/40 transition-all duration-200 hover:scale-110 hover:rotate-90">
-            <X className="w-5 h-5 text-white/80" />
-          </button>
-        </div>
 
-        {/* Titles translated to Spanish */}
-        <h1 className="text-3xl font-normal text-white mb-8 transition-all duration-300">
-          {activeTab === "signup" ? "Crear una cuenta" : "Bienvenido de vuelta"}
-        </h1>
-
-        <div className="relative overflow-hidden">
-          <div
-            className={`transition-all duration-500 ease-in-out transform ${
-              activeTab === "signup" ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0 absolute inset-0"
-            }`}
-          >
-            {/* Signup Form completely renovated with new fields */}
-            <form onSubmit={onSignUp} className="space-y-4">
-              {/* Full Name */}
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 transition-colors duration-200" />
-                <Input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 pl-12 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30"
-                  placeholder="Nombre completo"
-                  required
-                />
-              </div>
-
-              {/* Email */}
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 transition-colors duration-200" />
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 pl-12 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30"
-                  placeholder="Correo electrónico"
-                  required
-                />
-              </div>
-
-              {/* Username */}
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 transition-colors duration-200" />
-                <Input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 pl-12 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30"
-                  placeholder="Nombre de usuario"
-                  required
-                />
-              </div>
-
-              {/* Password */}
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 pr-12 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30"
-                  placeholder="Contraseña"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/60 transition-colors duration-200"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-
-              {/* Birth Date */}
-              <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 transition-colors duration-200" />
-                <Input
-                  type="date"
-                  value={birthDate}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                  className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 pl-12 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30"
-                  required
-                />
-              </div>
-
-              {/* Gender */}
-              <div className="relative">
-                <Select value={gender} onValueChange={setGender} required>
-                  <SelectTrigger className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30">
-                    <SelectValue placeholder="Seleccionar género" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-black/90 backdrop-blur-sm border border-white/10 rounded-xl">
-                    <SelectItem value="masculino" className="text-white hover:bg-white/10">
-                      Masculino
-                    </SelectItem>
-                    <SelectItem value="femenino" className="text-white hover:bg-white/10">
-                      Femenino
-                    </SelectItem>
-                    <SelectItem value="otro" className="text-white hover:bg-white/10">
-                      Otro
-                    </SelectItem>
-                    <SelectItem value="prefiero-no-decir" className="text-white hover:bg-white/10">
-                      Prefiero no decir
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Create account button */}
-              <Button
-                type="submit"
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 text-white font-medium rounded-2xl h-14 mt-8 text-base transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-                disabled={isLoading}
+          <div className="space-y-2">
+            <Label htmlFor="signin-password" className="text-white/90">
+              Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+              <Input
+                id="signin-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 backdrop-blur-sm"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-white/50 hover:text-white/70"
               >
-                {isLoading ? "Creando cuenta..." : "Crear cuenta"}
-              </Button>
-            </form>
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
-          <div
-            className={`transition-all duration-500 ease-in-out transform ${
-              activeTab === "signin" ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 absolute inset-0"
-            }`}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="remember"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(Boolean(checked))}
+                className="border-white/20 data-[state=checked]:bg-white/20"
+              />
+              <Label htmlFor="remember" className="text-sm text-white/70">
+                Remember me
+              </Label>
+            </div>
+            <button
+              type="button"
+              onClick={onForgotPassword}
+              className="text-sm text-white/70 hover:text-white underline"
+            >
+              Forgot password?
+            </button>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/20 backdrop-blur-sm transition-all duration-200"
+            disabled={isLoading}
           >
-            {/* Signin Form translated */}
-            <form onSubmit={onSignIn} className="space-y-4">
-              {/* Email field */}
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40 transition-colors duration-200" />
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 pl-12 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30"
-                  placeholder="Ingresa tu correo electrónico"
-                />
-              </div>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
+          </Button>
+        </form>
+      </TabsContent>
 
-              {/* Password field */}
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 text-white placeholder:text-white/40 focus:border-white/30 focus:ring-0 pr-12 text-base transition-all duration-200 hover:bg-black/30 focus:bg-black/30"
-                  placeholder="Ingresa tu contraseña"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/60 transition-colors duration-200"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+      <TabsContent value="signup" className="space-y-4 mt-6">
+        <form onSubmit={onSignUp} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="signup-name" className="text-white/90">
+              Full Name
+            </Label>
+            <div className="relative">
+              <User className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+              <Input
+                id="signup-name"
+                type="text"
+                placeholder="Enter your full name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 backdrop-blur-sm"
+                required
+              />
+            </div>
+          </div>
 
-              {/* Remember me and forgot password */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border border-white/20 bg-black/20 text-white focus:ring-white/20 focus:ring-2"
-                  />
-                  <span className="text-white/60 text-sm">Recordarme</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={onForgotPassword}
-                  className="text-white/60 hover:text-white text-sm transition-colors duration-200"
-                >
-                  ¿Olvidaste tu contraseña?
-                </button>
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="signup-email" className="text-white/90">
+              Email
+            </Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+              <Input
+                id="signup-email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 backdrop-blur-sm"
+                required
+              />
+            </div>
+          </div>
 
-              {/* Sign in button */}
-              <Button
-                type="submit"
-                className="w-full bg-white/20 backdrop-blur-sm border border-white/20 hover:bg-white/30 text-white font-medium rounded-2xl h-14 mt-8 text-base transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
-                disabled={isLoading}
+          <div className="space-y-2">
+            <Label htmlFor="signup-password" className="text-white/90">
+              Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+              <Input
+                id="signup-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Create a password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 pr-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 backdrop-blur-sm"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-white/50 hover:text-white/70"
               >
-                {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
-              </Button>
-            </form>
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Divider translated */}
-        <div className="flex items-center my-8">
-          <div className="flex-1 h-px bg-white/10"></div>
-          <span className="px-4 text-white/40 text-sm font-medium">
-            {activeTab === "signup" ? "O INICIA SESIÓN CON" : "O CONTINÚA CON"}
-          </span>
-          <div className="flex-1 h-px bg-white/10"></div>
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-password" className="text-white/90">
+              Confirm Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+              <Input
+                id="confirm-password"
+                type="password"
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 backdrop-blur-sm"
+                required
+              />
+            </div>
+            {confirmPassword && password !== confirmPassword && (
+              <p className="text-xs text-red-400">Passwords do not match</p>
+            )}
+          </div>
 
-        <div className="flex justify-center">
-          <button
-            onClick={() => onSocialLogin("google")}
-            className="bg-black/20 backdrop-blur-sm border border-white/10 rounded-2xl h-14 px-8 flex items-center justify-center hover:bg-black/30 transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 gap-3"
+          <Button
+            type="submit"
+            className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/20 backdrop-blur-sm transition-all duration-200"
+            disabled={isLoading || password !== confirmPassword}
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              />
-            </svg>
-            <span className="text-white font-medium">Google</span>
-          </button>
-        </div>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              "Create Account"
+            )}
+          </Button>
+        </form>
 
-        {/* Terms text translated */}
-        <p className="text-center text-white/40 text-sm mt-8">
-          {activeTab === "signup"
-            ? "Al crear una cuenta, aceptas nuestros Términos y Servicios"
-            : "Al iniciar sesión, aceptas nuestros Términos y Servicios"}
-        </p>
-      </div>
-    </div>
+      </TabsContent>
+    </Tabs>
   )
 }
