@@ -2,6 +2,7 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SignInForm } from "./sign-in-form"
 import { SignUpForm } from "./sign-up-form"
@@ -85,13 +86,12 @@ export function AuthCard({
                     />
                 </TabsContent>
 
-                <div className="flex items-center my-8">
-                    <div className="flex-1 h-px bg-white/10"></div>
-                    <span className="px-4 text-white/40 text-sm font-medium">O CONTINÚA CON</span>
-                    <div className="flex-1 h-px bg-white/10"></div>
-                </div>
-
-                <SocialLogin onSocialLogin={onSocialLogin} isLoading={isLoading} />
+                <TabsContent value="signin">
+                  <SocialLogin onSocialLogin={onSocialLogin} type="signin"/>
+                </TabsContent>
+                <TabsContent value="signup">
+                  <SocialLogin onSocialLogin={onSocialLogin} type="signup"/>
+                </TabsContent>
                 
                 <p className="text-center text-white/40 text-sm mt-8">
                     Al continuar, aceptas nuestros Términos y Servicios
