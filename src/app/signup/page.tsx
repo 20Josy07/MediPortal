@@ -92,7 +92,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-5 bg-cover bg-center" style={{backgroundImage: "url('/placeholder.svg')"}}>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-900 p-5 bg-cover bg-center" style={{backgroundImage: "url('https://i.postimg.cc/jdtHgNF9/Bg.jpg')"}}>
       <AuthCard
         isLoading={isLoading}
         email={email}
