@@ -406,7 +406,8 @@ export function PatientDetailPage({ patientId }: { patientId: string }) {
                 patientId,
                 type: 'Texto',
                 createdAt: new Date(),
-                hasHistory: false
+                hasHistory: false,
+                status: 'Draft',
             };
             const addedNote = await addNote(db, user.uid, patientId, newNote);
             setActiveNoteId(addedNote.id);
@@ -1077,7 +1078,7 @@ const NoteEntryForm = ({
                                         <Button
                                             variant={"outline"}
                                             className={cn("w-full justify-start text-left font-normal", !followUpDate && "text-muted-foreground")}
-                                        >
+                                            >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
                                             {followUpDate ? format(followUpDate, "PPP", { locale: es }) : <span>Elige una fecha</span>}
                                         </Button>
@@ -1141,13 +1142,4 @@ const NoteEntryForm = ({
     );
 };
 
-
     
-
-
-
-
-
-
-
-
