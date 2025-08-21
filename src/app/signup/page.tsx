@@ -18,7 +18,9 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-
+  const [username, setUsername] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [gender, setGender] = useState("");
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +58,7 @@ export default function SignUpPage() {
   };
 
   const handleSocialLogin = async (provider: string) => {
-     if (provider !== 'google') {
+     if (provider.toLowerCase() !== 'google') {
       toast({ title: "Próximamente", description: "Esta opción de inicio de sesión estará disponible pronto." });
       return;
     }
@@ -101,6 +103,12 @@ export default function SignUpPage() {
         onSocialLogin={handleSocialLogin}
         fullName={fullName}
         setFullName={setFullName}
+        username={username}
+        setUsername={setUsername}
+        birthDate={birthDate}
+        setBirthDate={setBirthDate}
+        gender={gender}
+        setGender={setGender}
         // Props for signin form, not used here but required by the component
         rememberMe={false}
         setRememberMe={() => {}}

@@ -20,6 +20,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
+  // States for sign-up form, not used here but needed for the shared component
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [gender, setGender] = useState("");
+
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!auth) {
@@ -55,7 +62,7 @@ export default function LoginPage() {
   };
 
   const handleSocialLogin = async (provider: string) => {
-    if (provider !== 'google') {
+    if (provider.toLowerCase() !== 'google') {
       toast({ title: "Próximamente", description: "Esta opción de inicio de sesión estará disponible pronto." });
       return;
     }
@@ -140,7 +147,16 @@ export default function LoginPage() {
         onSignIn={handleSignIn}
         onSocialLogin={handleSocialLogin}
         onForgotPassword={handleForgotPassword}
-        onSignUp={() => {}} // This is handled by the signup page
+        // Sign up props
+        onSignUp={() => {}}
+        fullName={fullName}
+        setFullName={setFullName}
+        username={username}
+        setUsername={setUsername}
+        birthDate={birthDate}
+        setBirthDate={setBirthDate}
+        gender={gender}
+        setGender={setGender}
       />
     </div>
   );
