@@ -458,7 +458,4 @@ export default function PatientsPage() {
             </Dialog>
         </>
     );
-
-
-
-    
+}
