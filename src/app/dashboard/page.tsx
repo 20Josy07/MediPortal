@@ -80,7 +80,6 @@ export default function DashboardPage() {
         const sessionsCollection = collection(db, `users/${user.uid}/sessions`);
         const qSessions = query(
             sessionsCollection,
-            where("date", ">=", Timestamp.fromDate(startOfToday)),
             orderBy("date")
         );
 
@@ -108,26 +107,32 @@ export default function DashboardPage() {
         
         const fetchRecentNotes = async () => {
             setIsLoadingNotes(true);
-            const allNotes: Note[] = [];
-            const patientDocs = await getDocs(patientsCollection);
-            for (const patientDoc of patientDocs.docs) {
-                const notesCollectionRef = collection(db, `users/${user.uid}/patients/${patientDoc.id}/notes`);
-                const qNotes = query(notesCollectionRef, orderBy("createdAt", "desc"), limit(5));
-                const notesSnapshot = await getDocs(qNotes);
-                notesSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    allNotes.push({
-                        id: doc.id,
-                        patientId: patientDoc.id,
-                        ...data,
-                        createdAt: data.createdAt.toDate(),
-                    } as Note);
-                });
+            try {
+                const allNotes: Note[] = [];
+                const patientDocs = await getDocs(patientsCollection);
+                for (const patientDoc of patientDocs.docs) {
+                    const notesCollectionRef = collection(db, `users/${user.uid}/patients/${patientDoc.id}/notes`);
+                    const qNotes = query(notesCollectionRef, orderBy("createdAt", "desc"), limit(5));
+                    const notesSnapshot = await getDocs(qNotes);
+                    notesSnapshot.forEach(doc => {
+                        const data = doc.data();
+                        allNotes.push({
+                            id: doc.id,
+                            patientId: patientDoc.id,
+                            ...data,
+                            createdAt: data.createdAt.toDate(),
+                        } as Note);
+                    });
+                }
+                 // Sort all notes by date and take the most recent 5
+                allNotes.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+                setRecentNotes(allNotes.slice(0, 5));
+            } catch (e) {
+                console.error("Error fetching recent notes:", e);
+                toast({ variant: "destructive", title: "Error al cargar notas recientes." });
+            } finally {
+                setIsLoadingNotes(false);
             }
-             // Sort all notes by date and take the most recent 5
-            allNotes.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-            setRecentNotes(allNotes.slice(0, 5));
-            setIsLoadingNotes(false);
         };
 
         fetchRecentNotes();
@@ -165,7 +170,7 @@ export default function DashboardPage() {
 
     const recentActivity = useMemo((): ActivityItem[] => {
         const completedSessions: ActivityItem[] = sessions
-            .filter(s => s.status === 'Confirmada') 
+            .filter(s => s.status === 'Confirmada' && !isFuture(s.date)) 
             .map(s => ({ ...s, activityType: 'session', activityDate: s.date }));
 
         const notesAsActivity: ActivityItem[] = recentNotes.map(n => {
@@ -185,7 +190,11 @@ export default function DashboardPage() {
 
 
     if (isLoading) {
-        return <div>Cargando...</div>;
+        return (
+          <div className="flex h-screen w-full items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        );
     }
 
     const getActivityIcon = (activity: ActivityItem) => {
