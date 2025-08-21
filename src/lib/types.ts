@@ -1,53 +1,14 @@
 
+import { z } from "zod";
 
-import { z } from 'zod';
-
-export interface Patient {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  nextSession: string | null;
-  status: "Activo" | "Inactivo";
-  dob?: string;
-  createdAt?: any;
-  consultationType?: string;
-  mainDiagnosis?: string;
-  currentObjective?: string;
-  frequency?: string;
-  context?: string;
-}
-
-export interface Session {
-  id: string;
-  patientId: string;
-  patientName: string;
-  date: Date;
-  endDate: Date;
-  duration: number; // in minutes
-  type: "Individual" | "Pareja" | "Familiar";
-  status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
-  remindPatient?: boolean;
-  googleEventId?: string;
-}
-
-export interface Note {
-  id: string;
-  patientId: string;
-  title: string;
-  type: "Voz" | "Texto" | "Manual";
-  createdAt: Date;
-  content: string;
-  sessionId?: string;
-  hasHistory?: boolean;
-}
-
-export interface NoteVersion {
-    id: string;
-    title: string;
-    content: string;
-    versionCreatedAt: Date;
-}
+// User Profile
+export const ProfileFormSchema = z.object({
+  fullName: z.string().min(2, "El nombre es muy corto").max(50, "El nombre es muy largo"),
+  email: z.string().email("El correo no es válido"),
+  phone: z.string().optional(),
+  photoURL: z.string().url().optional().or(z.literal("")),
+});
+export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
 
 export interface UserProfile {
   fullName: string;
@@ -57,26 +18,63 @@ export interface UserProfile {
   timezone?: string;
 }
 
-// Schema for chatWithNotes flow input
+// Patient
+export interface Patient {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  dob?: string; // Date of Birth
+  status: "Activo" | "Inactivo";
+  consultationType?: string;
+  mainDiagnosis?: string;
+  currentObjective?: string;
+  frequency?: string;
+  context?: string;
+  createdAt: any;
+}
+
+
+// Session
+export interface Session {
+  id: string;
+  patientId: string;
+  patientName: string;
+  date: Date;
+  endDate: Date;
+  duration: number;
+  type: "Individual" | "Pareja" | "Familiar";
+  status: "Confirmada" | "Pendiente" | "Cancelada" | "No asistió";
+  remindPatient: boolean;
+  googleEventId?: string;
+}
+
+// Note
+export interface Note {
+  id: string;
+  patientId: string;
+  title: string;
+  content: string;
+  type: "Voz" | "Texto" | "Manual";
+  createdAt: Date;
+  hasHistory: boolean;
+}
+
+export interface NoteVersion {
+    id: string;
+    title: string;
+    content: string;
+    versionCreatedAt: Date;
+}
+
+// Chat with Notes AI Flow
 export const ChatWithNotesInputSchema = z.object({
   question: z.string().describe('The user question about the notes.'),
-  notesContent: z.string().describe('The concatenated content of the relevant clinical notes.'),
+  notesContent: z.string().describe("A compilation of all clinical notes for the patient."),
 });
 export type ChatWithNotesInput = z.infer<typeof ChatWithNotesInputSchema>;
 
-// Schema for chatWithNotes flow output
 export const ChatWithNotesOutputSchema = z.object({
-  answer: z.string().describe("The AI's answer to the user's question based on the provided notes."),
+  answer: z.string().describe('The AI-generated answer.'),
 });
 export type ChatWithNotesOutput = z.infer<typeof ChatWithNotesOutputSchema>;
-
-export const ProfileFormSchema = z.object({
-  fullName: z.string().min(1, "El nombre completo es requerido."),
-  email: z.string().email("Correo electrónico inválido."),
-  phone: z.string().optional(),
-  photoURL: z.string().optional(),
-  timezone: z.string().optional(),
-});
-export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
-
-    
