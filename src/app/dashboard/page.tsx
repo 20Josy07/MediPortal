@@ -26,6 +26,7 @@ import {
   Heart,
   Target,
   NotebookText,
+  Loader2,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -260,7 +261,7 @@ export default function DashboardPage() {
                          <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
                             <Calendar className="h-4 w-4 text-blue-600" />
                             <AlertDescription className="text-blue-800 dark:text-blue-200">
-                                <strong>Próxima cita</strong> a las {format(nextSession.date, 'p', { locale: es})} - {nextSession.patientName}
+                                <strong>Próxima cita</strong> a las {format(nextSession.date, 'p', { locale: es })} - {nextSession.patientName}
                             </AlertDescription>
                         </Alert>
                     )}
