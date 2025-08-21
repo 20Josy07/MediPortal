@@ -58,6 +58,7 @@ export interface Note {
   type: "Voz" | "Texto" | "Manual";
   createdAt: Date;
   hasHistory: boolean;
+  status: 'Draft' | 'Completed';
 }
 
 export interface NoteVersion {

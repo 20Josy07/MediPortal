@@ -18,7 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History, ChevronDown, ChevronsUpDown, Check, Search } from "lucide-react";
+import { Mic, Paperclip, Send, Bot, FileText, User, Loader2, StopCircle, Trash2, Edit, Upload, FileAudio, Sparkles, Download, Bold, Italic, Underline, Palette, AlignCenter, AlignLeft, AlignRight, History, ChevronDown, ChevronsUpDown, Check, Search, Pencil, CheckCircle2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { transcribeAudio } from "@/ai/flows/transcribe-audio-flow";
 import { chatWithNotes } from "@/ai/flows/summarize-notes-flow";
@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
@@ -269,6 +269,7 @@ export default function SmartNotesPage() {
             id: doc.id,
             ...data,
             createdAt: (data.createdAt as any).toDate(),
+            status: data.status || 'Draft',
            } as Note;
         });
         setNotes(noteList);
@@ -320,7 +321,7 @@ export default function SmartNotesPage() {
     try {
       const { transcription } = await transcribeAudio({ audioDataUri: base64Audio });
       if (transcription) {
-        const newNote: Omit<Note, 'id'> = {
+        const newNote: Omit<Note, 'id' | 'status'> = {
           title: `Nota de audio - ${new Date().toLocaleString()}`,
           type: 'Voz',
           content: transcription,
@@ -330,7 +331,7 @@ export default function SmartNotesPage() {
         };
         const addedNote = await addNote(db, user.uid, selectedPatientId, newNote);
         setNotes(prevNotes => [addedNote, ...prevNotes]);
-        toast({ title: "Nota de audio guardada y transcrita." });
+        toast({ title: "Nota de audio guardada como borrador." });
       }
     } catch (err) {
       console.error("Transcription error:", err);
@@ -416,7 +417,7 @@ export default function SmartNotesPage() {
         const tempDiv = document.createElement("div");
         tempDiv.innerHTML = content;
         const textForTitle = tempDiv.textContent || tempDiv.innerText || "";
-      const newNote: Omit<Note, 'id'> = {
+      const newNote: Omit<Note, 'id' | 'status'> = {
         title: `${textForTitle.substring(0, 30)}${textForTitle.length > 30 ? '...' : ''}`,
         type: 'Texto',
         content: content,
@@ -428,7 +429,7 @@ export default function SmartNotesPage() {
       setNotes(prevNotes => [addedNote, ...prevNotes]);
       setTextNoteContent("");
        if(textEditorRef.current) textEditorRef.current.innerHTML = "";
-      toast({ title: "Resumen guardado" });
+      toast({ title: "Borrador guardado" });
     } catch (error) {
        console.error("Error saving text note:", error);
        toast({
@@ -451,7 +452,7 @@ export default function SmartNotesPage() {
     setIsDetailViewOpen(true);
   };
   
-  const handleUpdateNote = async () => {
+  const handleUpdateNote = async (newStatus?: 'Completed') => {
     if (!selectedNote || !user || !db || !selectedPatientId) return;
 
     let finalContent = editableNoteContent;
@@ -465,18 +466,36 @@ export default function SmartNotesPage() {
         finalContent = editorRef.current.innerHTML;
     }
 
-    const updatedData = {
+    const updatedData: Partial<Note> = {
       title: editableNoteTitle,
       content: finalContent,
     };
+    
+    if (newStatus) {
+        updatedData.status = newStatus;
+    }
 
     try {
       await updateNote(db, user.uid, selectedPatientId, selectedNote.id, updatedData);
-      setNotes(notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData, content: finalContent, hasHistory: true } : n));
-      toast({ title: "Nota actualizada correctamente." });
-      setIsDetailViewOpen(false);
-      setSelectedNote(null);
-      setGeneratedBlocks(null);
+      const updatedNotes = notes.map(n => n.id === selectedNote.id ? { ...n, ...updatedData, content: finalContent, hasHistory: true } : n);
+      setNotes(updatedNotes);
+      setFilteredNotes(updatedNotes); // Also update filtered notes
+
+      toast({ title: `Nota ${newStatus === 'Completed' ? 'marcada como completada' : 'actualizada'}.` });
+      
+      // If status changed, update the selectedNote in the dialog as well
+      if(newStatus) {
+        setSelectedNote(prev => prev ? {...prev, status: newStatus} : null);
+      }
+
+      if (newStatus === 'Completed' && !isEditing && !isEditingTranscription) {
+         // Keep dialog open if only status changed
+      } else {
+        setIsDetailViewOpen(false);
+        setSelectedNote(null);
+        setGeneratedBlocks(null);
+      }
+
     } catch (error) {
       console.error("Error updating note:", error);
       toast({ variant: "destructive", title: "Error al actualizar la nota." });
@@ -1140,10 +1159,18 @@ export default function SmartNotesPage() {
                           onClick={() => handleViewNote(note)}
                           className="flex items-start p-3 rounded-md hover:bg-muted/50 cursor-pointer"
                         >
-                          <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
+                          <div className="flex-shrink-0 mt-0.5">
+                            {note.status === 'Completed'
+                              ? <CheckCircle2 className="h-5 w-5 text-green-500" />
+                              : <Pencil className="h-5 w-5 text-yellow-500" />
+                            }
+                          </div>
                           <div className="flex-1 ml-3 overflow-hidden">
                             <p className="font-semibold truncate">{note.title}</p>
                             <p className="text-xs text-muted-foreground">
+                              <Badge variant={note.status === 'Completed' ? 'secondary' : 'outline'} className={cn("mr-2", note.status === 'Completed' ? "border-green-500/50" : "border-yellow-500/50")}>
+                                {note.status === 'Completed' ? 'Completada' : 'Borrador'}
+                              </Badge>
                               {note.type}
                               {' | '}
                               {formatDistanceToNow(note.createdAt, {
@@ -1301,11 +1328,20 @@ export default function SmartNotesPage() {
                 <div className="flex gap-2 justify-end">
                   <Button variant="outline" onClick={() => setIsDetailViewOpen(false)}>Cancelar</Button>
                   {isEditing || isEditingTranscription ? (
-                     <Button onClick={handleUpdateNote}>Guardar Cambios</Button>
+                     <Button onClick={() => handleUpdateNote()}>Guardar Cambios</Button>
                   ) : (
-                    <Button onClick={() => { setIsEditing(true); setIsEditingTranscription(true); }}>
-                        <Edit className="mr-2 h-4 w-4" /> Editar
-                    </Button>
+                    <>
+                      <Button variant="secondary" onClick={() => { setIsEditing(true); setIsEditingTranscription(true); }}>
+                          <Edit className="mr-2 h-4 w-4" /> Editar
+                      </Button>
+                      <Button 
+                        onClick={() => handleUpdateNote('Completed')}
+                        disabled={selectedNote.status === 'Completed'}
+                      >
+                          <CheckCircle2 className="mr-2 h-4 w-4" /> 
+                          {selectedNote.status === 'Completed' ? 'Completada' : 'Marcar como Completada'}
+                      </Button>
+                    </>
                   )}
                 </div>
               </DialogFooter>

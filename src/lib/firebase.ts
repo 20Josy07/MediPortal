@@ -57,17 +57,21 @@ export const signInWithGoogle = async (auth: Auth, db: Firestore): Promise<User>
   }
 };
 
-export const addNote = async (db: Firestore, userId: string, patientId: string, noteData: Omit<Note, 'id'>): Promise<Note> => {
+export const addNote = async (db: Firestore, userId: string, patientId: string, noteData: Omit<Note, 'id' | 'status'>): Promise<Note> => {
   const notesCollection = collection(db, `users/${userId}/patients/${patientId}/notes`);
-  const docRef = await addDoc(notesCollection, {
+  const newNoteData = {
     ...noteData,
     createdAt: serverTimestamp(),
+    status: 'Draft' as const,
     hasHistory: false,
-  });
+  };
+  const docRef = await addDoc(notesCollection, newNoteData);
   return {
     id: docRef.id,
     ...noteData,
-    createdAt: new Date(), // Return optimistic date
+    createdAt: new Date(),
+    status: 'Draft',
+    hasHistory: false,
   };
 };
 
@@ -80,23 +84,32 @@ export const updateNote = async (db: Firestore, userId: string, patientId: strin
   if (noteSnapshot.exists()) {
       const currentNote = noteSnapshot.data() as Note;
 
-      // 2. Create a new version in the 'versions' subcollection
-      const versionCollectionRef = collection(noteDocRef, 'versions');
-      const newVersionRef = doc(versionCollectionRef); // Auto-generate ID
-      
-      batch.set(newVersionRef, {
-          title: currentNote.title,
-          content: currentNote.content,
-          versionCreatedAt: currentNote.createdAt,
-      });
+      // 2. Create a new version in the 'versions' subcollection if content or title changes
+      const hasContentChanged = data.content !== undefined && data.content !== currentNote.content;
+      const hasTitleChanged = data.title !== undefined && data.title !== currentNote.title;
 
-      // 3. Update the main note document with new data and mark that it has history
-      const updateData = { ...data, hasHistory: true };
-      batch.update(noteDocRef, updateData);
+      if (hasContentChanged || hasTitleChanged) {
+        const versionCollectionRef = collection(noteDocRef, 'versions');
+        const newVersionRef = doc(versionCollectionRef);
+        
+        batch.set(newVersionRef, {
+            title: currentNote.title,
+            content: currentNote.content,
+            versionCreatedAt: serverTimestamp(), // Use server timestamp for versioning
+        });
+        
+        // 3. Update the main note document with new data and mark that it has history
+        const updateData = { ...data, hasHistory: true };
+        batch.update(noteDocRef, updateData);
+      } else {
+        // If only status or other minor fields change, just update without creating a version
+        batch.update(noteDocRef, data);
+      }
 
   } else {
-    // If for some reason the note doesn't exist, just update (which will create it if it doesn't exist with set)
-     batch.update(noteDocRef, data);
+    // If note doesn't exist, this will fail. Let's assume updates are on existing notes.
+    // For safety, you might want to throw an error here.
+    throw new Error("Note to update does not exist.");
   }
 
   // 4. Commit the batch
