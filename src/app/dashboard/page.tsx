@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -188,18 +189,17 @@ export default function DashboardPage() {
                     <Card className="relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent"></div>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Tasa de Éxito</CardTitle>
+                        <CardTitle className="text-sm font-medium">Sesiones por Reprogramar</CardTitle>
                         <div className="rounded-full bg-amber-100 p-2 dark:bg-amber-900">
-                            <Target className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                            <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                         </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold text-amber-600">94%</div>
+                            <div className="text-2xl font-bold text-amber-600">4</div>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <TrendingUp className="h-3 w-3 text-green-500" />
-                                +3% vs mes anterior
+                                Canceladas esta semana
                             </div>
-                            <Progress value={94} className="mt-2 h-1" />
+                            <Progress value={15} className="mt-2 h-1" />
                         </CardContent>
                     </Card>
 
