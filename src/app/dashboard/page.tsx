@@ -34,6 +34,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 type ActivityItem = 
   | (Session & { activityType: 'session'; activityDate: Date; })
@@ -244,6 +245,21 @@ export default function DashboardPage() {
                 return { title: '', description: '' };
         }
     };
+    
+    const getStatusBadge = (status: Session['status']): { variant: "success" | "warning" | "danger" | "info" | "default"; icon: React.ElementType } => {
+        switch (status) {
+            case "Confirmada":
+                return { variant: "success", icon: CheckCircle2 };
+            case "Pendiente":
+                return { variant: "warning", icon: Clock };
+            case "Cancelada":
+                 return { variant: "danger", icon: AlertCircle };
+            case "No asistió":
+                return { variant: "info", icon: AlertCircle };
+            default:
+                return { variant: "default", icon: AlertCircle };
+        }
+    };
 
 
     return (
@@ -354,45 +370,38 @@ export default function DashboardPage() {
                         <CardDescription>{format(new Date(), "eeee, d 'de' MMMM yyyy", { locale: es })}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                        {todaySchedule.length > 0 ? todaySchedule.map((session, index) => (
-                            <div
-                                key={index}
-                                className="group flex items-center justify-between rounded-xl border border-border p-4 transition-all hover:shadow-md hover:border-primary/20"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="flex h-12 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-muted to-muted/50 text-sm font-semibold">
-                                        {format(session.date, 'HH:mm')}
+                        {todaySchedule.length > 0 ? todaySchedule.map((session, index) => {
+                            const statusInfo = getStatusBadge(session.status);
+                            const Icon = statusInfo.icon;
+                            return (
+                                <div
+                                    key={index}
+                                    className="group flex items-center justify-between rounded-xl border border-border p-4 transition-all hover:shadow-md hover:border-primary/20"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex h-12 w-16 items-center justify-center rounded-lg bg-gradient-to-br from-muted to-muted/50 text-sm font-semibold">
+                                            {format(session.date, 'HH:mm')}
+                                        </div>
+                                        <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-semibold text-foreground">{session.patientName}</p>
+                                        </div>
+                                        <p className="text-sm text-muted-foreground">{session.type}</p>
+                                        <p className="text-xs text-muted-foreground">{session.duration} min</p>
+                                        </div>
                                     </div>
-                                    <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <p className="font-semibold text-foreground">{session.patientName}</p>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">{session.type}</p>
-                                    <p className="text-xs text-muted-foreground">{session.duration} min</p>
+                                        <Badge
+                                            variant={statusInfo.variant}
+                                            className="text-xs"
+                                        >
+                                            <Icon className="mr-1 h-3 w-3" />
+                                            {session.status}
+                                        </Badge>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <Badge
-                                        variant={
-                                            session.status === "Confirmada" ? "secondary"
-                                            : session.status === "Pendiente" ? "default"
-                                            : "outline"
-                                        }
-                                        className="text-xs"
-                                    >
-                                        {session.status === "Confirmada" ? (
-                                            <>
-                                            <CheckCircle2 className="mr-1 h-3 w-3" /> Confirmada
-                                            </>
-                                        ) : (
-                                            <>
-                                            <Clock className="mr-1 h-3 w-3" /> Pendiente
-                                            </>
-                                        )}
-                                    </Badge>
-                                </div>
-                            </div>
-                        )) : (
+                            )
+                        }) : (
                             <div className="text-center py-10 text-muted-foreground">
                                 No hay sesiones programadas para hoy.
                             </div>
