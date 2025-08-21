@@ -1,126 +1,109 @@
-
 "use client"
 
 import type React from "react"
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Eye, EyeOff, Mail, Lock, User, Calendar } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react"
 
 interface SignUpFormProps {
   onSubmit: (e: React.FormEvent) => void
   isLoading: boolean
+  password: string
+  setPassword: (password: string) => void
+  fullName: string;
+  setFullName: (name: string) => void;
+  email: string;
+  setEmail: (email: string) => void;
 }
 
-export function SignUpForm({
-  onSubmit,
-  isLoading,
+export function SignUpForm({ 
+    onSubmit, 
+    isLoading, 
+    password, 
+    setPassword,
+    fullName,
+    setFullName,
+    email,
+    setEmail
 }: SignUpFormProps) {
-    const [showPassword, setShowPassword] = useState(false)
-    const [fullName, setFullName] = useState("")
-    const [email, setEmail] = useState("")
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
-    const [birthDate, setBirthDate] = useState("")
-    const [gender, setGender] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-        {/* Full Name */}
-        <div className="relative">
-        <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
+    <form onSubmit={onSubmit} className="space-y-6">
+      <div className="space-y-3">
+        <Label htmlFor="name" className="text-white font-medium flex items-center gap-2 text-base font-sans">
+          <User className="w-4 h-4 text-[#8e8e93]" />
+          Full Name
+        </Label>
         <Input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="bg-black/20 border border-white/10 rounded-2xl h-14 text-white pl-12"
-            placeholder="Nombre completo"
-            required
+          id="name"
+          type="text"
+          placeholder="Enter your full name"
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          required
+          className="bg-[#2c2c2e] border border-[#3a3a3c] text-white placeholder:text-[#8e8e93] focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/20 transition-all duration-200 rounded-2xl h-14 text-base font-sans"
         />
-        </div>
-
-        {/* Email */}
-        <div className="relative">
-        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
+      </div>
+      <div className="space-y-3">
+        <Label htmlFor="signup-email" className="text-white font-medium flex items-center gap-2 text-base font-sans">
+          <Mail className="w-4 h-4 text-[#8e8e93]" />
+          Email
+        </Label>
         <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-black/20 border border-white/10 rounded-2xl h-14 text-white pl-12"
-            placeholder="Correo electrónico"
-            required
+          id="signup-email"
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="bg-[#2c2c2e] border border-[#3a3a3c] text-white placeholder:text-[#8e8e93] focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/20 transition-all duration-200 rounded-2xl h-14 text-base font-sans"
         />
-        </div>
-
-        {/* Username */}
+      </div>
+      <div className="space-y-3">
+        <Label htmlFor="signup-password" className="text-white font-medium flex items-center gap-2 text-base font-sans">
+          <Lock className="w-4 h-4 text-[#8e8e93]" />
+          Password
+        </Label>
         <div className="relative">
-        <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-        <Input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="bg-black/20 border border-white/10 rounded-2xl h-14 text-white pl-12"
-            placeholder="Nombre de usuario"
-            required
-        />
-        </div>
-
-        {/* Password */}
-        <div className="relative">
-        <Input
+          <Input
+            id="signup-password"
             type={showPassword ? "text" : "password"}
+            placeholder="Create a password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-black/20 border border-white/10 rounded-2xl h-14 text-white pr-12"
-            placeholder="Contraseña"
             required
-        />
-        <button
+            className="bg-[#2c2c2e] border border-[#3a3a3c] text-white placeholder:text-[#8e8e93] focus:border-[#007aff] focus:ring-2 focus:ring-[#007aff]/20 transition-all duration-200 rounded-2xl h-14 pr-14 text-base font-sans"
+          />
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-4 text-[#8e8e93] hover:text-white hover:bg-transparent"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/60"
-        >
+          >
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-        </button>
+          </Button>
         </div>
+      </div>
 
-        {/* Birth Date */}
-        <div className="relative">
-        <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/40" />
-        <Input
-            type="date"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            className="bg-black/20 border border-white/10 rounded-2xl h-14 text-white pl-12"
-            required
-        />
-        </div>
-
-        {/* Gender */}
-        <div className="relative">
-        <Select value={gender} onValueChange={setGender}>
-            <SelectTrigger className="bg-black/20 border border-white/10 rounded-2xl h-14 text-white">
-            <SelectValue placeholder="Seleccionar género" />
-            </SelectTrigger>
-            <SelectContent className="bg-black/90 border border-white/10 rounded-xl text-white">
-            <SelectItem value="masculino">Masculino</SelectItem>
-            <SelectItem value="femenino">Femenino</SelectItem>
-            <SelectItem value="otro">Otro</SelectItem>
-            <SelectItem value="prefiero-no-decir">Prefiero no decir</SelectItem>
-            </SelectContent>
-        </Select>
-        </div>
-
-        {/* Create account button */}
-        <Button
-            type="submit"
-            className="w-full bg-white/20 hover:bg-white/30 text-white font-medium rounded-2xl h-14 mt-8"
-            disabled={isLoading}
-        >
-            {isLoading ? "Creando cuenta..." : "Crear cuenta"}
-        </Button>
+      <Button
+        type="submit"
+        className="w-full bg-[#007aff] hover:bg-[#0056cc] text-white font-medium transition-all duration-200 transform hover:scale-[1.01] shadow-lg rounded-2xl h-14 mt-8 text-base font-sans"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            Creating account...
+          </div>
+        ) : (
+          "Create Account"
+        )}
+      </Button>
     </form>
   )
 }

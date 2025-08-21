@@ -2,7 +2,6 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SignInForm } from "./sign-in-form"
 import { SignUpForm } from "./sign-up-form"
@@ -20,6 +19,8 @@ interface AuthCardProps {
   onSignUp: (e: React.FormEvent) => void
   onSocialLogin: (provider: string) => void
   onForgotPassword: () => void
+  fullName: string
+  setFullName: (name: string) => void
 }
 
 export function AuthCard({
@@ -34,6 +35,8 @@ export function AuthCard({
   onSignUp,
   onSocialLogin,
   onForgotPassword,
+  fullName,
+  setFullName,
 }: AuthCardProps) {
   
   return (
@@ -73,6 +76,12 @@ export function AuthCard({
                     <SignUpForm
                         onSubmit={onSignUp}
                         isLoading={isLoading}
+                        password={password}
+                        setPassword={setPassword}
+                        fullName={fullName}
+                        setFullName={setFullName}
+                        email={email}
+                        setEmail={setEmail}
                     />
                 </TabsContent>
 
