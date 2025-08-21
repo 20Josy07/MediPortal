@@ -167,7 +167,9 @@ export default function DashboardPage() {
     }, [sessions, patients]);
 
     const upcomingSessions = useMemo(() => {
-        return sessions.filter(s => isFuture(s.date) || isToday(s.date)).sort((a, b) => a.date.getTime() - b.date.getTime());
+        return sessions
+            .filter(s => s.endDate > new Date())
+            .sort((a, b) => a.date.getTime() - b.date.getTime());
     }, [sessions]);
 
     const nextSession = upcomingSessions[0];
@@ -532,3 +534,4 @@ export default function DashboardPage() {
     
 
     
+
