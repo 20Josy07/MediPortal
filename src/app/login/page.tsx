@@ -140,10 +140,7 @@ export default function LoginPage() {
         onSignIn={handleSignIn}
         onSocialLogin={handleSocialLogin}
         onForgotPassword={handleForgotPassword}
-        // Props for signup form, not used here but required by the component
-        fullName=""
-        setFullName={() => {}}
-        onSignUp={() => {}}
+        onSignUp={() => {}} // This is handled by the signup page
       />
     </div>
   );

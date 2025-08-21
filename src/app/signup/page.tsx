@@ -97,11 +97,9 @@ export default function SignUpPage() {
         setEmail={setEmail}
         password={password}
         setPassword={setPassword}
-        fullName={fullName}
-        setFullName={setFullName}
         onSignUp={handleSignUp}
         onSocialLogin={handleSocialLogin}
-        // Props for signin form, not used here but required
+        // Props for signin form, not used here but required by the component
         rememberMe={false}
         setRememberMe={() => {}}
         onSignIn={() => {}}
