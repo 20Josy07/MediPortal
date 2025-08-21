@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import type { Session, Patient, Note } from "@/lib/types";
-import { format, isToday, startOfDay, endOfDay, isFuture, subDays, addMinutes, formatDistanceToNow } from "date-fns";
+import { format, isToday, startOfDay, endOfDay, isFuture, subDays, addMinutes, formatDistanceToNow, formatRelative } from "date-fns";
 import { es } from "date-fns/locale";
 
 import {
@@ -287,8 +287,8 @@ export default function DashboardPage() {
                     {nextSession && (
                          <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
                             <Calendar className="h-4 w-4 text-blue-600" />
-                            <AlertDescription className="text-blue-800 dark:text-blue-200">
-                                <strong>Próxima cita</strong> a las {format(nextSession.date, 'p', { locale: es })} - {nextSession.patientName}
+                            <AlertDescription className="text-blue-800 dark:text-blue-200 capitalize">
+                                <strong>Próxima cita</strong> {formatRelative(nextSession.date, new Date(), { locale: es })} - {nextSession.patientName}
                             </AlertDescription>
                         </Alert>
                     )}
