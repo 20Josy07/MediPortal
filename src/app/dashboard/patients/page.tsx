@@ -318,7 +318,7 @@ export default function PatientsPage() {
                     </Card>
                     <Card>
                         <CardContent className="p-4">
-                        <div className="text-2xl font-bold text-muted-foreground">{stats.inactive}</div>
+                        <div className="text-2xl font-bold text-red-600">{stats.inactive}</div>
                         <p className="text-sm text-muted-foreground">Pacientes Inactivos</p>
                         </CardContent>
                     </Card>
