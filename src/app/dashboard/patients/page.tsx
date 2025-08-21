@@ -61,10 +61,6 @@ const calculateAge = (dob: string | undefined): number | null => {
 const PatientCard = ({ patient, onEdit, onDelete, index }: { patient: Patient, onEdit: (patient: Patient) => void, onDelete: (patient: Patient) => void, index: number }) => {
   const getInitials = (name: string) => {
     if (!name) return "U";
-    const names = name.split(" ");
-    if (names.length > 1) {
-      return names[0][0] + names[names.length - 1][0];
-    }
     return name.substring(0, 2);
   };
   
@@ -463,3 +459,4 @@ export default function PatientsPage() {
         </>
     );
 }
+
