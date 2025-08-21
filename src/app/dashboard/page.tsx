@@ -34,7 +34,10 @@ import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton";
 
-type ActivityItem = (Session & { activityType: 'session' }) | (Note & { activityType: 'note' });
+type ActivityItem = 
+  | (Session & { activityType: 'session'; activityDate: Date; })
+  | (Note & { activityType: 'note'; activityDate: Date; patientName?: string; })
+  | (Patient & { activityType: 'patient'; activityDate: Date; });
 
 
 export default function DashboardPage() {
@@ -56,7 +59,7 @@ export default function DashboardPage() {
         setIsLoading(true);
 
         const patientsCollection = collection(db, `users/${user.uid}/patients`);
-        const unsubscribePatients = onSnapshot(patientsCollection, (patientSnapshot) => {
+        const unsubscribePatients = onSnapshot(query(patientsCollection, orderBy("createdAt", "desc")), (patientSnapshot) => {
             const patientList = patientSnapshot.docs.map((doc) => {
                 const data = doc.data();
                 return {
@@ -160,19 +163,24 @@ export default function DashboardPage() {
             .sort((a, b) => a.date.getTime() - b.date.getTime());
     }, [sessions]);
 
-    const recentActivity = useMemo(() => {
-        const completedSessions = sessions
-            .filter(s => s.status === 'Confirmada') // Assuming 'Confirmada' means completed for activity feed
-            .map(s => ({ ...s, activityType: 'session' as const, activityDate: s.date }));
+    const recentActivity = useMemo((): ActivityItem[] => {
+        const completedSessions: ActivityItem[] = sessions
+            .filter(s => s.status === 'Confirmada') 
+            .map(s => ({ ...s, activityType: 'session', activityDate: s.date }));
 
-        const notesAsActivity = recentNotes.map(n => {
+        const notesAsActivity: ActivityItem[] = recentNotes.map(n => {
             const patient = patients.find(p => p.id === n.patientId);
-            return { ...n, activityType: 'note' as const, activityDate: n.createdAt, patientName: patient?.name || 'Paciente desconocido' };
+            return { ...n, activityType: 'note', activityDate: n.createdAt, patientName: patient?.name || 'Desconocido' };
         });
 
-        const combined = [...completedSessions, ...notesAsActivity];
+        const newPatientsAsActivity: ActivityItem[] = patients
+            .map(p => ({ ...p, activityType: 'patient', activityDate: p.createdAt }));
 
-        return combined.sort((a, b) => b.activityDate.getTime() - a.activityDate.getTime()).slice(0, 5);
+        const combined = [...completedSessions, ...notesAsActivity, ...newPatientsAsActivity];
+        
+        return combined
+            .sort((a, b) => b.activityDate.getTime() - a.activityDate.getTime())
+            .slice(0, 5);
     }, [sessions, recentNotes, patients]);
 
 
@@ -181,22 +189,52 @@ export default function DashboardPage() {
     }
 
     const getActivityIcon = (activity: ActivityItem) => {
-        if (activity.activityType === 'session') {
-            return (
-                <div className="rounded-full bg-green-100 p-1 dark:bg-green-900">
-                    <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
-                </div>
-            );
+        switch (activity.activityType) {
+            case 'session':
+                return (
+                    <div className="rounded-full bg-green-100 p-1 dark:bg-green-900">
+                        <CheckCircle2 className="h-3 w-3 text-green-600 dark:text-green-400" />
+                    </div>
+                );
+            case 'note':
+                return (
+                    <div className="rounded-full bg-purple-100 p-1 dark:bg-purple-900">
+                        <NotebookText className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+                    </div>
+                );
+            case 'patient':
+                return (
+                    <div className="rounded-full bg-blue-100 p-1 dark:bg-blue-900">
+                        <UserPlus className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                    </div>
+                );
+            default:
+                return null;
         }
-        if (activity.activityType === 'note') {
-            return (
-                 <div className="rounded-full bg-purple-100 p-1 dark:bg-purple-900">
-                    <NotebookText className="h-3 w-3 text-purple-600 dark:text-purple-400" />
-                </div>
-            )
+    };
+
+    const getActivityText = (activity: ActivityItem) => {
+        switch (activity.activityType) {
+            case 'session':
+                return {
+                    title: 'Sesión completada',
+                    description: `${activity.patientName} - ${activity.type}`
+                };
+            case 'note':
+                return {
+                    title: `Nota ${activity.type === 'Voz' ? 'de voz' : 'de texto'} creada`,
+                    description: `${activity.patientName} - "${activity.title}"`
+                };
+            case 'patient':
+                return {
+                    title: 'Nuevo paciente agregado',
+                    description: activity.name
+                };
+            default:
+                return { title: '', description: '' };
         }
-        return null;
-    }
+    };
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
@@ -435,22 +473,21 @@ export default function DashboardPage() {
                                         </div>
                                     </>
                                 ) : recentActivity.length > 0 ? (
-                                    recentActivity.map((activity) => (
-                                        <div key={activity.id} className="flex items-start gap-3">
-                                            {getActivityIcon(activity)}
-                                            <div className="space-y-1 text-sm">
-                                                <p className="font-medium text-foreground">
-                                                    {activity.activityType === 'session' ? 'Sesión completada' : 'Nueva nota creada'}
-                                                </p>
-                                                <p className="text-muted-foreground">
-                                                    {activity.activityType === 'note' ? activity.patientName : activity.patientName} - {activity.activityType === 'session' ? activity.type : activity.title}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {formatDistanceToNow(activity.activityType === 'note' ? activity.createdAt : activity.date, { addSuffix: true, locale: es })}
-                                                </p>
+                                    recentActivity.map((activity) => {
+                                        const { title, description } = getActivityText(activity);
+                                        return (
+                                            <div key={`${activity.activityType}-${activity.id}`} className="flex items-start gap-3">
+                                                {getActivityIcon(activity)}
+                                                <div className="space-y-1 text-sm">
+                                                    <p className="font-medium text-foreground">{title}</p>
+                                                    <p className="text-muted-foreground truncate max-w-[240px]">{description}</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {formatDistanceToNow(activity.activityDate, { addSuffix: true, locale: es })}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 ) : (
                                     <p className="text-sm text-muted-foreground text-center py-4">No hay actividad reciente.</p>
                                 )}
@@ -463,3 +500,4 @@ export default function DashboardPage() {
     )
 }
 
+    
