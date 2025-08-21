@@ -85,7 +85,7 @@ const PatientCard = ({ patient, onEdit, onDelete, index }: { patient: Patient, o
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <h3 className="font-medium text-foreground">{patient.name}</h3>
-            <Badge variant={patient.status === "Activo" ? "default" : "secondary"} className={patient.status === 'Activo' ? 'bg-green-600/90' : ''}>
+            <Badge variant={patient.status === 'Activo' ? 'default' : 'destructive'} className={cn(patient.status === 'Activo' && 'bg-green-600/90')}>
               {patient.status}
             </Badge>
           </div>
@@ -458,5 +458,7 @@ export default function PatientsPage() {
             </Dialog>
         </>
     );
-}
 
+
+
+    
